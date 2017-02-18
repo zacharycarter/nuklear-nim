@@ -396,7 +396,7 @@ type
     parent*: ptr nk_panel
 
   nk_window* = object
-    seq*: cuint
+    `seq`*: cuint
     name*: nk_hash
     name_string*: array[64, char]
     flags*: nk_flags
@@ -429,7 +429,7 @@ type
 
   nk_edit_state* = object
     name*: nk_hash
-    seq*: cuint
+    `seq`*: cuint
     old*: cuint
     active*: cint
     prev*: cint
@@ -447,7 +447,7 @@ type
     length*: cint
     cursor*: cint
     name*: nk_hash
-    seq*: cuint
+    `seq`*: cuint
     old*: cuint
     state*: cint
 
@@ -525,7 +525,7 @@ type
     button_behaviors*: nk_config_stack_button_behavior
 
   nk_table* = object
-    seq*: cuint
+    `seq`*: cuint
     #keys*: array[(((if (sizeof(nk_window)) < (sizeof(nk_panel)): (sizeof(nk_panel)) else: (
        # sizeof(nk_window))) div sizeof((nk_uint))) div 2), nk_hash]
     #values*: array[(((if (sizeof(nk_window)) < (sizeof(nk_panel)): (sizeof(nk_panel)) else: (
@@ -606,7 +606,7 @@ type
     current*: ptr nk_window
     freelist*: ptr nk_page_element
     count*: cuint
-    seq*: cuint
+    `seq`*: cuint
 
   nk_plugin_paste* = proc (a2: nk_handle; a3: ptr nk_text_edit) {.cdecl.}
   nk_plugin_copy* = proc (a2: nk_handle; a3: cstring; len: cint) {.cdecl.}

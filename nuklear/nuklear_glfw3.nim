@@ -118,16 +118,18 @@ proc nk_glfw3_device_create*() =
     glBindVertexArray(0)
 
 proc nk_glfw3_init*(win: glfw.Window; init_state: nk_glfw_init_state): ptr nk_context =
-    nukGLFW.win = win
-    #if init_state == NK_GLFW3_INSTALL_CALLBACKS:
-      #glfwSetScrollCallback(win, nk_gflw3_scroll_callback)
-      #glfwSetCharCallback(win, nk_glfw3_char_callback)
-    discard nk_init_default(addr(nukGLFW.ctx), nil)
-    #nukGLFW.ctx.clip.copy = nk_glfw3_clipbard_copy
-    #nukGLFW.ctx.clip.paste = nk_glfw3_clipbard_paste
-    #nukGLFW.ctx.clip.userdata = nk_handle_ptr(0)
-    nk_glfw3_device_create()
-    return addr(nukGLFW.ctx)
+  nukGLFW = nk_glfw()
+  nukGLFW.win = win
+  #if init_state == NK_GLFW3_INSTALL_CALLBACKS:
+    #glfwSetScrollCallback(win, nk_gflw3_scroll_callback)
+    #glfwSetCharCallback(win, nk_glfw3_char_callback)
+  discard nk_init_default(addr(nukGLFW.ctx), nil)
+  #nukGLFW.ctx.clip.copy = nk_glfw3_clipbard_copy
+  #nukGLFW.ctx.clip.paste = nk_glfw3_clipbard_paste
+  #nukGLFW.ctx.clip.userdata = nk_handle_ptr(0)
+  nk_glfw3_device_create()
+  
+  return addr(nukGLFW.ctx)
 
 proc nk_glfw3_font_stash_begin*(atlas: ptr ptr nk_font_atlas) =
   nk_font_atlas_init_default(addr(nukGLFW.atlas))
@@ -157,3 +159,6 @@ proc nk_glfw3_font_stash_end*() =
   if not nukGLFW.atlas.default_font.isNil:
     nk_style_set_font(addr(nukGLFW.ctx), addr(nukGLFW.atlas.default_font.handle))
   
+proc nk_glfw3_new_frame*() =
+  nk_input_begin(addr nukGLFW.ctx)
+  nk_input_end(addr nukGLFW.ctx)

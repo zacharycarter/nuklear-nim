@@ -32,6 +32,7 @@ template LEN*(a: untyped): untyped =
   (sizeof((a) div sizeof((a)[0])))
 
 proc error_callback*(e: cint; d: cstring) {.cdecl.} =
+  setupForeignThreadGc()
   echo d
 
 proc main*(): cint =
@@ -58,6 +59,7 @@ proc main*(): cint =
   loadExtensions()
   glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
   ctx = nk_glfw3_init(win, NK_GLFW3_INSTALL_CALLBACKS)
+  
   ##  Load Fonts: if none of these are loaded a default font will be used
   ##  Load Cursor: if you uncomment cursor loading please hide the cursor
   var atlas: ptr nk_font_atlas
@@ -77,39 +79,39 @@ proc main*(): cint =
   ## set_style(ctx, THEME_BLUE);
   ## set_style(ctx, THEME_DARK);
   background = nk_rgb(28, 48, 62)
+  
   while glfw.WindowShouldClose(win) != 1:
     ##  Input
     glfw.PollEvents()
-    #nk_glfw3_new_frame()
+    nk_glfw3_new_frame()
     ##  GUI
-    if nk_begin(ctx, "Demo", nk_rect(50, 50, 230, 250), nk_flags NK_WINDOW_BORDER.cint or
+    echo nk_begin(ctx, "Demo", nk_rect(50, 50, 230, 250), nk_flags NK_WINDOW_BORDER.cint or
         NK_WINDOW_MOVABLE.cint or NK_WINDOW_SCALABLE.cint or NK_WINDOW_MINIMIZABLE.cint or
-        NK_WINDOW_TITLE.cint) == 1:
-        discard
-      #[const
-        EASY = 0
-        HARD = 1
-      var op: cint = EASY
-      var property: cint = 20
-      nk_layout_row_static(ctx, 30, 80, 1)
-      if nk_button_label(ctx, "button"): fprintf(stdout, "button pressed\x0A")
-      nk_layout_row_dynamic(ctx, 30, 2)
-      if nk_option_label(ctx, "easy", op == EASY): op = EASY
-      if nk_option_label(ctx, "hard", op == HARD): op = HARD
-      nk_layout_row_dynamic(ctx, 25, 1)
-      nk_property_int(ctx, "Compression:", 0, addr(property), 100, 10, 1)
-      nk_layout_row_dynamic(ctx, 20, 1)
-      nk_label(ctx, "background:", NK_TEXT_LEFT)
-      nk_layout_row_dynamic(ctx, 25, 1)
-      if nk_combo_begin_color(ctx, background, nk_vec2(nk_widget_width(ctx), 400)):
-        nk_layout_row_dynamic(ctx, 120, 1)
-        background = nk_color_picker(ctx, background, NK_RGBA)
-        nk_layout_row_dynamic(ctx, 25, 1)
-        background.r = cast[nk_byte](nk_propertyi(ctx, "#R:", 0, background.r, 255, 1, 1))
-        background.g = cast[nk_byte](nk_propertyi(ctx, "#G:", 0, background.g, 255, 1, 1))
-        background.b = cast[nk_byte](nk_propertyi(ctx, "#B:", 0, background.b, 255, 1, 1))
-        background.a = cast[nk_byte](nk_propertyi(ctx, "#A:", 0, background.a, 255, 1, 1))
-        nk_combo_end(ctx)]#
+        NK_WINDOW_TITLE.cint)
+      #const
+      #  EASY = 0
+      #  HARD = 1
+      #var op: cint = EASY
+      #var property: cint = 20
+      #nk_layout_row_static(ctx, 30, 80, 1)
+      #if nk_button_label(ctx, "button"): fprintf(stdout, "button pressed\x0A")
+      #nk_layout_row_dynamic(ctx, 30, 2)
+      #if nk_option_label(ctx, "easy", op == EASY): op = EASY
+      #if nk_option_label(ctx, "hard", op == HARD): op = HARD
+      #nk_layout_row_dynamic(ctx, 25, 1)
+      #nk_property_int(ctx, "Compression:", 0, addr(property), 100, 10, 1)
+      #nk_layout_row_dynamic(ctx, 20, 1)
+      #nk_label(ctx, "background:", NK_TEXT_LEFT)
+      #nk_layout_row_dynamic(ctx, 25, 1)
+      #if nk_combo_begin_color(ctx, background, nk_vec2(nk_widget_width(ctx), 400)):
+      #  nk_layout_row_dynamic(ctx, 120, 1)
+      #  background = nk_color_picker(ctx, background, NK_RGBA)
+      #  nk_layout_row_dynamic(ctx, 25, 1)
+      #  background.r = cast[nk_byte](nk_propertyi(ctx, "#R:", 0, background.r, 255, 1, 1))
+      #  background.g = cast[nk_byte](nk_propertyi(ctx, "#G:", 0, background.g, 255, 1, 1))
+      #  background.b = cast[nk_byte](nk_propertyi(ctx, "#B:", 0, background.b, 255, 1, 1))
+      #  background.a = cast[nk_byte](nk_propertyi(ctx, "#A:", 0, background.a, 255, 1, 1))
+      #  nk_combo_end(ctx)
     nk_end(ctx)
     ##  -------------- EXAMPLES ----------------
     ## calculator(ctx);
