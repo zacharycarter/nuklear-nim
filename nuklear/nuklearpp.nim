@@ -1,7 +1,7 @@
 {.deadCodeElim: on.}
-when defined(macosx):
-  const
-    libnuklear* = "libnuklear.dylib"
+
+{.compile: "bind.c".}
+
 type
   nk_char* = char
   nk_uchar* = cuchar
@@ -1081,95 +1081,88 @@ type
     NK_WINDOW_BACKGROUND = (1 shl (8)), NK_WINDOW_SCALE_LEFT = (1 shl (9))
 
 proc nk_memset*(`ptr`: pointer; c0: cint; size: nk_size) {.cdecl,
-    importc: "nk_buffer_init_default", dynlib: libnuklear.}
+    importc: "nk_buffer_init_default".}
 
 proc nk_buffer_init_default*(a2: ptr nk_buffer) {.cdecl,
-    importc: "nk_buffer_init_default", dynlib: libnuklear.}
+    importc: "nk_buffer_init_default".}
 proc nk_buffer_init*(a2: ptr nk_buffer; a3: ptr nk_allocator; size: nk_size) {.cdecl,
-    importc: "nk_buffer_init", dynlib: libnuklear.}
+    importc: "nk_buffer_init".}
 proc nk_buffer_init_fixed*(a2: ptr nk_buffer; memory: pointer; size: nk_size) {.cdecl,
-    importc: "nk_buffer_init_fixed", dynlib: libnuklear.}
+    importc: "nk_buffer_init_fixed".}
 proc nk_buffer_info*(a2: ptr nk_memory_status; a3: ptr nk_buffer) {.cdecl,
-    importc: "nk_buffer_info", dynlib: libnuklear.}
+    importc: "nk_buffer_info".}
 proc nk_buffer_push*(a2: ptr nk_buffer; `type`: nk_buffer_allocation_type;
                     memory: pointer; size: nk_size; align: nk_size) {.cdecl,
-    importc: "nk_buffer_push", dynlib: libnuklear.}
+    importc: "nk_buffer_push".}
 proc nk_buffer_mark*(a2: ptr nk_buffer; `type`: nk_buffer_allocation_type) {.cdecl,
-    importc: "nk_buffer_mark", dynlib: libnuklear.}
+    importc: "nk_buffer_mark".}
 proc nk_buffer_reset*(a2: ptr nk_buffer; `type`: nk_buffer_allocation_type) {.cdecl,
-    importc: "nk_buffer_reset", dynlib: libnuklear.}
-proc nk_buffer_clear*(a2: ptr nk_buffer) {.cdecl, importc: "nk_buffer_clear",
-                                       dynlib: libnuklear.}
-proc nk_buffer_free*(a2: ptr nk_buffer) {.cdecl, importc: "nk_buffer_free",
-                                      dynlib: libnuklear.}
+    importc: "nk_buffer_reset".}
+proc nk_buffer_clear*(a2: ptr nk_buffer) {.cdecl, importc: "nk_buffer_clear".}
+proc nk_buffer_free*(a2: ptr nk_buffer) {.cdecl, importc: "nk_buffer_free".}
 proc nk_buffer_memory*(a2: ptr nk_buffer): pointer {.cdecl,
-    importc: "nk_buffer_memory", dynlib: libnuklear.}
+    importc: "nk_buffer_memory".}
 proc nk_buffer_memory_const*(a2: ptr nk_buffer): pointer {.cdecl,
-    importc: "nk_buffer_memory_const", dynlib: libnuklear.}
-proc nk_buffer_total*(a2: ptr nk_buffer): nk_size {.cdecl, importc: "nk_buffer_total",
-    dynlib: libnuklear.}
+    importc: "nk_buffer_memory_const".}
+proc nk_buffer_total*(a2: ptr nk_buffer): nk_size {.cdecl, importc: "nk_buffer_total".}
 
 
 proc nk_str_init*(a2: ptr nk_str; a3: ptr nk_allocator; size: nk_size) {.cdecl,
-    importc: "nk_str_init", dynlib: libnuklear.}
+    importc: "nk_str_init".}
 proc nk_str_init_fixed*(a2: ptr nk_str; memory: pointer; size: nk_size) {.cdecl,
-    importc: "nk_str_init_fixed", dynlib: libnuklear.}
-proc nk_str_clear*(a2: ptr nk_str) {.cdecl, importc: "nk_str_clear", dynlib: libnuklear.}
-proc nk_str_free*(a2: ptr nk_str) {.cdecl, importc: "nk_str_free", dynlib: libnuklear.}
+    importc: "nk_str_init_fixed".}
+proc nk_str_clear*(a2: ptr nk_str) {.cdecl, importc: "nk_str_clear".}
+proc nk_str_free*(a2: ptr nk_str) {.cdecl, importc: "nk_str_free".}
 proc nk_str_append_text_char*(a2: ptr nk_str; a3: cstring; a4: cint): cint {.cdecl,
-    importc: "nk_str_append_text_char", dynlib: libnuklear.}
+    importc: "nk_str_append_text_char".}
 proc nk_str_append_str_char*(a2: ptr nk_str; a3: cstring): cint {.cdecl,
-    importc: "nk_str_append_str_char", dynlib: libnuklear.}
+    importc: "nk_str_append_str_char".}
 proc nk_str_append_text_utf8*(a2: ptr nk_str; a3: cstring; a4: cint): cint {.cdecl,
-    importc: "nk_str_append_text_utf8", dynlib: libnuklear.}
+    importc: "nk_str_append_text_utf8".}
 proc nk_str_append_str_utf8*(a2: ptr nk_str; a3: cstring): cint {.cdecl,
-    importc: "nk_str_append_str_utf8", dynlib: libnuklear.}
+    importc: "nk_str_append_str_utf8".}
 proc nk_str_append_text_runes*(a2: ptr nk_str; a3: ptr nk_rune; a4: cint): cint {.cdecl,
-    importc: "nk_str_append_text_runes", dynlib: libnuklear.}
+    importc: "nk_str_append_text_runes".}
 proc nk_str_append_str_runes*(a2: ptr nk_str; a3: ptr nk_rune): cint {.cdecl,
-    importc: "nk_str_append_str_runes", dynlib: libnuklear.}
+    importc: "nk_str_append_str_runes".}
 proc nk_str_insert_at_char*(a2: ptr nk_str; pos: cint; a4: cstring; a5: cint): cint {.
-    cdecl, importc: "nk_str_insert_at_char", dynlib: libnuklear.}
+    cdecl, importc: "nk_str_insert_at_char".}
 proc nk_str_insert_at_rune*(a2: ptr nk_str; pos: cint; a4: cstring; a5: cint): cint {.
-    cdecl, importc: "nk_str_insert_at_rune", dynlib: libnuklear.}
+    cdecl, importc: "nk_str_insert_at_rune".}
 proc nk_str_insert_text_char*(a2: ptr nk_str; pos: cint; a4: cstring; a5: cint): cint {.
-    cdecl, importc: "nk_str_insert_text_char", dynlib: libnuklear.}
+    cdecl, importc: "nk_str_insert_text_char".}
 proc nk_str_insert_str_char*(a2: ptr nk_str; pos: cint; a4: cstring): cint {.cdecl,
-    importc: "nk_str_insert_str_char", dynlib: libnuklear.}
+    importc: "nk_str_insert_str_char".}
 proc nk_str_insert_text_utf8*(a2: ptr nk_str; pos: cint; a4: cstring; a5: cint): cint {.
-    cdecl, importc: "nk_str_insert_text_utf8", dynlib: libnuklear.}
+    cdecl, importc: "nk_str_insert_text_utf8".}
 proc nk_str_insert_str_utf8*(a2: ptr nk_str; pos: cint; a4: cstring): cint {.cdecl,
-    importc: "nk_str_insert_str_utf8", dynlib: libnuklear.}
+    importc: "nk_str_insert_str_utf8".}
 proc nk_str_insert_text_runes*(a2: ptr nk_str; pos: cint; a4: ptr nk_rune; a5: cint): cint {.
-    cdecl, importc: "nk_str_insert_text_runes", dynlib: libnuklear.}
+    cdecl, importc: "nk_str_insert_text_runes".}
 proc nk_str_insert_str_runes*(a2: ptr nk_str; pos: cint; a4: ptr nk_rune): cint {.cdecl,
-    importc: "nk_str_insert_str_runes", dynlib: libnuklear.}
+    importc: "nk_str_insert_str_runes".}
 proc nk_str_remove_chars*(a2: ptr nk_str; len: cint) {.cdecl,
-    importc: "nk_str_remove_chars", dynlib: libnuklear.}
+    importc: "nk_str_remove_chars".}
 proc nk_str_remove_runes*(str: ptr nk_str; len: cint) {.cdecl,
-    importc: "nk_str_remove_runes", dynlib: libnuklear.}
+    importc: "nk_str_remove_runes".}
 proc nk_str_delete_chars*(a2: ptr nk_str; pos: cint; len: cint) {.cdecl,
-    importc: "nk_str_delete_chars", dynlib: libnuklear.}
+    importc: "nk_str_delete_chars".}
 proc nk_str_delete_runes*(a2: ptr nk_str; pos: cint; len: cint) {.cdecl,
-    importc: "nk_str_delete_runes", dynlib: libnuklear.}
+    importc: "nk_str_delete_runes".}
 proc nk_str_at_char*(a2: ptr nk_str; pos: cint): cstring {.cdecl,
-    importc: "nk_str_at_char", dynlib: libnuklear.}
+    importc: "nk_str_at_char".}
 proc nk_str_at_rune*(a2: ptr nk_str; pos: cint; unicode: ptr nk_rune; len: ptr cint): cstring {.
-    cdecl, importc: "nk_str_at_rune", dynlib: libnuklear.}
+    cdecl, importc: "nk_str_at_rune".}
 proc nk_str_rune_at*(a2: ptr nk_str; pos: cint): nk_rune {.cdecl,
-    importc: "nk_str_rune_at", dynlib: libnuklear.}
+    importc: "nk_str_rune_at".}
 proc nk_str_at_char_const*(a2: ptr nk_str; pos: cint): cstring {.cdecl,
-    importc: "nk_str_at_char_const", dynlib: libnuklear.}
+    importc: "nk_str_at_char_const".}
 proc nk_str_at_const*(a2: ptr nk_str; pos: cint; unicode: ptr nk_rune; len: ptr cint): cstring {.
-    cdecl, importc: "nk_str_at_const", dynlib: libnuklear.}
-proc nk_str_get*(a2: ptr nk_str): cstring {.cdecl, importc: "nk_str_get",
-                                       dynlib: libnuklear.}
-proc nk_str_get_const*(a2: ptr nk_str): cstring {.cdecl, importc: "nk_str_get_const",
-    dynlib: libnuklear.}
-proc nk_str_len*(a2: ptr nk_str): cint {.cdecl, importc: "nk_str_len",
-                                    dynlib: libnuklear.}
-proc nk_str_len_char*(a2: ptr nk_str): cint {.cdecl, importc: "nk_str_len_char",
-    dynlib: libnuklear.}
+    cdecl, importc: "nk_str_at_const".}
+proc nk_str_get*(a2: ptr nk_str): cstring {.cdecl, importc: "nk_str_get".}
+proc nk_str_get_const*(a2: ptr nk_str): cstring {.cdecl, importc: "nk_str_get_const".}
+proc nk_str_len*(a2: ptr nk_str): cint {.cdecl, importc: "nk_str_len".}
+proc nk_str_len_char*(a2: ptr nk_str): cint {.cdecl, importc: "nk_str_len_char".}
 
 type
   nk_text_edit_mode* {.size: sizeof(cint).} = enum
@@ -1177,41 +1170,37 @@ type
 
 
 proc nk_filter_default*(a2: ptr nk_text_edit; unicode: nk_rune): cint {.cdecl,
-    importc: "nk_filter_default", dynlib: libnuklear.}
+    importc: "nk_filter_default".}
 proc nk_filter_ascii*(a2: ptr nk_text_edit; unicode: nk_rune): cint {.cdecl,
-    importc: "nk_filter_ascii", dynlib: libnuklear.}
+    importc: "nk_filter_ascii".}
 proc nk_filter_float*(a2: ptr nk_text_edit; unicode: nk_rune): cint {.cdecl,
-    importc: "nk_filter_float", dynlib: libnuklear.}
+    importc: "nk_filter_float".}
 proc nk_filter_decimal*(a2: ptr nk_text_edit; unicode: nk_rune): cint {.cdecl,
-    importc: "nk_filter_decimal", dynlib: libnuklear.}
+    importc: "nk_filter_decimal".}
 proc nk_filter_hex*(a2: ptr nk_text_edit; unicode: nk_rune): cint {.cdecl,
-    importc: "nk_filter_hex", dynlib: libnuklear.}
+    importc: "nk_filter_hex".}
 proc nk_filter_oct*(a2: ptr nk_text_edit; unicode: nk_rune): cint {.cdecl,
-    importc: "nk_filter_oct", dynlib: libnuklear.}
+    importc: "nk_filter_oct".}
 proc nk_filter_binary*(a2: ptr nk_text_edit; unicode: nk_rune): cint {.cdecl,
-    importc: "nk_filter_binary", dynlib: libnuklear.}
+    importc: "nk_filter_binary".}
 proc nk_textedit_init*(a2: ptr nk_text_edit; a3: ptr nk_allocator; size: nk_size) {.
-    cdecl, importc: "nk_textedit_init", dynlib: libnuklear.}
+    cdecl, importc: "nk_textedit_init".}
 proc nk_textedit_init_fixed*(a2: ptr nk_text_edit; memory: pointer; size: nk_size) {.
-    cdecl, importc: "nk_textedit_init_fixed", dynlib: libnuklear.}
-proc nk_textedit_free*(a2: ptr nk_text_edit) {.cdecl, importc: "nk_textedit_free",
-    dynlib: libnuklear.}
+    cdecl, importc: "nk_textedit_init_fixed".}
+proc nk_textedit_free*(a2: ptr nk_text_edit) {.cdecl, importc: "nk_textedit_free".}
 proc nk_textedit_text*(a2: ptr nk_text_edit; a3: cstring; total_len: cint) {.cdecl,
-    importc: "nk_textedit_text", dynlib: libnuklear.}
+    importc: "nk_textedit_text".}
 proc nk_textedit_delete*(a2: ptr nk_text_edit; where: cint; len: cint) {.cdecl,
-    importc: "nk_textedit_delete", dynlib: libnuklear.}
+    importc: "nk_textedit_delete".}
 proc nk_textedit_delete_selection*(a2: ptr nk_text_edit) {.cdecl,
-    importc: "nk_textedit_delete_selection", dynlib: libnuklear.}
+    importc: "nk_textedit_delete_selection".}
 proc nk_textedit_select_all*(a2: ptr nk_text_edit) {.cdecl,
-    importc: "nk_textedit_select_all", dynlib: libnuklear.}
-proc nk_textedit_cut*(a2: ptr nk_text_edit): cint {.cdecl, importc: "nk_textedit_cut",
-    dynlib: libnuklear.}
+    importc: "nk_textedit_select_all".}
+proc nk_textedit_cut*(a2: ptr nk_text_edit): cint {.cdecl, importc: "nk_textedit_cut".}
 proc nk_textedit_paste*(a2: ptr nk_text_edit; a3: cstring; len: cint): cint {.cdecl,
-    importc: "nk_textedit_paste", dynlib: libnuklear.}
-proc nk_textedit_undo*(a2: ptr nk_text_edit) {.cdecl, importc: "nk_textedit_undo",
-    dynlib: libnuklear.}
-proc nk_textedit_redo*(a2: ptr nk_text_edit) {.cdecl, importc: "nk_textedit_redo",
-    dynlib: libnuklear.}
+    importc: "nk_textedit_paste".}
+proc nk_textedit_undo*(a2: ptr nk_text_edit) {.cdecl, importc: "nk_textedit_undo".}
+proc nk_textedit_redo*(a2: ptr nk_text_edit) {.cdecl, importc: "nk_textedit_redo".}
 type
   nk_command_type* {.size: sizeof(cint).} = enum
     NK_COMMAND_NOP, NK_COMMAND_SCISSOR, NK_COMMAND_LINE, NK_COMMAND_CURVE,
@@ -1376,93 +1365,86 @@ type
 
 proc nk_stroke_line*(b: ptr nk_command_buffer; x0: cfloat; y0: cfloat; x1: cfloat;
                     y1: cfloat; line_thickness: cfloat; a8: nk_color) {.cdecl,
-    importc: "nk_stroke_line", dynlib: libnuklear.}
+    importc: "nk_stroke_line".}
 proc nk_stroke_curve*(a2: ptr nk_command_buffer; a3: cfloat; a4: cfloat; a5: cfloat;
                      a6: cfloat; a7: cfloat; a8: cfloat; a9: cfloat; a10: cfloat;
                      line_thickness: cfloat; a12: nk_color) {.cdecl,
-    importc: "nk_stroke_curve", dynlib: libnuklear.}
+    importc: "nk_stroke_curve".}
 proc nk_stroke_rect*(a2: ptr nk_command_buffer; a3: nuk_rect; rounding: cfloat;
                     line_thickness: cfloat; a6: nk_color) {.cdecl,
-    importc: "nk_stroke_rect", dynlib: libnuklear.}
+    importc: "nk_stroke_rect".}
 proc nk_stroke_circle*(a2: ptr nk_command_buffer; a3: nuk_rect; line_thickness: cfloat;
-                      a5: nk_color) {.cdecl, importc: "nk_stroke_circle",
-                                    dynlib: libnuklear.}
+                      a5: nk_color) {.cdecl, importc: "nk_stroke_circle".}
 proc nk_stroke_arc*(a2: ptr nk_command_buffer; cx: cfloat; cy: cfloat; radius: cfloat;
                    a_min: cfloat; a_max: cfloat; line_thickness: cfloat; a9: nk_color) {.
-    cdecl, importc: "nk_stroke_arc", dynlib: libnuklear.}
+    cdecl, importc: "nk_stroke_arc".}
 proc nk_stroke_triangle*(a2: ptr nk_command_buffer; a3: cfloat; a4: cfloat; a5: cfloat;
                         a6: cfloat; a7: cfloat; a8: cfloat; line_thichness: cfloat;
-                        a10: nk_color) {.cdecl, importc: "nk_stroke_triangle",
-                                       dynlib: libnuklear.}
+                        a10: nk_color) {.cdecl, importc: "nk_stroke_triangle".}
 proc nk_stroke_polyline*(a2: ptr nk_command_buffer; points: ptr cfloat;
                         point_count: cint; line_thickness: cfloat; col: nk_color) {.
-    cdecl, importc: "nk_stroke_polyline", dynlib: libnuklear.}
+    cdecl, importc: "nk_stroke_polyline".}
 proc nk_stroke_polygon*(a2: ptr nk_command_buffer; a3: ptr cfloat; point_count: cint;
                        line_thickness: cfloat; a6: nk_color) {.cdecl,
-    importc: "nk_stroke_polygon", dynlib: libnuklear.}
+    importc: "nk_stroke_polygon".}
 proc nk_fill_rect*(a2: ptr nk_command_buffer; a3: nuk_rect; rounding: cfloat;
-                  a5: nk_color) {.cdecl, importc: "nk_fill_rect", dynlib: libnuklear.}
+                  a5: nk_color) {.cdecl, importc: "nk_fill_rect".}
 proc nk_fill_rect_multi_color*(a2: ptr nk_command_buffer; a3: nuk_rect; left: nk_color;
                               top: nk_color; right: nk_color; bottom: nk_color) {.
-    cdecl, importc: "nk_fill_rect_multi_color", dynlib: libnuklear.}
+    cdecl, importc: "nk_fill_rect_multi_color".}
 proc nk_fill_circle*(a2: ptr nk_command_buffer; a3: nuk_rect; a4: nk_color) {.cdecl,
-    importc: "nk_fill_circle", dynlib: libnuklear.}
+    importc: "nk_fill_circle".}
 proc nk_fill_arc*(a2: ptr nk_command_buffer; cx: cfloat; cy: cfloat; radius: cfloat;
                  a_min: cfloat; a_max: cfloat; a8: nk_color) {.cdecl,
-    importc: "nk_fill_arc", dynlib: libnuklear.}
+    importc: "nk_fill_arc".}
 proc nk_fill_triangle*(a2: ptr nk_command_buffer; x0: cfloat; y0: cfloat; x1: cfloat;
                       y1: cfloat; x2: cfloat; y2: cfloat; a9: nk_color) {.cdecl,
-    importc: "nk_fill_triangle", dynlib: libnuklear.}
+    importc: "nk_fill_triangle".}
 proc nk_fill_polygon*(a2: ptr nk_command_buffer; a3: ptr cfloat; point_count: cint;
-                     a5: nk_color) {.cdecl, importc: "nk_fill_polygon",
-                                   dynlib: libnuklear.}
+                     a5: nk_color) {.cdecl, importc: "nk_fill_polygon".}
 proc nk_push_scissor*(a2: ptr nk_command_buffer; a3: nuk_rect) {.cdecl,
-    importc: "nk_push_scissor", dynlib: libnuklear.}
+    importc: "nk_push_scissor".}
 proc nk_draw_image*(a2: ptr nk_command_buffer; a3: nuk_rect; a4: ptr nuk_image;
-                   a5: nk_color) {.cdecl, importc: "nk_draw_image",
-                                 dynlib: libnuklear.}
+                   a5: nk_color) {.cdecl, importc: "nk_draw_image".}
 proc nk_draw_text*(a2: ptr nk_command_buffer; a3: nuk_rect; text: cstring; len: cint;
                   a6: ptr nk_user_font; a7: nk_color; a8: nk_color) {.cdecl,
-    importc: "nk_draw_text", dynlib: libnuklear.}
+    importc: "nk_draw_text".}
 proc nk_next*(a2: ptr nk_context; a3: ptr nk_command): ptr nk_command {.cdecl,
-    importc: "nk__next", dynlib: libnuklear.}
-proc nk_begin*(a2: ptr nk_context): ptr nk_command {.cdecl, importc: "nk__begin",
-    dynlib: libnuklear.}
+    importc: "nk__next".}
+proc nk_begin*(a2: ptr nk_context): ptr nk_command {.cdecl, importc: "nk__begin".}
 
 
 proc nk_input_has_mouse_click*(a2: ptr nk_input; a3: nk_buttons): cint {.cdecl,
-    importc: "nk_input_has_mouse_click", dynlib: libnuklear.}
+    importc: "nk_input_has_mouse_click".}
 proc nk_input_has_mouse_click_in_rect*(a2: ptr nk_input; a3: nk_buttons; a4: nuk_rect): cint {.
-    cdecl, importc: "nk_input_has_mouse_click_in_rect", dynlib: libnuklear.}
+    cdecl, importc: "nk_input_has_mouse_click_in_rect".}
 proc nk_input_has_mouse_click_down_in_rect*(a2: ptr nk_input; a3: nk_buttons;
-    a4: nuk_rect; down: cint): cint {.cdecl, importc: "nk_input_has_mouse_click_down_in_rect",
-                                dynlib: libnuklear.}
+    a4: nuk_rect; down: cint): cint {.cdecl, importc: "nk_input_has_mouse_click_down_in_rect".}
 proc nk_input_is_mouse_click_in_rect*(a2: ptr nk_input; a3: nk_buttons; a4: nuk_rect): cint {.
-    cdecl, importc: "nk_input_is_mouse_click_in_rect", dynlib: libnuklear.}
+    cdecl, importc: "nk_input_is_mouse_click_in_rect".}
 proc nk_input_is_mouse_click_down_in_rect*(i: ptr nk_input; id: nk_buttons;
     b: nuk_rect; down: cint): cint {.cdecl,
-                               importc: "nk_input_is_mouse_click_down_in_rect",
-                               dynlib: libnuklear.}
+                               importc: "nk_input_is_mouse_click_down_in_rect".}
 proc nk_input_any_mouse_click_in_rect*(a2: ptr nk_input; a3: nuk_rect): cint {.cdecl,
-    importc: "nk_input_any_mouse_click_in_rect", dynlib: libnuklear.}
+    importc: "nk_input_any_mouse_click_in_rect".}
 proc nk_input_is_mouse_prev_hovering_rect*(a2: ptr nk_input; a3: nuk_rect): cint {.
-    cdecl, importc: "nk_input_is_mouse_prev_hovering_rect", dynlib: libnuklear.}
+    cdecl, importc: "nk_input_is_mouse_prev_hovering_rect".}
 proc nk_input_is_mouse_hovering_rect*(a2: ptr nk_input; a3: nuk_rect): cint {.cdecl,
-    importc: "nk_input_is_mouse_hovering_rect", dynlib: libnuklear.}
+    importc: "nk_input_is_mouse_hovering_rect".}
 proc nk_input_mouse_clicked*(a2: ptr nk_input; a3: nk_buttons; a4: nuk_rect): cint {.
-    cdecl, importc: "nk_input_mouse_clicked", dynlib: libnuklear.}
+    cdecl, importc: "nk_input_mouse_clicked".}
 proc nk_input_is_mouse_down*(a2: ptr nk_input; a3: nk_buttons): cint {.cdecl,
-    importc: "nk_input_is_mouse_down", dynlib: libnuklear.}
+    importc: "nk_input_is_mouse_down".}
 proc nk_input_is_mouse_pressed*(a2: ptr nk_input; a3: nk_buttons): cint {.cdecl,
-    importc: "nk_input_is_mouse_pressed", dynlib: libnuklear.}
+    importc: "nk_input_is_mouse_pressed".}
 proc nk_input_is_mouse_released*(a2: ptr nk_input; a3: nk_buttons): cint {.cdecl,
-    importc: "nk_input_is_mouse_released", dynlib: libnuklear.}
+    importc: "nk_input_is_mouse_released".}
 proc nk_input_is_key_pressed*(a2: ptr nk_input; a3: nk_keys): cint {.cdecl,
-    importc: "nk_input_is_key_pressed", dynlib: libnuklear.}
+    importc: "nk_input_is_key_pressed".}
 proc nk_input_is_key_released*(a2: ptr nk_input; a3: nk_keys): cint {.cdecl,
-    importc: "nk_input_is_key_released", dynlib: libnuklear.}
+    importc: "nk_input_is_key_released".}
 proc nk_input_is_key_down*(a2: ptr nk_input; a3: nk_keys): cint {.cdecl,
-    importc: "nk_input_is_key_down", dynlib: libnuklear.}
+    importc: "nk_input_is_key_down".}
   
 type
   nk_draw_index* = nk_ushort
@@ -1474,95 +1456,93 @@ const
   NK_FORMAT_COLOR_END = NK_FORMAT_RGBA32
 
 
-proc nk_draw_list_init*(a2: ptr nk_draw_list) {.cdecl, importc: "nk_draw_list_init",
-    dynlib: libnuklear.}
+proc nk_draw_list_init*(a2: ptr nk_draw_list) {.cdecl, importc: "nk_draw_list_init".}
 proc nk_draw_list_setup*(a2: ptr nk_draw_list; a3: ptr nk_convert_config;
                         cmds: ptr nk_buffer; vertices: ptr nk_buffer;
                         elements: ptr nk_buffer) {.cdecl,
-    importc: "nk_draw_list_setup", dynlib: libnuklear.}
+    importc: "nk_draw_list_setup".}
 proc nk_draw_list_clear*(a2: ptr nk_draw_list) {.cdecl,
-    importc: "nk_draw_list_clear", dynlib: libnuklear.}
+    importc: "nk_draw_list_clear".}
 proc nk_draw_list_begin*(a2: ptr nk_draw_list; a3: ptr nk_buffer): ptr nk_draw_command {.
-    cdecl, importc: "nk__draw_list_begin", dynlib: libnuklear.}
+    cdecl, importc: "nk__draw_list_begin".}
 proc nk_draw_list_next*(a2: ptr nk_draw_command; a3: ptr nk_buffer;
                         a4: ptr nk_draw_list): ptr nk_draw_command {.cdecl,
-    importc: "nk__draw_list_next", dynlib: libnuklear.}
+    importc: "nk__draw_list_next".}
 proc nk_draw_list_end*(a2: ptr nk_draw_list; a3: ptr nk_buffer): ptr nk_draw_command {.
-    cdecl, importc: "nk__draw_list_end", dynlib: libnuklear.}
+    cdecl, importc: "nk__draw_list_end".}
 proc nk_draw_list_clear*(list: ptr nk_draw_list) {.cdecl,
-    importc: "nk_draw_list_clear", dynlib: libnuklear.}
+    importc: "nk_draw_list_clear".}
 proc nk_draw_list_path_clear*(a2: ptr nk_draw_list) {.cdecl,
-    importc: "nk_draw_list_path_clear", dynlib: libnuklear.}
+    importc: "nk_draw_list_path_clear".}
 proc nk_draw_list_path_line_to*(a2: ptr nk_draw_list; pos: nuk_vec2) {.cdecl,
-    importc: "nk_draw_list_path_line_to", dynlib: libnuklear.}
+    importc: "nk_draw_list_path_line_to".}
 proc nk_draw_list_path_arc_to_fast*(a2: ptr nk_draw_list; center: nuk_vec2;
                                    radius: cfloat; a_min: cint; a_max: cint) {.cdecl,
-    importc: "nk_draw_list_path_arc_to_fast", dynlib: libnuklear.}
+    importc: "nk_draw_list_path_arc_to_fast".}
 proc nk_draw_list_path_arc_to*(a2: ptr nk_draw_list; center: nuk_vec2; radius: cfloat;
                               a_min: cfloat; a_max: cfloat; segments: cuint) {.cdecl,
-    importc: "nk_draw_list_path_arc_to", dynlib: libnuklear.}
+    importc: "nk_draw_list_path_arc_to".}
 proc nk_draw_list_path_rect_to*(a2: ptr nk_draw_list; a: nuk_vec2; b: nuk_vec2;
                                rounding: cfloat) {.cdecl,
-    importc: "nk_draw_list_path_rect_to", dynlib: libnuklear.}
+    importc: "nk_draw_list_path_rect_to".}
 proc nk_draw_list_path_curve_to*(a2: ptr nk_draw_list; p2: nuk_vec2; p3: nuk_vec2;
                                 p4: nuk_vec2; num_segments: cuint) {.cdecl,
-    importc: "nk_draw_list_path_curve_to", dynlib: libnuklear.}
+    importc: "nk_draw_list_path_curve_to".}
 proc nk_draw_list_path_fill*(a2: ptr nk_draw_list; a3: nk_color) {.cdecl,
-    importc: "nk_draw_list_path_fill", dynlib: libnuklear.}
+    importc: "nk_draw_list_path_fill".}
 proc nk_draw_list_path_stroke*(a2: ptr nk_draw_list; a3: nk_color;
                               closed: nk_draw_list_stroke; thickness: cfloat) {.
-    cdecl, importc: "nk_draw_list_path_stroke", dynlib: libnuklear.}
+    cdecl, importc: "nk_draw_list_path_stroke".}
 proc nk_draw_list_stroke_line*(a2: ptr nk_draw_list; a: nuk_vec2; b: nuk_vec2;
                               a5: nk_color; thickness: cfloat) {.cdecl,
-    importc: "nk_draw_list_stroke_line", dynlib: libnuklear.}
+    importc: "nk_draw_list_stroke_line".}
 proc nk_draw_list_stroke_rect*(a2: ptr nk_draw_list; rect: nuk_rect; a4: nk_color;
                               rounding: cfloat; thickness: cfloat) {.cdecl,
-    importc: "nk_draw_list_stroke_rect", dynlib: libnuklear.}
+    importc: "nk_draw_list_stroke_rect".}
 proc nk_draw_list_stroke_triangle*(a2: ptr nk_draw_list; a: nuk_vec2; b: nuk_vec2;
                                   c: nuk_vec2; a6: nk_color; thickness: cfloat) {.
-    cdecl, importc: "nk_draw_list_stroke_triangle", dynlib: libnuklear.}
+    cdecl, importc: "nk_draw_list_stroke_triangle".}
 proc nk_draw_list_stroke_circle*(a2: ptr nk_draw_list; center: nuk_vec2;
                                 radius: cfloat; a5: nk_color; segs: cuint;
                                 thickness: cfloat) {.cdecl,
-    importc: "nk_draw_list_stroke_circle", dynlib: libnuklear.}
+    importc: "nk_draw_list_stroke_circle".}
 proc nk_draw_list_stroke_curve*(a2: ptr nk_draw_list; p0: nuk_vec2; cp0: nuk_vec2;
                                cp1: nuk_vec2; p1: nuk_vec2; a7: nk_color;
                                segments: cuint; thickness: cfloat) {.cdecl,
-    importc: "nk_draw_list_stroke_curve", dynlib: libnuklear.}
+    importc: "nk_draw_list_stroke_curve".}
 proc nk_draw_list_stroke_poly_line*(a2: ptr nk_draw_list; pnts: ptr nuk_vec2;
                                    cnt: cuint; a5: nk_color;
                                    a6: nk_draw_list_stroke; thickness: cfloat;
                                    a8: nk_anti_aliasing) {.cdecl,
-    importc: "nk_draw_list_stroke_poly_line", dynlib: libnuklear.}
+    importc: "nk_draw_list_stroke_poly_line".}
 proc nk_draw_list_fill_rect*(a2: ptr nk_draw_list; rect: nuk_rect; a4: nk_color;
                             rounding: cfloat) {.cdecl,
-    importc: "nk_draw_list_fill_rect", dynlib: libnuklear.}
+    importc: "nk_draw_list_fill_rect".}
 proc nk_draw_list_fill_rect_multi_color*(a2: ptr nk_draw_list; rect: nuk_rect;
                                         left: nk_color; top: nk_color;
                                         right: nk_color; bottom: nk_color) {.cdecl,
-    importc: "nk_draw_list_fill_rect_multi_color", dynlib: libnuklear.}
+    importc: "nk_draw_list_fill_rect_multi_color".}
 proc nk_draw_list_fill_triangle*(a2: ptr nk_draw_list; a: nuk_vec2; b: nuk_vec2;
                                 c: nuk_vec2; a6: nk_color) {.cdecl,
-    importc: "nk_draw_list_fill_triangle", dynlib: libnuklear.}
+    importc: "nk_draw_list_fill_triangle".}
 proc nk_draw_list_fill_circle*(a2: ptr nk_draw_list; center: nuk_vec2; radius: cfloat;
                               col: nk_color; segs: cuint) {.cdecl,
-    importc: "nk_draw_list_fill_circle", dynlib: libnuklear.}
+    importc: "nk_draw_list_fill_circle".}
 proc nk_draw_list_fill_poly_convex*(a2: ptr nk_draw_list; points: ptr nuk_vec2;
                                    count: cuint; a5: nk_color; a6: nk_anti_aliasing) {.
-    cdecl, importc: "nk_draw_list_fill_poly_convex", dynlib: libnuklear.}
+    cdecl, importc: "nk_draw_list_fill_poly_convex".}
 proc nk_draw_list_add_image*(a2: ptr nk_draw_list; texture: nuk_image; rect: nuk_rect;
                             a5: nk_color) {.cdecl,
-    importc: "nk_draw_list_add_image", dynlib: libnuklear.}
+    importc: "nk_draw_list_add_image".}
 proc nk_draw_list_add_text*(a2: ptr nk_draw_list; a3: ptr nk_user_font; a4: nuk_rect;
                            text: cstring; len: cint; font_height: cfloat; a8: nk_color) {.
-    cdecl, importc: "nk_draw_list_add_text", dynlib: libnuklear.}
+    cdecl, importc: "nk_draw_list_add_text".}
 
 proc nk_style_item_image*(img: nuk_image): nk_style_item {.cdecl,
-    importc: "nk_style_item_image", dynlib: libnuklear.}
+    importc: "nk_style_item_image".}
 proc nk_style_item_color*(a2: nk_color): nk_style_item {.cdecl,
-    importc: "nk_style_item_color", dynlib: libnuklear.}
-proc nk_style_item_hide*(): nk_style_item {.cdecl, importc: "nk_style_item_hide",
-    dynlib: libnuklear.}
+    importc: "nk_style_item_color".}
+proc nk_style_item_hide*(): nk_style_item {.cdecl, importc: "nk_style_item_hide".}
 
 
 type
@@ -1584,768 +1564,682 @@ type
 const
   NK_WINDOW_DYNAMIC = NK_WINDOW_PRIVATE
 
-proc nk_init_default*(a2: ptr nk_context; a3: ptr nk_user_font): cint {.cdecl, importc: "nk_init_default",
-    dynlib: libnuklear.}
+proc nk_init_default*(a2: ptr nk_context; a3: ptr nk_user_font): cint {.cdecl, importc: "nk_init_default".}
 proc nk_init_fixed*(a2: ptr nk_context; memory: pointer; size: nk_size;
-                   a5: ptr nk_user_font): cint {.cdecl, importc: "nk_init_fixed",
-    dynlib: libnuklear.}
+                   a5: ptr nk_user_font): cint {.cdecl, importc: "nk_init_fixed".}
 proc nk_init*(a2: ptr nk_context; a3: ptr nk_allocator; a4: ptr nk_user_font): cint {.
-    cdecl, importc: "nk_init", dynlib: libnuklear.}
+    cdecl, importc: "nk_init".}
 proc nk_init_custom*(a2: ptr nk_context; cmds: ptr nk_buffer; pool: ptr nk_buffer;
-                    a5: ptr nk_user_font): cint {.cdecl, importc: "nk_init_custom",
-    dynlib: libnuklear.}
-proc nk_clear*(a2: ptr nk_context) {.cdecl, importc: "nk_clear", dynlib: libnuklear.}
-proc nk_free*(a2: ptr nk_context) {.cdecl, importc: "nk_free", dynlib: libnuklear.}
+                    a5: ptr nk_user_font): cint {.cdecl, importc: "nk_init_custom".}
+proc nk_clear*(a2: ptr nk_context) {.cdecl, importc: "nk_clear".}
+proc nk_free*(a2: ptr nk_context) {.cdecl, importc: "nk_free".}
 proc nk_begin*(a2: ptr nk_context; title: cstring; bounds: nuk_rect; flags: nk_flags): cint {.
-    cdecl, importc: "nk_begin", dynlib: libnuklear.}
+    cdecl, importc: "nk_begin".}
 proc nk_begin_titled*(a2: ptr nk_context; name: cstring; title: cstring;
                      bounds: nuk_rect; flags: nk_flags): cint {.cdecl,
-    importc: "nk_begin_titled", dynlib: libnuklear.}
-proc nk_end*(a2: ptr nk_context) {.cdecl, importc: "nk_end", dynlib: libnuklear.}
+    importc: "nk_begin_titled".}
+proc nk_end*(a2: ptr nk_context) {.cdecl, importc: "nk_end".}
 proc nk_window_find*(ctx: ptr nk_context; name: cstring): ptr nk_window {.cdecl,
-    importc: "nk_window_find", dynlib: libnuklear.}
+    importc: "nk_window_find".}
 proc nk_window_get_bounds*(a2: ptr nk_context): nuk_rect {.cdecl,
-    importc: "nk_window_get_bounds", dynlib: libnuklear.}
+    importc: "nk_window_get_bounds".}
 proc nk_window_get_position*(a2: ptr nk_context): nuk_vec2 {.cdecl,
-    importc: "nk_window_get_position", dynlib: libnuklear.}
+    importc: "nk_window_get_position".}
 proc nk_window_get_size*(a2: ptr nk_context): nuk_vec2 {.cdecl,
-    importc: "nk_window_get_size", dynlib: libnuklear.}
+    importc: "nk_window_get_size".}
 proc nk_window_get_width*(a2: ptr nk_context): cfloat {.cdecl,
-    importc: "nk_window_get_width", dynlib: libnuklear.}
+    importc: "nk_window_get_width".}
 proc nk_window_get_height*(a2: ptr nk_context): cfloat {.cdecl,
-    importc: "nk_window_get_height", dynlib: libnuklear.}
+    importc: "nk_window_get_height".}
 proc nk_window_get_panel*(a2: ptr nk_context): ptr nk_panel {.cdecl,
-    importc: "nk_window_get_panel", dynlib: libnuklear.}
+    importc: "nk_window_get_panel".}
 proc nk_window_get_content_region*(a2: ptr nk_context): nuk_rect {.cdecl,
-    importc: "nk_window_get_content_region", dynlib: libnuklear.}
+    importc: "nk_window_get_content_region".}
 proc nk_window_get_content_region_min*(a2: ptr nk_context): nuk_vec2 {.cdecl,
-    importc: "nk_window_get_content_region_min", dynlib: libnuklear.}
+    importc: "nk_window_get_content_region_min".}
 proc nk_window_get_content_region_max*(a2: ptr nk_context): nuk_vec2 {.cdecl,
-    importc: "nk_window_get_content_region_max", dynlib: libnuklear.}
+    importc: "nk_window_get_content_region_max".}
 proc nk_window_get_content_region_size*(a2: ptr nk_context): nuk_vec2 {.cdecl,
-    importc: "nk_window_get_content_region_size", dynlib: libnuklear.}
+    importc: "nk_window_get_content_region_size".}
 proc nk_window_get_canvas*(a2: ptr nk_context): ptr nk_command_buffer {.cdecl,
-    importc: "nk_window_get_canvas", dynlib: libnuklear.}
+    importc: "nk_window_get_canvas".}
 proc nk_window_has_focus*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_window_has_focus", dynlib: libnuklear.}
+    importc: "nk_window_has_focus".}
 proc nk_window_is_collapsed*(a2: ptr nk_context; a3: cstring): cint {.cdecl,
-    importc: "nk_window_is_collapsed", dynlib: libnuklear.}
+    importc: "nk_window_is_collapsed".}
 proc nk_window_is_closed*(a2: ptr nk_context; a3: cstring): cint {.cdecl,
-    importc: "nk_window_is_closed", dynlib: libnuklear.}
+    importc: "nk_window_is_closed".}
 proc nk_window_is_hidden*(a2: ptr nk_context; a3: cstring): cint {.cdecl,
-    importc: "nk_window_is_hidden", dynlib: libnuklear.}
+    importc: "nk_window_is_hidden".}
 proc nk_window_is_active*(a2: ptr nk_context; a3: cstring): cint {.cdecl,
-    importc: "nk_window_is_active", dynlib: libnuklear.}
+    importc: "nk_window_is_active".}
 proc nk_window_is_hovered*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_window_is_hovered", dynlib: libnuklear.}
+    importc: "nk_window_is_hovered".}
 proc nk_window_is_any_hovered*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_window_is_any_hovered", dynlib: libnuklear.}
+    importc: "nk_window_is_any_hovered".}
 proc nk_item_is_any_active*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_item_is_any_active", dynlib: libnuklear.}
+    importc: "nk_item_is_any_active".}
 proc nk_window_set_bounds*(a2: ptr nk_context; a3: nuk_rect) {.cdecl,
-    importc: "nk_window_set_bounds", dynlib: libnuklear.}
+    importc: "nk_window_set_bounds".}
 proc nk_window_set_position*(a2: ptr nk_context; a3: nuk_vec2) {.cdecl,
-    importc: "nk_window_set_position", dynlib: libnuklear.}
+    importc: "nk_window_set_position".}
 proc nk_window_set_size*(a2: ptr nk_context; a3: nuk_vec2) {.cdecl,
-    importc: "nk_window_set_size", dynlib: libnuklear.}
+    importc: "nk_window_set_size".}
 proc nk_window_set_focus*(a2: ptr nk_context; name: cstring) {.cdecl,
-    importc: "nk_window_set_focus", dynlib: libnuklear.}
+    importc: "nk_window_set_focus".}
 proc nk_window_close*(ctx: ptr nk_context; name: cstring) {.cdecl,
-    importc: "nk_window_close", dynlib: libnuklear.}
+    importc: "nk_window_close".}
 proc nk_window_collapse*(a2: ptr nk_context; name: cstring; a4: nk_collapse_states) {.
-    cdecl, importc: "nk_window_collapse", dynlib: libnuklear.}
+    cdecl, importc: "nk_window_collapse".}
 proc nk_window_collapse_if*(a2: ptr nk_context; name: cstring; a4: nk_collapse_states;
-                           cond: cint) {.cdecl, importc: "nk_window_collapse_if",
-                                       dynlib: libnuklear.}
+                           cond: cint) {.cdecl, importc: "nk_window_collapse_if".}
 proc nk_window_show*(a2: ptr nk_context; name: cstring; a4: nk_show_states) {.cdecl,
-    importc: "nk_window_show", dynlib: libnuklear.}
+    importc: "nk_window_show".}
 proc nk_window_show_if*(a2: ptr nk_context; name: cstring; a4: nk_show_states;
-                       cond: cint) {.cdecl, importc: "nk_window_show_if",
-                                   dynlib: libnuklear.}
+                       cond: cint) {.cdecl, importc: "nk_window_show_if".}
 proc nk_layout_row_dynamic*(a2: ptr nk_context; height: cfloat; cols: cint) {.cdecl,
-    importc: "nk_layout_row_dynamic", dynlib: libnuklear.}
+    importc: "nk_layout_row_dynamic".}
 proc nk_layout_row_static*(a2: ptr nk_context; height: cfloat; item_width: cint;
-                          cols: cint) {.cdecl, importc: "nk_layout_row_static",
-                                      dynlib: libnuklear.}
+                          cols: cint) {.cdecl, importc: "nk_layout_row_static".}
 proc nk_layout_row_begin*(a2: ptr nk_context; a3: nk_layout_format;
                          row_height: cfloat; cols: cint) {.cdecl,
-    importc: "nk_layout_row_begin", dynlib: libnuklear.}
+    importc: "nk_layout_row_begin".}
 proc nk_layout_row_push*(a2: ptr nk_context; value: cfloat) {.cdecl,
-    importc: "nk_layout_row_push", dynlib: libnuklear.}
-proc nk_layout_row_end*(a2: ptr nk_context) {.cdecl, importc: "nk_layout_row_end",
-    dynlib: libnuklear.}
+    importc: "nk_layout_row_push".}
+proc nk_layout_row_end*(a2: ptr nk_context) {.cdecl, importc: "nk_layout_row_end".}
 proc nk_layout_row*(a2: ptr nk_context; a3: nk_layout_format; height: cfloat;
-                   cols: cint; ratio: ptr cfloat) {.cdecl, importc: "nk_layout_row",
-    dynlib: libnuklear.}
+                   cols: cint; ratio: ptr cfloat) {.cdecl, importc: "nk_layout_row".}
 proc nk_layout_row_template_begin*(a2: ptr nk_context; height: cfloat) {.cdecl,
-    importc: "nk_layout_row_template_begin", dynlib: libnuklear.}
+    importc: "nk_layout_row_template_begin".}
 proc nk_layout_row_template_push_dynamic*(a2: ptr nk_context) {.cdecl,
-    importc: "nk_layout_row_template_push_dynamic", dynlib: libnuklear.}
+    importc: "nk_layout_row_template_push_dynamic".}
 proc nk_layout_row_template_push_variable*(a2: ptr nk_context; min_width: cfloat) {.
-    cdecl, importc: "nk_layout_row_template_push_variable", dynlib: libnuklear.}
+    cdecl, importc: "nk_layout_row_template_push_variable".}
 proc nk_layout_row_template_push_static*(a2: ptr nk_context; width: cfloat) {.cdecl,
-    importc: "nk_layout_row_template_push_static", dynlib: libnuklear.}
+    importc: "nk_layout_row_template_push_static".}
 proc nk_layout_row_template_end*(a2: ptr nk_context) {.cdecl,
-    importc: "nk_layout_row_template_end", dynlib: libnuklear.}
+    importc: "nk_layout_row_template_end".}
 proc nk_layout_space_begin*(a2: ptr nk_context; a3: nk_layout_format; height: cfloat;
                            widget_count: cint) {.cdecl,
-    importc: "nk_layout_space_begin", dynlib: libnuklear.}
+    importc: "nk_layout_space_begin".}
 proc nk_layout_space_push*(a2: ptr nk_context; a3: nuk_rect) {.cdecl,
-    importc: "nk_layout_space_push", dynlib: libnuklear.}
+    importc: "nk_layout_space_push".}
 proc nk_layout_space_end*(a2: ptr nk_context) {.cdecl,
-    importc: "nk_layout_space_end", dynlib: libnuklear.}
+    importc: "nk_layout_space_end".}
 proc nk_layout_space_bounds*(a2: ptr nk_context): nuk_rect {.cdecl,
-    importc: "nk_layout_space_bounds", dynlib: libnuklear.}
+    importc: "nk_layout_space_bounds".}
 proc nk_layout_space_to_screen*(a2: ptr nk_context; a3: nuk_vec2): nuk_vec2 {.cdecl,
-    importc: "nk_layout_space_to_screen", dynlib: libnuklear.}
+    importc: "nk_layout_space_to_screen".}
 proc nk_layout_space_to_local*(a2: ptr nk_context; a3: nuk_vec2): nuk_vec2 {.cdecl,
-    importc: "nk_layout_space_to_local", dynlib: libnuklear.}
+    importc: "nk_layout_space_to_local".}
 proc nk_layout_space_rect_to_screen*(a2: ptr nk_context; a3: nuk_rect): nuk_rect {.cdecl,
-    importc: "nk_layout_space_rect_to_screen", dynlib: libnuklear.}
+    importc: "nk_layout_space_rect_to_screen".}
 proc nk_layout_space_rect_to_local*(a2: ptr nk_context; a3: nuk_rect): nuk_rect {.cdecl,
-    importc: "nk_layout_space_rect_to_local", dynlib: libnuklear.}
+    importc: "nk_layout_space_rect_to_local".}
 proc nk_layout_ratio_from_pixel*(a2: ptr nk_context; pixel_width: cfloat): cfloat {.
-    cdecl, importc: "nk_layout_ratio_from_pixel", dynlib: libnuklear.}
+    cdecl, importc: "nk_layout_ratio_from_pixel".}
 proc nk_group_begin*(a2: ptr nk_context; title: cstring; a4: nk_flags): cint {.cdecl,
-    importc: "nk_group_begin", dynlib: libnuklear.}
+    importc: "nk_group_begin".}
 proc nk_group_scrolled_offset_begin*(a2: ptr nk_context; x_offset: ptr nk_uint;
                                     y_offset: ptr nk_uint; a5: cstring; a6: nk_flags): cint {.
-    cdecl, importc: "nk_group_scrolled_offset_begin", dynlib: libnuklear.}
+    cdecl, importc: "nk_group_scrolled_offset_begin".}
 proc nk_group_scrolled_begin*(a2: ptr nk_context; a3: ptr nk_scroll; title: cstring;
                              a5: nk_flags): cint {.cdecl,
-    importc: "nk_group_scrolled_begin", dynlib: libnuklear.}
+    importc: "nk_group_scrolled_begin".}
 proc nk_group_scrolled_end*(a2: ptr nk_context) {.cdecl,
-    importc: "nk_group_scrolled_end", dynlib: libnuklear.}
-proc nk_group_end*(a2: ptr nk_context) {.cdecl, importc: "nk_group_end",
-                                     dynlib: libnuklear.}
+    importc: "nk_group_scrolled_end".}
+proc nk_group_end*(a2: ptr nk_context) {.cdecl, importc: "nk_group_end".}
 proc nk_list_view_begin*(a2: ptr nk_context; `out`: ptr nk_list_view; id: cstring;
                         a5: nk_flags; row_height: cint; row_count: cint): cint {.cdecl,
-    importc: "nk_list_view_begin", dynlib: libnuklear.}
-proc nk_list_view_end*(a2: ptr nk_list_view) {.cdecl, importc: "nk_list_view_end",
-    dynlib: libnuklear.}
+    importc: "nk_list_view_begin".}
+proc nk_list_view_end*(a2: ptr nk_list_view) {.cdecl, importc: "nk_list_view_end".}
 proc nk_tree_push_hashed*(a2: ptr nk_context; a3: nk_tree_type; title: cstring;
                          initial_state: nk_collapse_states; hash: cstring;
                          len: cint; seed: cint): cint {.cdecl,
-    importc: "nk_tree_push_hashed", dynlib: libnuklear.}
+    importc: "nk_tree_push_hashed".}
 proc nk_tree_image_push_hashed*(a2: ptr nk_context; a3: nk_tree_type; a4: nuk_image;
                                title: cstring; initial_state: nk_collapse_states;
                                hash: cstring; len: cint; seed: cint): cint {.cdecl,
-    importc: "nk_tree_image_push_hashed", dynlib: libnuklear.}
-proc nk_tree_pop*(a2: ptr nk_context) {.cdecl, importc: "nk_tree_pop",
-                                    dynlib: libnuklear.}
+    importc: "nk_tree_image_push_hashed".}
+proc nk_tree_pop*(a2: ptr nk_context) {.cdecl, importc: "nk_tree_pop".}
 proc nk_tree_state_push*(a2: ptr nk_context; a3: nk_tree_type; title: cstring;
                         state: ptr nk_collapse_states): cint {.cdecl,
-    importc: "nk_tree_state_push", dynlib: libnuklear.}
+    importc: "nk_tree_state_push".}
 proc nk_tree_state_image_push*(a2: ptr nk_context; a3: nk_tree_type; a4: nuk_image;
                               title: cstring; state: ptr nk_collapse_states): cint {.
-    cdecl, importc: "nk_tree_state_image_push", dynlib: libnuklear.}
-proc nk_tree_state_pop*(a2: ptr nk_context) {.cdecl, importc: "nk_tree_state_pop",
-    dynlib: libnuklear.}
+    cdecl, importc: "nk_tree_state_image_push".}
+proc nk_tree_state_pop*(a2: ptr nk_context) {.cdecl, importc: "nk_tree_state_pop".}
 proc nk_text*(a2: ptr nk_context; a3: cstring; a4: cint; a5: nk_flags) {.cdecl,
-    importc: "nk_text", dynlib: libnuklear.}
+    importc: "nk_text".}
 proc nk_text_colored*(a2: ptr nk_context; a3: cstring; a4: cint; a5: nk_flags;
-                     a6: nk_color) {.cdecl, importc: "nk_text_colored",
-                                   dynlib: libnuklear.}
+                     a6: nk_color) {.cdecl, importc: "nk_text_colored".}
 proc nk_text_wrap*(a2: ptr nk_context; a3: cstring; a4: cint) {.cdecl,
-    importc: "nk_text_wrap", dynlib: libnuklear.}
+    importc: "nk_text_wrap".}
 proc nk_text_wrap_colored*(a2: ptr nk_context; a3: cstring; a4: cint; a5: nk_color) {.
-    cdecl, importc: "nk_text_wrap_colored", dynlib: libnuklear.}
+    cdecl, importc: "nk_text_wrap_colored".}
 proc nk_label*(a2: ptr nk_context; a3: cstring; align: nk_flags) {.cdecl,
-    importc: "nk_label", dynlib: libnuklear.}
+    importc: "nk_label".}
 proc nk_label_colored*(a2: ptr nk_context; a3: cstring; align: nk_flags; a5: nk_color) {.
-    cdecl, importc: "nk_label_colored", dynlib: libnuklear.}
-proc nk_label_wrap*(a2: ptr nk_context; a3: cstring) {.cdecl, importc: "nk_label_wrap",
-    dynlib: libnuklear.}
+    cdecl, importc: "nk_label_colored".}
+proc nk_label_wrap*(a2: ptr nk_context; a3: cstring) {.cdecl, importc: "nk_label_wrap".}
 proc nk_label_colored_wrap*(a2: ptr nk_context; a3: cstring; a4: nk_color) {.cdecl,
-    importc: "nk_label_colored_wrap", dynlib: libnuklear.}
-proc nk_image*(a2: ptr nk_context; a3: nuk_image) {.cdecl, importc: "nk_image",
-    dynlib: libnuklear.}
+    importc: "nk_label_colored_wrap".}
+proc nk_image*(a2: ptr nk_context; a3: nuk_image) {.cdecl, importc: "nk_image".}
 proc nk_button_set_behavior*(a2: ptr nk_context; a3: nk_button_behavior) {.cdecl,
-    importc: "nk_button_set_behavior", dynlib: libnuklear.}
+    importc: "nk_button_set_behavior".}
 proc nk_button_push_behavior*(a2: ptr nk_context; a3: nk_button_behavior): cint {.
-    cdecl, importc: "nk_button_push_behavior", dynlib: libnuklear.}
+    cdecl, importc: "nk_button_push_behavior".}
 proc nk_button_pop_behavior*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_button_pop_behavior", dynlib: libnuklear.}
+    importc: "nk_button_pop_behavior".}
 proc nk_button_text*(a2: ptr nk_context; title: cstring; len: cint): cint {.cdecl,
-    importc: "nk_button_text", dynlib: libnuklear.}
+    importc: "nk_button_text".}
 proc nk_button_label*(a2: ptr nk_context; title: cstring): cint {.cdecl,
-    importc: "nk_button_label", dynlib: libnuklear.}
+    importc: "nk_button_label".}
 proc nk_button_color*(a2: ptr nk_context; a3: nk_color): cint {.cdecl,
-    importc: "nk_button_color", dynlib: libnuklear.}
+    importc: "nk_button_color".}
 proc nk_button_symbol*(a2: ptr nk_context; a3: nk_symbol_type): cint {.cdecl,
-    importc: "nk_button_symbol", dynlib: libnuklear.}
+    importc: "nk_button_symbol".}
 proc nk_button_image*(a2: ptr nk_context; img: nuk_image): cint {.cdecl,
-    importc: "nk_button_image", dynlib: libnuklear.}
+    importc: "nk_button_image".}
 proc nk_button_symbol_label*(a2: ptr nk_context; a3: nk_symbol_type; a4: cstring;
                             text_alignment: nk_flags): cint {.cdecl,
-    importc: "nk_button_symbol_label", dynlib: libnuklear.}
+    importc: "nk_button_symbol_label".}
 proc nk_button_symbol_text*(a2: ptr nk_context; a3: nk_symbol_type; a4: cstring;
                            a5: cint; alignment: nk_flags): cint {.cdecl,
-    importc: "nk_button_symbol_text", dynlib: libnuklear.}
+    importc: "nk_button_symbol_text".}
 proc nk_button_image_label*(a2: ptr nk_context; img: nuk_image; a4: cstring;
                            text_alignment: nk_flags): cint {.cdecl,
-    importc: "nk_button_image_label", dynlib: libnuklear.}
+    importc: "nk_button_image_label".}
 proc nk_button_image_text*(a2: ptr nk_context; img: nuk_image; a4: cstring; a5: cint;
                           alignment: nk_flags): cint {.cdecl,
-    importc: "nk_button_image_text", dynlib: libnuklear.}
+    importc: "nk_button_image_text".}
 proc nk_button_text_styled*(a2: ptr nk_context; a3: ptr nk_style_button;
                            title: cstring; len: cint): cint {.cdecl,
-    importc: "nk_button_text_styled", dynlib: libnuklear.}
+    importc: "nk_button_text_styled".}
 proc nk_button_label_styled*(a2: ptr nk_context; a3: ptr nk_style_button;
                             title: cstring): cint {.cdecl,
-    importc: "nk_button_label_styled", dynlib: libnuklear.}
+    importc: "nk_button_label_styled".}
 proc nk_button_symbol_styled*(a2: ptr nk_context; a3: ptr nk_style_button;
                              a4: nk_symbol_type): cint {.cdecl,
-    importc: "nk_button_symbol_styled", dynlib: libnuklear.}
+    importc: "nk_button_symbol_styled".}
 proc nk_button_image_styled*(a2: ptr nk_context; a3: ptr nk_style_button; img: nuk_image): cint {.
-    cdecl, importc: "nk_button_image_styled", dynlib: libnuklear.}
+    cdecl, importc: "nk_button_image_styled".}
 proc nk_button_symbol_label_styled*(a2: ptr nk_context; a3: ptr nk_style_button;
                                    a4: nk_symbol_type; a5: cstring;
                                    text_alignment: nk_flags): cint {.cdecl,
-    importc: "nk_button_symbol_label_styled", dynlib: libnuklear.}
+    importc: "nk_button_symbol_label_styled".}
 proc nk_button_symbol_text_styled*(a2: ptr nk_context; a3: ptr nk_style_button;
                                   a4: nk_symbol_type; a5: cstring; a6: cint;
                                   alignment: nk_flags): cint {.cdecl,
-    importc: "nk_button_symbol_text_styled", dynlib: libnuklear.}
+    importc: "nk_button_symbol_text_styled".}
 proc nk_button_image_label_styled*(a2: ptr nk_context; a3: ptr nk_style_button;
                                   img: nuk_image; a5: cstring;
                                   text_alignment: nk_flags): cint {.cdecl,
-    importc: "nk_button_image_label_styled", dynlib: libnuklear.}
+    importc: "nk_button_image_label_styled".}
 proc nk_button_image_text_styled*(a2: ptr nk_context; a3: ptr nk_style_button;
                                  img: nuk_image; a5: cstring; a6: cint;
                                  alignment: nk_flags): cint {.cdecl,
-    importc: "nk_button_image_text_styled", dynlib: libnuklear.}
+    importc: "nk_button_image_text_styled".}
 proc nk_check_label*(a2: ptr nk_context; a3: cstring; active: cint): cint {.cdecl,
-    importc: "nk_check_label", dynlib: libnuklear.}
+    importc: "nk_check_label".}
 proc nk_check_text*(a2: ptr nk_context; a3: cstring; a4: cint; active: cint): cint {.cdecl,
-    importc: "nk_check_text", dynlib: libnuklear.}
+    importc: "nk_check_text".}
 proc nk_check_flags_label*(a2: ptr nk_context; a3: cstring; flags: cuint; value: cuint): cuint {.
-    cdecl, importc: "nk_check_flags_label", dynlib: libnuklear.}
+    cdecl, importc: "nk_check_flags_label".}
 proc nk_check_flags_text*(a2: ptr nk_context; a3: cstring; a4: cint; flags: cuint;
                          value: cuint): cuint {.cdecl,
-    importc: "nk_check_flags_text", dynlib: libnuklear.}
+    importc: "nk_check_flags_text".}
 proc nk_checkbox_label*(a2: ptr nk_context; a3: cstring; active: ptr cint): cint {.cdecl,
-    importc: "nk_checkbox_label", dynlib: libnuklear.}
+    importc: "nk_checkbox_label".}
 proc nk_checkbox_text*(a2: ptr nk_context; a3: cstring; a4: cint; active: ptr cint): cint {.
-    cdecl, importc: "nk_checkbox_text", dynlib: libnuklear.}
+    cdecl, importc: "nk_checkbox_text".}
 proc nk_checkbox_flags_label*(a2: ptr nk_context; a3: cstring; flags: ptr cuint;
                              value: cuint): cint {.cdecl,
-    importc: "nk_checkbox_flags_label", dynlib: libnuklear.}
+    importc: "nk_checkbox_flags_label".}
 proc nk_checkbox_flags_text*(a2: ptr nk_context; a3: cstring; a4: cint;
                             flags: ptr cuint; value: cuint): cint {.cdecl,
-    importc: "nk_checkbox_flags_text", dynlib: libnuklear.}
+    importc: "nk_checkbox_flags_text".}
 proc nk_radio_label*(a2: ptr nk_context; a3: cstring; active: ptr cint): cint {.cdecl,
-    importc: "nk_radio_label", dynlib: libnuklear.}
+    importc: "nk_radio_label".}
 proc nk_radio_text*(a2: ptr nk_context; a3: cstring; a4: cint; active: ptr cint): cint {.
-    cdecl, importc: "nk_radio_text", dynlib: libnuklear.}
+    cdecl, importc: "nk_radio_text".}
 proc nk_option_label*(a2: ptr nk_context; a3: cstring; active: cint): cint {.cdecl,
-    importc: "nk_option_label", dynlib: libnuklear.}
+    importc: "nk_option_label".}
 proc nk_option_text*(a2: ptr nk_context; a3: cstring; a4: cint; active: cint): cint {.
-    cdecl, importc: "nk_option_text", dynlib: libnuklear.}
+    cdecl, importc: "nk_option_text".}
 proc nk_selectable_label*(a2: ptr nk_context; a3: cstring; align: nk_flags;
                          value: ptr cint): cint {.cdecl,
-    importc: "nk_selectable_label", dynlib: libnuklear.}
+    importc: "nk_selectable_label".}
 proc nk_selectable_text*(a2: ptr nk_context; a3: cstring; a4: cint; align: nk_flags;
                         value: ptr cint): cint {.cdecl,
-    importc: "nk_selectable_text", dynlib: libnuklear.}
+    importc: "nk_selectable_text".}
 proc nk_selectable_image_label*(a2: ptr nk_context; a3: nuk_image; a4: cstring;
                                align: nk_flags; value: ptr cint): cint {.cdecl,
-    importc: "nk_selectable_image_label", dynlib: libnuklear.}
+    importc: "nk_selectable_image_label".}
 proc nk_selectable_image_text*(a2: ptr nk_context; a3: nuk_image; a4: cstring; a5: cint;
                               align: nk_flags; value: ptr cint): cint {.cdecl,
-    importc: "nk_selectable_image_text", dynlib: libnuklear.}
+    importc: "nk_selectable_image_text".}
 proc nk_select_label*(a2: ptr nk_context; a3: cstring; align: nk_flags; value: cint): cint {.
-    cdecl, importc: "nk_select_label", dynlib: libnuklear.}
+    cdecl, importc: "nk_select_label".}
 proc nk_select_text*(a2: ptr nk_context; a3: cstring; a4: cint; align: nk_flags;
-                    value: cint): cint {.cdecl, importc: "nk_select_text",
-                                      dynlib: libnuklear.}
+                    value: cint): cint {.cdecl, importc: "nk_select_text".}
 proc nk_select_image_label*(a2: ptr nk_context; a3: nuk_image; a4: cstring;
                            align: nk_flags; value: cint): cint {.cdecl,
-    importc: "nk_select_image_label", dynlib: libnuklear.}
+    importc: "nk_select_image_label".}
 proc nk_select_image_text*(a2: ptr nk_context; a3: nuk_image; a4: cstring; a5: cint;
                           align: nk_flags; value: cint): cint {.cdecl,
-    importc: "nk_select_image_text", dynlib: libnuklear.}
+    importc: "nk_select_image_text".}
 proc nk_slide_float*(a2: ptr nk_context; min: cfloat; val: cfloat; max: cfloat;
-                    step: cfloat): cfloat {.cdecl, importc: "nk_slide_float",
-    dynlib: libnuklear.}
+                    step: cfloat): cfloat {.cdecl, importc: "nk_slide_float".}
 proc nk_slide_int*(a2: ptr nk_context; min: cint; val: cint; max: cint; step: cint): cint {.
-    cdecl, importc: "nk_slide_int", dynlib: libnuklear.}
+    cdecl, importc: "nk_slide_int".}
 proc nk_slider_float*(a2: ptr nk_context; min: cfloat; val: ptr cfloat; max: cfloat;
-                     step: cfloat): cint {.cdecl, importc: "nk_slider_float",
-                                        dynlib: libnuklear.}
+                     step: cfloat): cint {.cdecl, importc: "nk_slider_float".}
 proc nk_slider_int*(a2: ptr nk_context; min: cint; val: ptr cint; max: cint; step: cint): cint {.
-    cdecl, importc: "nk_slider_int", dynlib: libnuklear.}
+    cdecl, importc: "nk_slider_int".}
 proc nk_progress*(a2: ptr nk_context; cur: ptr nk_size; max: nk_size; modifyable: cint): cint {.
-    cdecl, importc: "nk_progress", dynlib: libnuklear.}
+    cdecl, importc: "nk_progress".}
 proc nk_prog*(a2: ptr nk_context; cur: nk_size; max: nk_size; modifyable: cint): nk_size {.
-    cdecl, importc: "nk_prog", dynlib: libnuklear.}
+    cdecl, importc: "nk_prog".}
 proc nk_color_picker*(a2: ptr nk_context; a3: nk_color; a4: nk_color_format): nk_color {.
-    cdecl, importc: "nk_color_picker", dynlib: libnuklear.}
+    cdecl, importc: "nk_color_picker".}
 proc nk_color_pick*(a2: ptr nk_context; a3: ptr nk_color; a4: nk_color_format): cint {.
-    cdecl, importc: "nk_color_pick", dynlib: libnuklear.}
+    cdecl, importc: "nk_color_pick".}
 proc nk_property_int*(a2: ptr nk_context; name: cstring; min: cint; val: ptr cint;
                      max: cint; step: cint; inc_per_pixel: cfloat) {.cdecl,
-    importc: "nk_property_int", dynlib: libnuklear.}
+    importc: "nk_property_int".}
 proc nk_property_float*(a2: ptr nk_context; name: cstring; min: cfloat; val: ptr cfloat;
                        max: cfloat; step: cfloat; inc_per_pixel: cfloat) {.cdecl,
-    importc: "nk_property_float", dynlib: libnuklear.}
+    importc: "nk_property_float".}
 proc nk_property_double*(a2: ptr nk_context; name: cstring; min: cdouble;
                         val: ptr cdouble; max: cdouble; step: cdouble;
                         inc_per_pixel: cfloat) {.cdecl,
-    importc: "nk_property_double", dynlib: libnuklear.}
+    importc: "nk_property_double".}
 proc nk_propertyi*(a2: ptr nk_context; name: cstring; min: cint; val: cint; max: cint;
                   step: cint; inc_per_pixel: cfloat): cint {.cdecl,
-    importc: "nk_propertyi", dynlib: libnuklear.}
+    importc: "nk_propertyi".}
 proc nk_propertyf*(a2: ptr nk_context; name: cstring; min: cfloat; val: cfloat;
                   max: cfloat; step: cfloat; inc_per_pixel: cfloat): cfloat {.cdecl,
-    importc: "nk_propertyf", dynlib: libnuklear.}
+    importc: "nk_propertyf".}
 proc nk_propertyd*(a2: ptr nk_context; name: cstring; min: cdouble; val: cdouble;
                   max: cdouble; step: cdouble; inc_per_pixel: cfloat): cdouble {.cdecl,
-    importc: "nk_propertyd", dynlib: libnuklear.}
+    importc: "nk_propertyd".}
 proc nk_edit_focus*(a2: ptr nk_context; flags: nk_flags) {.cdecl,
-    importc: "nk_edit_focus", dynlib: libnuklear.}
-proc nk_edit_unfocus*(a2: ptr nk_context) {.cdecl, importc: "nk_edit_unfocus",
-                                        dynlib: libnuklear.}
+    importc: "nk_edit_focus".}
+proc nk_edit_unfocus*(a2: ptr nk_context) {.cdecl, importc: "nk_edit_unfocus".}
 proc nk_edit_string*(a2: ptr nk_context; a3: nk_flags; buffer: cstring; len: ptr cint;
                     max: cint; a7: nk_plugin_filter): nk_flags {.cdecl,
-    importc: "nk_edit_string", dynlib: libnuklear.}
+    importc: "nk_edit_string".}
 proc nk_edit_buffer*(a2: ptr nk_context; a3: nk_flags; a4: ptr nk_text_edit;
                     a5: nk_plugin_filter): nk_flags {.cdecl,
-    importc: "nk_edit_buffer", dynlib: libnuklear.}
+    importc: "nk_edit_buffer".}
 proc nk_edit_string_zero_terminated*(a2: ptr nk_context; a3: nk_flags;
                                     buffer: cstring; max: cint; a6: nk_plugin_filter): nk_flags {.
-    cdecl, importc: "nk_edit_string_zero_terminated", dynlib: libnuklear.}
+    cdecl, importc: "nk_edit_string_zero_terminated".}
 proc nk_chart_begin*(a2: ptr nk_context; a3: nk_chart_type; num: cint; min: cfloat;
-                    max: cfloat): cint {.cdecl, importc: "nk_chart_begin",
-                                      dynlib: libnuklear.}
+                    max: cfloat): cint {.cdecl, importc: "nk_chart_begin".}
 proc nk_chart_begin_colored*(a2: ptr nk_context; a3: nk_chart_type; a4: nk_color;
                             active: nk_color; num: cint; min: cfloat; max: cfloat): cint {.
-    cdecl, importc: "nk_chart_begin_colored", dynlib: libnuklear.}
+    cdecl, importc: "nk_chart_begin_colored".}
 proc nk_chart_add_slot*(ctx: ptr nk_context; a3: nk_chart_type; count: cint;
                        min_value: cfloat; max_value: cfloat) {.cdecl,
-    importc: "nk_chart_add_slot", dynlib: libnuklear.}
+    importc: "nk_chart_add_slot".}
 proc nk_chart_add_slot_colored*(ctx: ptr nk_context; a3: nk_chart_type; a4: nk_color;
                                active: nk_color; count: cint; min_value: cfloat;
                                max_value: cfloat) {.cdecl,
-    importc: "nk_chart_add_slot_colored", dynlib: libnuklear.}
+    importc: "nk_chart_add_slot_colored".}
 proc nk_chart_push*(a2: ptr nk_context; a3: cfloat): nk_flags {.cdecl,
-    importc: "nk_chart_push", dynlib: libnuklear.}
+    importc: "nk_chart_push".}
 proc nk_chart_push_slot*(a2: ptr nk_context; a3: cfloat; a4: cint): nk_flags {.cdecl,
-    importc: "nk_chart_push_slot", dynlib: libnuklear.}
-proc nk_chart_end*(a2: ptr nk_context) {.cdecl, importc: "nk_chart_end",
-                                     dynlib: libnuklear.}
+    importc: "nk_chart_push_slot".}
+proc nk_chart_end*(a2: ptr nk_context) {.cdecl, importc: "nk_chart_end".}
 proc nk_plot*(a2: ptr nk_context; a3: nk_chart_type; values: ptr cfloat; count: cint;
-             offset: cint) {.cdecl, importc: "nk_plot", dynlib: libnuklear.}
+             offset: cint) {.cdecl, importc: "nk_plot".}
 proc nk_plot_function*(a2: ptr nk_context; a3: nk_chart_type; userdata: pointer;
     value_getter: proc (user: pointer; index: cint): cfloat {.cdecl.}; count: cint;
-                      offset: cint) {.cdecl, importc: "nk_plot_function",
-                                    dynlib: libnuklear.}
+                      offset: cint) {.cdecl, importc: "nk_plot_function".}
 proc nk_popup_begin*(a2: ptr nk_context; a3: nk_popup_type; a4: cstring; a5: nk_flags;
-                    bounds: nuk_rect): cint {.cdecl, importc: "nk_popup_begin",
-    dynlib: libnuklear.}
-proc nk_popup_close*(a2: ptr nk_context) {.cdecl, importc: "nk_popup_close",
-                                       dynlib: libnuklear.}
-proc nk_popup_end*(a2: ptr nk_context) {.cdecl, importc: "nk_popup_end",
-                                     dynlib: libnuklear.}
+                    bounds: nuk_rect): cint {.cdecl, importc: "nk_popup_begin".}
+proc nk_popup_close*(a2: ptr nk_context) {.cdecl, importc: "nk_popup_close".}
+proc nk_popup_end*(a2: ptr nk_context) {.cdecl, importc: "nk_popup_end".}
 proc nk_combo*(a2: ptr nk_context; items: cstringArray; count: cint; selected: cint;
-              item_height: cint; size: nuk_vec2): cint {.cdecl, importc: "nk_combo",
-    dynlib: libnuklear.}
+              item_height: cint; size: nuk_vec2): cint {.cdecl, importc: "nk_combo".}
 proc nk_combo_separator*(a2: ptr nk_context; items_separated_by_separator: cstring;
                         separator: cint; selected: cint; count: cint;
                         item_height: cint; size: nuk_vec2): cint {.cdecl,
-    importc: "nk_combo_separator", dynlib: libnuklear.}
+    importc: "nk_combo_separator".}
 proc nk_combo_string*(a2: ptr nk_context; items_separated_by_zeros: cstring;
                      selected: cint; count: cint; item_height: cint; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_combo_string", dynlib: libnuklear.}
+    cdecl, importc: "nk_combo_string".}
 proc nk_combo_callback*(a2: ptr nk_context; item_getter: proc (a2: pointer; a3: cint;
     a4: cstringArray) {.cdecl.}; userdata: pointer; selected: cint; count: cint;
                        item_height: cint; size: nuk_vec2): cint {.cdecl,
-    importc: "nk_combo_callback", dynlib: libnuklear.}
+    importc: "nk_combo_callback".}
 proc nk_combobox*(a2: ptr nk_context; items: cstringArray; count: cint;
                  selected: ptr cint; item_height: cint; size: nuk_vec2) {.cdecl,
-    importc: "nk_combobox", dynlib: libnuklear.}
+    importc: "nk_combobox".}
 proc nk_combobox_string*(a2: ptr nk_context; items_separated_by_zeros: cstring;
                         selected: ptr cint; count: cint; item_height: cint;
-                        size: nuk_vec2) {.cdecl, importc: "nk_combobox_string",
-                                       dynlib: libnuklear.}
+                        size: nuk_vec2) {.cdecl, importc: "nk_combobox_string".}
 proc nk_combobox_separator*(a2: ptr nk_context;
                            items_separated_by_separator: cstring; separator: cint;
                            selected: ptr cint; count: cint; item_height: cint;
                            size: nuk_vec2) {.cdecl,
-    importc: "nk_combobox_separator", dynlib: libnuklear.}
+    importc: "nk_combobox_separator".}
 proc nk_combobox_callback*(a2: ptr nk_context; item_getter: proc (a2: pointer; a3: cint;
     a4: cstringArray) {.cdecl.}; a4: pointer; selected: ptr cint; count: cint;
                           item_height: cint; size: nuk_vec2) {.cdecl,
-    importc: "nk_combobox_callback", dynlib: libnuklear.}
+    importc: "nk_combobox_callback".}
 proc nk_combo_begin_text*(a2: ptr nk_context; selected: cstring; a4: cint; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_combo_begin_text", dynlib: libnuklear.}
+    cdecl, importc: "nk_combo_begin_text".}
 proc nk_combo_begin_label*(a2: ptr nk_context; selected: cstring; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_combo_begin_label", dynlib: libnuklear.}
+    cdecl, importc: "nk_combo_begin_label".}
 proc nk_combo_begin_color*(a2: ptr nk_context; color: nk_color; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_combo_begin_color", dynlib: libnuklear.}
+    cdecl, importc: "nk_combo_begin_color".}
 proc nk_combo_begin_symbol*(a2: ptr nk_context; a3: nk_symbol_type; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_combo_begin_symbol", dynlib: libnuklear.}
+    cdecl, importc: "nk_combo_begin_symbol".}
 proc nk_combo_begin_symbol_label*(a2: ptr nk_context; selected: cstring;
                                  a4: nk_symbol_type; size: nuk_vec2): cint {.cdecl,
-    importc: "nk_combo_begin_symbol_label", dynlib: libnuklear.}
+    importc: "nk_combo_begin_symbol_label".}
 proc nk_combo_begin_symbol_text*(a2: ptr nk_context; selected: cstring; a4: cint;
                                 a5: nk_symbol_type; size: nuk_vec2): cint {.cdecl,
-    importc: "nk_combo_begin_symbol_text", dynlib: libnuklear.}
+    importc: "nk_combo_begin_symbol_text".}
 proc nk_combo_begin_image*(a2: ptr nk_context; img: nuk_image; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_combo_begin_image", dynlib: libnuklear.}
+    cdecl, importc: "nk_combo_begin_image".}
 proc nk_combo_begin_image_label*(a2: ptr nk_context; selected: cstring; a4: nuk_image;
                                 size: nuk_vec2): cint {.cdecl,
-    importc: "nk_combo_begin_image_label", dynlib: libnuklear.}
+    importc: "nk_combo_begin_image_label".}
 proc nk_combo_begin_image_text*(a2: ptr nk_context; selected: cstring; a4: cint;
                                a5: nuk_image; size: nuk_vec2): cint {.cdecl,
-    importc: "nk_combo_begin_image_text", dynlib: libnuklear.}
+    importc: "nk_combo_begin_image_text".}
 proc nk_combo_item_label*(a2: ptr nk_context; a3: cstring; alignment: nk_flags): cint {.
-    cdecl, importc: "nk_combo_item_label", dynlib: libnuklear.}
+    cdecl, importc: "nk_combo_item_label".}
 proc nk_combo_item_text*(a2: ptr nk_context; a3: cstring; a4: cint; alignment: nk_flags): cint {.
-    cdecl, importc: "nk_combo_item_text", dynlib: libnuklear.}
+    cdecl, importc: "nk_combo_item_text".}
 proc nk_combo_item_image_label*(a2: ptr nk_context; a3: nuk_image; a4: cstring;
                                alignment: nk_flags): cint {.cdecl,
-    importc: "nk_combo_item_image_label", dynlib: libnuklear.}
+    importc: "nk_combo_item_image_label".}
 proc nk_combo_item_image_text*(a2: ptr nk_context; a3: nuk_image; a4: cstring; a5: cint;
                               alignment: nk_flags): cint {.cdecl,
-    importc: "nk_combo_item_image_text", dynlib: libnuklear.}
+    importc: "nk_combo_item_image_text".}
 proc nk_combo_item_symbol_label*(a2: ptr nk_context; a3: nk_symbol_type; a4: cstring;
                                 alignment: nk_flags): cint {.cdecl,
-    importc: "nk_combo_item_symbol_label", dynlib: libnuklear.}
+    importc: "nk_combo_item_symbol_label".}
 proc nk_combo_item_symbol_text*(a2: ptr nk_context; a3: nk_symbol_type; a4: cstring;
                                a5: cint; alignment: nk_flags): cint {.cdecl,
-    importc: "nk_combo_item_symbol_text", dynlib: libnuklear.}
-proc nk_combo_close*(a2: ptr nk_context) {.cdecl, importc: "nk_combo_close",
-                                       dynlib: libnuklear.}
-proc nk_combo_end*(a2: ptr nk_context) {.cdecl, importc: "nk_combo_end",
-                                     dynlib: libnuklear.}
+    importc: "nk_combo_item_symbol_text".}
+proc nk_combo_close*(a2: ptr nk_context) {.cdecl, importc: "nk_combo_close".}
+proc nk_combo_end*(a2: ptr nk_context) {.cdecl, importc: "nk_combo_end".}
 proc nk_contextual_begin*(a2: ptr nk_context; a3: nk_flags; a4: nuk_vec2;
                          trigger_bounds: nuk_rect): cint {.cdecl,
-    importc: "nk_contextual_begin", dynlib: libnuklear.}
+    importc: "nk_contextual_begin".}
 proc nk_contextual_item_text*(a2: ptr nk_context; a3: cstring; a4: cint; align: nk_flags): cint {.
-    cdecl, importc: "nk_contextual_item_text", dynlib: libnuklear.}
+    cdecl, importc: "nk_contextual_item_text".}
 proc nk_contextual_item_label*(a2: ptr nk_context; a3: cstring; align: nk_flags): cint {.
-    cdecl, importc: "nk_contextual_item_label", dynlib: libnuklear.}
+    cdecl, importc: "nk_contextual_item_label".}
 proc nk_contextual_item_image_label*(a2: ptr nk_context; a3: nuk_image; a4: cstring;
                                     alignment: nk_flags): cint {.cdecl,
-    importc: "nk_contextual_item_image_label", dynlib: libnuklear.}
+    importc: "nk_contextual_item_image_label".}
 proc nk_contextual_item_image_text*(a2: ptr nk_context; a3: nuk_image; a4: cstring;
                                    len: cint; alignment: nk_flags): cint {.cdecl,
-    importc: "nk_contextual_item_image_text", dynlib: libnuklear.}
+    importc: "nk_contextual_item_image_text".}
 proc nk_contextual_item_symbol_label*(a2: ptr nk_context; a3: nk_symbol_type;
                                      a4: cstring; alignment: nk_flags): cint {.cdecl,
-    importc: "nk_contextual_item_symbol_label", dynlib: libnuklear.}
+    importc: "nk_contextual_item_symbol_label".}
 proc nk_contextual_item_symbol_text*(a2: ptr nk_context; a3: nk_symbol_type;
                                     a4: cstring; a5: cint; alignment: nk_flags): cint {.
-    cdecl, importc: "nk_contextual_item_symbol_text", dynlib: libnuklear.}
+    cdecl, importc: "nk_contextual_item_symbol_text".}
 proc nk_contextual_close*(a2: ptr nk_context) {.cdecl,
-    importc: "nk_contextual_close", dynlib: libnuklear.}
-proc nk_contextual_end*(a2: ptr nk_context) {.cdecl, importc: "nk_contextual_end",
-    dynlib: libnuklear.}
-proc nk_tooltip*(a2: ptr nk_context; a3: cstring) {.cdecl, importc: "nk_tooltip",
-    dynlib: libnuklear.}
+    importc: "nk_contextual_close".}
+proc nk_contextual_end*(a2: ptr nk_context) {.cdecl, importc: "nk_contextual_end".}
+proc nk_tooltip*(a2: ptr nk_context; a3: cstring) {.cdecl, importc: "nk_tooltip".}
 proc nk_tooltip_begin*(a2: ptr nk_context; width: cfloat): cint {.cdecl,
-    importc: "nk_tooltip_begin", dynlib: libnuklear.}
-proc nk_tooltip_end*(a2: ptr nk_context) {.cdecl, importc: "nk_tooltip_end",
-                                       dynlib: libnuklear.}
-proc nk_menubar_begin*(a2: ptr nk_context) {.cdecl, importc: "nk_menubar_begin",
-    dynlib: libnuklear.}
-proc nk_menubar_end*(a2: ptr nk_context) {.cdecl, importc: "nk_menubar_end",
-                                       dynlib: libnuklear.}
+    importc: "nk_tooltip_begin".}
+proc nk_tooltip_end*(a2: ptr nk_context) {.cdecl, importc: "nk_tooltip_end".}
+proc nk_menubar_begin*(a2: ptr nk_context) {.cdecl, importc: "nk_menubar_begin".}
+proc nk_menubar_end*(a2: ptr nk_context) {.cdecl, importc: "nk_menubar_end".}
 proc nk_menu_begin_text*(a2: ptr nk_context; title: cstring; title_len: cint;
                         align: nk_flags; size: nuk_vec2): cint {.cdecl,
-    importc: "nk_menu_begin_text", dynlib: libnuklear.}
+    importc: "nk_menu_begin_text".}
 proc nk_menu_begin_label*(a2: ptr nk_context; a3: cstring; align: nk_flags;
                          size: nuk_vec2): cint {.cdecl,
-    importc: "nk_menu_begin_label", dynlib: libnuklear.}
+    importc: "nk_menu_begin_label".}
 proc nk_menu_begin_image*(a2: ptr nk_context; a3: cstring; a4: nuk_image; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_menu_begin_image", dynlib: libnuklear.}
+    cdecl, importc: "nk_menu_begin_image".}
 proc nk_menu_begin_image_text*(a2: ptr nk_context; a3: cstring; a4: cint;
                               align: nk_flags; a6: nuk_image; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_menu_begin_image_text", dynlib: libnuklear.}
+    cdecl, importc: "nk_menu_begin_image_text".}
 proc nk_menu_begin_image_label*(a2: ptr nk_context; a3: cstring; align: nk_flags;
                                a5: nuk_image; size: nuk_vec2): cint {.cdecl,
-    importc: "nk_menu_begin_image_label", dynlib: libnuklear.}
+    importc: "nk_menu_begin_image_label".}
 proc nk_menu_begin_symbol*(a2: ptr nk_context; a3: cstring; a4: nk_symbol_type;
                           size: nuk_vec2): cint {.cdecl,
-    importc: "nk_menu_begin_symbol", dynlib: libnuklear.}
+    importc: "nk_menu_begin_symbol".}
 proc nk_menu_begin_symbol_text*(a2: ptr nk_context; a3: cstring; a4: cint;
                                align: nk_flags; a6: nk_symbol_type; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_menu_begin_symbol_text", dynlib: libnuklear.}
+    cdecl, importc: "nk_menu_begin_symbol_text".}
 proc nk_menu_begin_symbol_label*(a2: ptr nk_context; a3: cstring; align: nk_flags;
                                 a5: nk_symbol_type; size: nuk_vec2): cint {.cdecl,
-    importc: "nk_menu_begin_symbol_label", dynlib: libnuklear.}
+    importc: "nk_menu_begin_symbol_label".}
 proc nk_menu_item_text*(a2: ptr nk_context; a3: cstring; a4: cint; align: nk_flags): cint {.
-    cdecl, importc: "nk_menu_item_text", dynlib: libnuklear.}
+    cdecl, importc: "nk_menu_item_text".}
 proc nk_menu_item_label*(a2: ptr nk_context; a3: cstring; alignment: nk_flags): cint {.
-    cdecl, importc: "nk_menu_item_label", dynlib: libnuklear.}
+    cdecl, importc: "nk_menu_item_label".}
 proc nk_menu_item_image_label*(a2: ptr nk_context; a3: nuk_image; a4: cstring;
                               alignment: nk_flags): cint {.cdecl,
-    importc: "nk_menu_item_image_label", dynlib: libnuklear.}
+    importc: "nk_menu_item_image_label".}
 proc nk_menu_item_image_text*(a2: ptr nk_context; a3: nuk_image; a4: cstring; len: cint;
                              alignment: nk_flags): cint {.cdecl,
-    importc: "nk_menu_item_image_text", dynlib: libnuklear.}
+    importc: "nk_menu_item_image_text".}
 proc nk_menu_item_symbol_text*(a2: ptr nk_context; a3: nk_symbol_type; a4: cstring;
                               a5: cint; alignment: nk_flags): cint {.cdecl,
-    importc: "nk_menu_item_symbol_text", dynlib: libnuklear.}
+    importc: "nk_menu_item_symbol_text".}
 proc nk_menu_item_symbol_label*(a2: ptr nk_context; a3: nk_symbol_type; a4: cstring;
                                alignment: nk_flags): cint {.cdecl,
-    importc: "nk_menu_item_symbol_label", dynlib: libnuklear.}
-proc nk_menu_close*(a2: ptr nk_context) {.cdecl, importc: "nk_menu_close",
-                                      dynlib: libnuklear.}
-proc nk_menu_end*(a2: ptr nk_context) {.cdecl, importc: "nk_menu_end",
-                                    dynlib: libnuklear.}
+    importc: "nk_menu_item_symbol_label".}
+proc nk_menu_close*(a2: ptr nk_context) {.cdecl, importc: "nk_menu_close".}
+proc nk_menu_end*(a2: ptr nk_context) {.cdecl, importc: "nk_menu_end".}
 proc nk_convert*(a2: ptr nk_context; cmds: ptr nk_buffer; vertices: ptr nk_buffer;
                 elements: ptr nk_buffer; a6: ptr nk_convert_config) {.cdecl,
-    importc: "nk_convert", dynlib: libnuklear.}
+    importc: "nk_convert".}
 proc nk_draw_begin*(a2: ptr nk_context; a3: ptr nk_buffer): ptr nk_draw_command {.cdecl,
-    importc: "nk__draw_begin", dynlib: libnuklear.}
+    importc: "nk__draw_begin".}
 proc nk_draw_end*(a2: ptr nk_context; a3: ptr nk_buffer): ptr nk_draw_command {.cdecl,
-    importc: "nk__draw_end", dynlib: libnuklear.}
+    importc: "nk__draw_end".}
 proc nk_draw_next*(a2: ptr nk_draw_command; a3: ptr nk_buffer; a4: ptr nk_context): ptr nk_draw_command {.
-    cdecl, importc: "nk__draw_next", dynlib: libnuklear.}
-proc nk_input_begin*(a2: ptr nk_context) {.cdecl, importc: "nk_input_begin",
-                                       dynlib: libnuklear.}
+    cdecl, importc: "nk__draw_next".}
+proc nk_input_begin*(a2: ptr nk_context) {.cdecl, importc: "nk_input_begin".}
 proc nk_input_motion*(a2: ptr nk_context; x: cint; y: cint) {.cdecl,
-    importc: "nk_input_motion", dynlib: libnuklear.}
+    importc: "nk_input_motion".}
 proc nk_input_key*(a2: ptr nk_context; a3: nk_keys; down: cint) {.cdecl,
-    importc: "nk_input_key", dynlib: libnuklear.}
+    importc: "nk_input_key".}
 proc nk_input_button*(a2: ptr nk_context; a3: nk_buttons; x: cint; y: cint; down: cint) {.
-    cdecl, importc: "nk_input_button", dynlib: libnuklear.}
+    cdecl, importc: "nk_input_button".}
 proc nk_input_scroll*(a2: ptr nk_context; y: cfloat) {.cdecl,
-    importc: "nk_input_scroll", dynlib: libnuklear.}
-proc nk_input_char*(a2: ptr nk_context; a3: char) {.cdecl, importc: "nk_input_char",
-    dynlib: libnuklear.}
+    importc: "nk_input_scroll".}
+proc nk_input_char*(a2: ptr nk_context; a3: char) {.cdecl, importc: "nk_input_char".}
 proc nk_input_glyph*(a2: ptr nk_context; a3: nk_glyph) {.cdecl,
-    importc: "nk_input_glyph", dynlib: libnuklear.}
+    importc: "nk_input_glyph".}
 proc nk_input_unicode*(a2: ptr nk_context; a3: nk_rune) {.cdecl,
-    importc: "nk_input_unicode", dynlib: libnuklear.}
-proc nk_input_end*(a2: ptr nk_context) {.cdecl, importc: "nk_input_end",
-                                     dynlib: libnuklear.}
-proc nk_style_default*(a2: ptr nk_context) {.cdecl, importc: "nk_style_default",
-    dynlib: libnuklear.}
+    importc: "nk_input_unicode".}
+proc nk_input_end*(a2: ptr nk_context) {.cdecl, importc: "nk_input_end".}
+proc nk_style_default*(a2: ptr nk_context) {.cdecl, importc: "nk_style_default".}
 proc nk_style_from_table*(a2: ptr nk_context; a3: ptr nk_color) {.cdecl,
-    importc: "nk_style_from_table", dynlib: libnuklear.}
+    importc: "nk_style_from_table".}
 proc nk_style_load_cursor*(a2: ptr nk_context; a3: nk_style_cursor; a4: ptr nk_cursor) {.
-    cdecl, importc: "nk_style_load_cursor", dynlib: libnuklear.}
+    cdecl, importc: "nk_style_load_cursor".}
 proc nk_style_load_all_cursors*(a2: ptr nk_context; a3: ptr nk_cursor) {.cdecl,
-    importc: "nk_style_load_all_cursors", dynlib: libnuklear.}
+    importc: "nk_style_load_all_cursors".}
 proc nk_style_get_color_by_name*(a2: nk_style_colors): cstring {.cdecl,
-    importc: "nk_style_get_color_by_name", dynlib: libnuklear.}
+    importc: "nk_style_get_color_by_name".}
 proc nk_style_set_font*(a2: ptr nk_context; a3: ptr nk_user_font) {.cdecl,
-    importc: "nk_style_set_font", dynlib: libnuklear.}
+    importc: "nk_style_set_font".}
 proc nk_style_set_cursor*(a2: ptr nk_context; a3: nk_style_cursor): cint {.cdecl,
-    importc: "nk_style_set_cursor", dynlib: libnuklear.}
+    importc: "nk_style_set_cursor".}
 proc nk_style_show_cursor*(a2: ptr nk_context) {.cdecl,
-    importc: "nk_style_show_cursor", dynlib: libnuklear.}
+    importc: "nk_style_show_cursor".}
 proc nk_style_hide_cursor*(a2: ptr nk_context) {.cdecl,
-    importc: "nk_style_hide_cursor", dynlib: libnuklear.}
+    importc: "nk_style_hide_cursor".}
 proc nk_style_push_font*(a2: ptr nk_context; a3: ptr nk_user_font): cint {.cdecl,
-    importc: "nk_style_push_font", dynlib: libnuklear.}
+    importc: "nk_style_push_font".}
 proc nk_style_push_float*(a2: ptr nk_context; a3: ptr cfloat; a4: cfloat): cint {.cdecl,
-    importc: "nk_style_push_float", dynlib: libnuklear.}
+    importc: "nk_style_push_float".}
 proc nk_style_push_vec2*(a2: ptr nk_context; a3: ptr nuk_vec2; a4: nuk_vec2): cint {.cdecl,
-    importc: "nk_style_push_vec2", dynlib: libnuklear.}
+    importc: "nk_style_push_vec2".}
 proc nk_style_push_style_item*(a2: ptr nk_context; a3: ptr nk_style_item;
                               a4: nk_style_item): cint {.cdecl,
-    importc: "nk_style_push_style_item", dynlib: libnuklear.}
+    importc: "nk_style_push_style_item".}
 proc nk_style_push_flags*(a2: ptr nk_context; a3: ptr nk_flags; a4: nk_flags): cint {.
-    cdecl, importc: "nk_style_push_flags", dynlib: libnuklear.}
+    cdecl, importc: "nk_style_push_flags".}
 proc nk_style_push_color*(a2: ptr nk_context; a3: ptr nk_color; a4: nk_color): cint {.
-    cdecl, importc: "nk_style_push_color", dynlib: libnuklear.}
+    cdecl, importc: "nk_style_push_color".}
 proc nk_style_pop_font*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_style_pop_font", dynlib: libnuklear.}
+    importc: "nk_style_pop_font".}
 proc nk_style_pop_float*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_style_pop_float", dynlib: libnuklear.}
+    importc: "nk_style_pop_float".}
 proc nk_style_pop_vec2*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_style_pop_vec2", dynlib: libnuklear.}
+    importc: "nk_style_pop_vec2".}
 proc nk_style_pop_style_item*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_style_pop_style_item", dynlib: libnuklear.}
+    importc: "nk_style_pop_style_item".}
 proc nk_style_pop_flags*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_style_pop_flags", dynlib: libnuklear.}
+    importc: "nk_style_pop_flags".}
 proc nk_style_pop_color*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_style_pop_color", dynlib: libnuklear.}
+    importc: "nk_style_pop_color".}
 proc nk_widget_bounds*(a2: ptr nk_context): nuk_rect {.cdecl,
-    importc: "nk_widget_bounds", dynlib: libnuklear.}
+    importc: "nk_widget_bounds".}
 proc nk_widget_position*(a2: ptr nk_context): nuk_vec2 {.cdecl,
-    importc: "nk_widget_position", dynlib: libnuklear.}
-proc nk_widget_size*(a2: ptr nk_context): nuk_vec2 {.cdecl, importc: "nk_widget_size",
-    dynlib: libnuklear.}
-proc nk_widget_width*(a2: ptr nk_context): cfloat {.cdecl, importc: "nk_widget_width",
-    dynlib: libnuklear.}
+    importc: "nk_widget_position".}
+proc nk_widget_size*(a2: ptr nk_context): nuk_vec2 {.cdecl, importc: "nk_widget_size".}
+proc nk_widget_width*(a2: ptr nk_context): cfloat {.cdecl, importc: "nk_widget_width".}
 proc nk_widget_height*(a2: ptr nk_context): cfloat {.cdecl,
-    importc: "nk_widget_height", dynlib: libnuklear.}
+    importc: "nk_widget_height".}
 proc nk_widget_is_hovered*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_widget_is_hovered", dynlib: libnuklear.}
+    importc: "nk_widget_is_hovered".}
 proc nk_widget_is_mouse_clicked*(a2: ptr nk_context; a3: nk_buttons): cint {.cdecl,
-    importc: "nk_widget_is_mouse_clicked", dynlib: libnuklear.}
+    importc: "nk_widget_is_mouse_clicked".}
 proc nk_widget_has_mouse_click_down*(a2: ptr nk_context; a3: nk_buttons; down: cint): cint {.
-    cdecl, importc: "nk_widget_has_mouse_click_down", dynlib: libnuklear.}
-proc nk_spacing*(a2: ptr nk_context; cols: cint) {.cdecl, importc: "nk_spacing",
-    dynlib: libnuklear.}
+    cdecl, importc: "nk_widget_has_mouse_click_down".}
+proc nk_spacing*(a2: ptr nk_context; cols: cint) {.cdecl, importc: "nk_spacing".}
 proc nk_widget*(a2: ptr nuk_rect; a3: ptr nk_context): nk_widget_layout_states {.cdecl,
-    importc: "nk_widget", dynlib: libnuklear.}
+    importc: "nk_widget".}
 proc nk_widget_fitting*(a2: ptr nuk_rect; a3: ptr nk_context; a4: nuk_vec2): nk_widget_layout_states {.
-    cdecl, importc: "nk_widget_fitting", dynlib: libnuklear.}
-proc nk_rgb*(r: cint; g: cint; b: cint): nk_color {.cdecl, importc: "nk_rgb",
-    dynlib: libnuklear.}
-proc nk_rgb_iv*(rgb: ptr cint): nk_color {.cdecl, importc: "nk_rgb_iv",
-                                      dynlib: libnuklear.}
-proc nk_rgb_bv*(rgb: ptr nk_byte): nk_color {.cdecl, importc: "nk_rgb_bv",
-    dynlib: libnuklear.}
-proc nk_rgb_f*(r: cfloat; g: cfloat; b: cfloat): nk_color {.cdecl, importc: "nk_rgb_f",
-    dynlib: libnuklear.}
-proc nk_rgb_fv*(rgb: ptr cfloat): nk_color {.cdecl, importc: "nk_rgb_fv",
-                                        dynlib: libnuklear.}
-proc nk_rgb_hex*(rgb: cstring): nk_color {.cdecl, importc: "nk_rgb_hex",
-                                       dynlib: libnuklear.}
-proc nk_rgba*(r: cint; g: cint; b: cint; a: cint): nk_color {.cdecl, importc: "nk_rgba",
-    dynlib: libnuklear.}
-proc nk_rgba_u32*(a2: nk_uint): nk_color {.cdecl, importc: "nk_rgba_u32",
-                                       dynlib: libnuklear.}
-proc nk_rgba_iv*(rgba: ptr cint): nk_color {.cdecl, importc: "nk_rgba_iv",
-                                        dynlib: libnuklear.}
-proc nk_rgba_bv*(rgba: ptr nk_byte): nk_color {.cdecl, importc: "nk_rgba_bv",
-    dynlib: libnuklear.}
+    cdecl, importc: "nk_widget_fitting".}
+proc nk_rgb*(r: cint; g: cint; b: cint): nk_color {.cdecl, importc: "nk_rgb".}
+proc nk_rgb_iv*(rgb: ptr cint): nk_color {.cdecl, importc: "nk_rgb_iv".}
+proc nk_rgb_bv*(rgb: ptr nk_byte): nk_color {.cdecl, importc: "nk_rgb_bv".}
+proc nk_rgb_f*(r: cfloat; g: cfloat; b: cfloat): nk_color {.cdecl, importc: "nk_rgb_f".}
+proc nk_rgb_fv*(rgb: ptr cfloat): nk_color {.cdecl, importc: "nk_rgb_fv".}
+proc nk_rgb_hex*(rgb: cstring): nk_color {.cdecl, importc: "nk_rgb_hex".}
+proc nk_rgba*(r: cint; g: cint; b: cint; a: cint): nk_color {.cdecl, importc: "nk_rgba".}
+proc nk_rgba_u32*(a2: nk_uint): nk_color {.cdecl, importc: "nk_rgba_u32".}
+proc nk_rgba_iv*(rgba: ptr cint): nk_color {.cdecl, importc: "nk_rgba_iv".}
+proc nk_rgba_bv*(rgba: ptr nk_byte): nk_color {.cdecl, importc: "nk_rgba_bv".}
 proc nk_rgba_f*(r: cfloat; g: cfloat; b: cfloat; a: cfloat): nk_color {.cdecl,
-    importc: "nk_rgba_f", dynlib: libnuklear.}
-proc nk_rgba_fv*(rgba: ptr cfloat): nk_color {.cdecl, importc: "nk_rgba_fv",
-    dynlib: libnuklear.}
-proc nk_rgba_hex*(rgb: cstring): nk_color {.cdecl, importc: "nk_rgba_hex",
-                                        dynlib: libnuklear.}
-proc nk_hsv*(h: cint; s: cint; v: cint): nk_color {.cdecl, importc: "nk_hsv",
-    dynlib: libnuklear.}
-proc nk_hsv_iv*(hsv: ptr cint): nk_color {.cdecl, importc: "nk_hsv_iv",
-                                      dynlib: libnuklear.}
-proc nk_hsv_bv*(hsv: ptr nk_byte): nk_color {.cdecl, importc: "nk_hsv_bv",
-    dynlib: libnuklear.}
-proc nk_hsv_f*(h: cfloat; s: cfloat; v: cfloat): nk_color {.cdecl, importc: "nk_hsv_f",
-    dynlib: libnuklear.}
-proc nk_hsv_fv*(hsv: ptr cfloat): nk_color {.cdecl, importc: "nk_hsv_fv",
-                                        dynlib: libnuklear.}
-proc nk_hsva*(h: cint; s: cint; v: cint; a: cint): nk_color {.cdecl, importc: "nk_hsva",
-    dynlib: libnuklear.}
-proc nk_hsva_iv*(hsva: ptr cint): nk_color {.cdecl, importc: "nk_hsva_iv",
-                                        dynlib: libnuklear.}
-proc nk_hsva_bv*(hsva: ptr nk_byte): nk_color {.cdecl, importc: "nk_hsva_bv",
-    dynlib: libnuklear.}
+    importc: "nk_rgba_f".}
+proc nk_rgba_fv*(rgba: ptr cfloat): nk_color {.cdecl, importc: "nk_rgba_fv".}
+proc nk_rgba_hex*(rgb: cstring): nk_color {.cdecl, importc: "nk_rgba_hex".}
+proc nk_hsv*(h: cint; s: cint; v: cint): nk_color {.cdecl, importc: "nk_hsv".}
+proc nk_hsv_iv*(hsv: ptr cint): nk_color {.cdecl, importc: "nk_hsv_iv".}
+proc nk_hsv_bv*(hsv: ptr nk_byte): nk_color {.cdecl, importc: "nk_hsv_bv".}
+proc nk_hsv_f*(h: cfloat; s: cfloat; v: cfloat): nk_color {.cdecl, importc: "nk_hsv_f".}
+proc nk_hsv_fv*(hsv: ptr cfloat): nk_color {.cdecl, importc: "nk_hsv_fv".}
+proc nk_hsva*(h: cint; s: cint; v: cint; a: cint): nk_color {.cdecl, importc: "nk_hsva".}
+proc nk_hsva_iv*(hsva: ptr cint): nk_color {.cdecl, importc: "nk_hsva_iv".}
+proc nk_hsva_bv*(hsva: ptr nk_byte): nk_color {.cdecl, importc: "nk_hsva_bv".}
 proc nk_hsva_f*(h: cfloat; s: cfloat; v: cfloat; a: cfloat): nk_color {.cdecl,
-    importc: "nk_hsva_f", dynlib: libnuklear.}
-proc nk_hsva_fv*(hsva: ptr cfloat): nk_color {.cdecl, importc: "nk_hsva_fv",
-    dynlib: libnuklear.}
+    importc: "nk_hsva_f".}
+proc nk_hsva_fv*(hsva: ptr cfloat): nk_color {.cdecl, importc: "nk_hsva_fv".}
 proc nk_color_f*(r: ptr cfloat; g: ptr cfloat; b: ptr cfloat; a: ptr cfloat; a6: nk_color) {.
-    cdecl, importc: "nk_color_f", dynlib: libnuklear.}
-proc nk_color_fv*(rgba_out: ptr cfloat; a3: nk_color) {.cdecl, importc: "nk_color_fv",
-    dynlib: libnuklear.}
+    cdecl, importc: "nk_color_f".}
+proc nk_color_fv*(rgba_out: ptr cfloat; a3: nk_color) {.cdecl, importc: "nk_color_fv".}
 proc nk_color_d*(r: ptr cdouble; g: ptr cdouble; b: ptr cdouble; a: ptr cdouble; a6: nk_color) {.
-    cdecl, importc: "nk_color_d", dynlib: libnuklear.}
-proc nk_color_dv*(rgba_out: ptr cdouble; a3: nk_color) {.cdecl, importc: "nk_color_dv",
-    dynlib: libnuklear.}
-proc nk_color_u32*(a2: nk_color): nk_uint {.cdecl, importc: "nk_color_u32",
-                                        dynlib: libnuklear.}
+    cdecl, importc: "nk_color_d".}
+proc nk_color_dv*(rgba_out: ptr cdouble; a3: nk_color) {.cdecl, importc: "nk_color_dv".}
+proc nk_color_u32*(a2: nk_color): nk_uint {.cdecl, importc: "nk_color_u32".}
 proc nk_color_hex_rgba*(output: cstring; a3: nk_color) {.cdecl,
-    importc: "nk_color_hex_rgba", dynlib: libnuklear.}
+    importc: "nk_color_hex_rgba".}
 proc nk_color_hex_rgb*(output: cstring; a3: nk_color) {.cdecl,
-    importc: "nk_color_hex_rgb", dynlib: libnuklear.}
+    importc: "nk_color_hex_rgb".}
 proc nk_color_hsv_i*(out_h: ptr cint; out_s: ptr cint; out_v: ptr cint; a5: nk_color) {.
-    cdecl, importc: "nk_color_hsv_i", dynlib: libnuklear.}
+    cdecl, importc: "nk_color_hsv_i".}
 proc nk_color_hsv_b*(out_h: ptr nk_byte; out_s: ptr nk_byte; out_v: ptr nk_byte;
-                    a5: nk_color) {.cdecl, importc: "nk_color_hsv_b",
-                                  dynlib: libnuklear.}
+                    a5: nk_color) {.cdecl, importc: "nk_color_hsv_b".}
 proc nk_color_hsv_iv*(hsv_out: ptr cint; a3: nk_color) {.cdecl,
-    importc: "nk_color_hsv_iv", dynlib: libnuklear.}
+    importc: "nk_color_hsv_iv".}
 proc nk_color_hsv_bv*(hsv_out: ptr nk_byte; a3: nk_color) {.cdecl,
-    importc: "nk_color_hsv_bv", dynlib: libnuklear.}
+    importc: "nk_color_hsv_bv".}
 proc nk_color_hsv_f*(out_h: ptr cfloat; out_s: ptr cfloat; out_v: ptr cfloat; a5: nk_color) {.
-    cdecl, importc: "nk_color_hsv_f", dynlib: libnuklear.}
+    cdecl, importc: "nk_color_hsv_f".}
 proc nk_color_hsv_fv*(hsv_out: ptr cfloat; a3: nk_color) {.cdecl,
-    importc: "nk_color_hsv_fv", dynlib: libnuklear.}
+    importc: "nk_color_hsv_fv".}
 proc nk_color_hsva_i*(h: ptr cint; s: ptr cint; v: ptr cint; a: ptr cint; a6: nk_color) {.
-    cdecl, importc: "nk_color_hsva_i", dynlib: libnuklear.}
+    cdecl, importc: "nk_color_hsva_i".}
 proc nk_color_hsva_b*(h: ptr nk_byte; s: ptr nk_byte; v: ptr nk_byte; a: ptr nk_byte;
-                     a6: nk_color) {.cdecl, importc: "nk_color_hsva_b",
-                                   dynlib: libnuklear.}
+                     a6: nk_color) {.cdecl, importc: "nk_color_hsva_b".}
 proc nk_color_hsva_iv*(hsva_out: ptr cint; a3: nk_color) {.cdecl,
-    importc: "nk_color_hsva_iv", dynlib: libnuklear.}
+    importc: "nk_color_hsva_iv".}
 proc nk_color_hsva_bv*(hsva_out: ptr nk_byte; a3: nk_color) {.cdecl,
-    importc: "nk_color_hsva_bv", dynlib: libnuklear.}
+    importc: "nk_color_hsva_bv".}
 proc nk_color_hsva_f*(out_h: ptr cfloat; out_s: ptr cfloat; out_v: ptr cfloat;
                      out_a: ptr cfloat; a6: nk_color) {.cdecl,
-    importc: "nk_color_hsva_f", dynlib: libnuklear.}
+    importc: "nk_color_hsva_f".}
 proc nk_color_hsva_fv*(hsva_out: ptr cfloat; a3: nk_color) {.cdecl,
-    importc: "nk_color_hsva_fv", dynlib: libnuklear.}
-proc nk_handle_ptr*(a2: pointer): nk_handle {.cdecl, importc: "nk_handle_ptr",
-    dynlib: libnuklear.}
-proc nk_handle_id*(a2: cint): nk_handle {.cdecl, importc: "nk_handle_id",
-                                      dynlib: libnuklear.}
-proc nk_image_handle*(a2: nk_handle): nuk_image {.cdecl, importc: "nk_image_handle",
-    dynlib: libnuklear.}
-proc nk_image_ptr*(a2: pointer): nuk_image {.cdecl, importc: "nk_image_ptr",
-                                        dynlib: libnuklear.}
-proc nk_image_id*(a2: cint): nuk_image {.cdecl, importc: "nk_image_id",
-                                    dynlib: libnuklear.}
+    importc: "nk_color_hsva_fv".}
+proc nk_handle_ptr*(a2: pointer): nk_handle {.cdecl, importc: "nk_handle_ptr".}
+proc nk_handle_id*(a2: cint): nk_handle {.cdecl, importc: "nk_handle_id".}
+proc nk_image_handle*(a2: nk_handle): nuk_image {.cdecl, importc: "nk_image_handle".}
+proc nk_image_ptr*(a2: pointer): nuk_image {.cdecl, importc: "nk_image_ptr".}
+proc nk_image_id*(a2: cint): nuk_image {.cdecl, importc: "nk_image_id".}
 proc nk_image_is_subimage*(img: ptr nuk_image): cint {.cdecl,
-    importc: "nk_image_is_subimage", dynlib: libnuklear.}
+    importc: "nk_image_is_subimage".}
 proc nk_subimage_ptr*(a2: pointer; w: cushort; h: cushort; sub_region: nuk_rect): nuk_image {.
-    cdecl, importc: "nk_subimage_ptr", dynlib: libnuklear.}
+    cdecl, importc: "nk_subimage_ptr".}
 proc nk_subimage_id*(a2: cint; w: cushort; h: cushort; sub_region: nuk_rect): nuk_image {.
-    cdecl, importc: "nk_subimage_id", dynlib: libnuklear.}
+    cdecl, importc: "nk_subimage_id".}
 proc nk_subimage_handle*(a2: nk_handle; w: cushort; h: cushort; sub_region: nuk_rect): nuk_image {.
-    cdecl, importc: "nk_subimage_handle", dynlib: libnuklear.}
+    cdecl, importc: "nk_subimage_handle".}
 proc nk_murmur_hash*(key: pointer; len: cint; seed: nk_hash): nk_hash {.cdecl,
-    importc: "nk_murmur_hash", dynlib: libnuklear.}
+    importc: "nk_murmur_hash".}
 proc nk_triangle_from_direction*(result: ptr nuk_vec2; r: nuk_rect; pad_x: cfloat;
                                 pad_y: cfloat; a6: nk_heading) {.cdecl,
-    importc: "nk_triangle_from_direction", dynlib: libnuklear.}
-proc nk_vec2*(x: cfloat; y: cfloat): nuk_vec2 {.cdecl, importc: "nk_vec2",
-    dynlib: libnuklear.}
-proc nk_vec2i*(x: cint; y: cint): nuk_vec2 {.cdecl, importc: "nk_vec2i",
-                                      dynlib: libnuklear.}
-proc nk_vec2v*(xy: ptr cfloat): nuk_vec2 {.cdecl, importc: "nk_vec2v", dynlib: libnuklear.}
-proc nk_vec2iv*(xy: ptr cint): nuk_vec2 {.cdecl, importc: "nk_vec2iv", dynlib: libnuklear.}
-proc nk_get_null_rect*(): nuk_rect {.cdecl, importc: "nk_get_null_rect",
-                                 dynlib: libnuklear.}
+    importc: "nk_triangle_from_direction".}
+proc nk_vec2*(x: cfloat; y: cfloat): nuk_vec2 {.cdecl, importc: "nk_vec2".}
+proc nk_vec2i*(x: cint; y: cint): nuk_vec2 {.cdecl, importc: "nk_vec2i".}
+proc nk_vec2v*(xy: ptr cfloat): nuk_vec2 {.cdecl, importc: "nk_vec2v".}
+proc nk_vec2iv*(xy: ptr cint): nuk_vec2 {.cdecl, importc: "nk_vec2iv".}
+proc nk_get_null_rect*(): nuk_rect {.cdecl, importc: "nk_get_null_rect".}
 proc nk_rect*(x: cfloat; y: cfloat; w: cfloat; h: cfloat): nuk_rect {.cdecl,
-    importc: "nk_rect", dynlib: libnuklear.}
-proc nk_recti*(x: cint; y: cint; w: cint; h: cint): nuk_rect {.cdecl, importc: "nk_recti",
-    dynlib: libnuklear.}
-proc nk_recta*(pos: nuk_vec2; size: nuk_vec2): nuk_rect {.cdecl, importc: "nk_recta",
-    dynlib: libnuklear.}
-proc nk_rectv*(xywh: ptr cfloat): nuk_rect {.cdecl, importc: "nk_rectv",
-                                       dynlib: libnuklear.}
-proc nk_rectiv*(xywh: ptr cint): nuk_rect {.cdecl, importc: "nk_rectiv",
-                                      dynlib: libnuklear.}
-proc nk_rect_pos*(a2: nuk_rect): nuk_vec2 {.cdecl, importc: "nk_rect_pos",
-                                      dynlib: libnuklear.}
-proc nk_rect_size*(a2: nuk_rect): nuk_vec2 {.cdecl, importc: "nk_rect_size",
-                                       dynlib: libnuklear.}
-proc nk_strlen*(str: cstring): cint {.cdecl, importc: "nk_strlen", dynlib: libnuklear.}
-proc nk_stricmp*(s1: cstring; s2: cstring): cint {.cdecl, importc: "nk_stricmp",
-    dynlib: libnuklear.}
+    importc: "nk_rect".}
+proc nk_recti*(x: cint; y: cint; w: cint; h: cint): nuk_rect {.cdecl, importc: "nk_recti".}
+proc nk_recta*(pos: nuk_vec2; size: nuk_vec2): nuk_rect {.cdecl, importc: "nk_recta".}
+proc nk_rectv*(xywh: ptr cfloat): nuk_rect {.cdecl, importc: "nk_rectv".}
+proc nk_rectiv*(xywh: ptr cint): nuk_rect {.cdecl, importc: "nk_rectiv".}
+proc nk_rect_pos*(a2: nuk_rect): nuk_vec2 {.cdecl, importc: "nk_rect_pos".}
+proc nk_rect_size*(a2: nuk_rect): nuk_vec2 {.cdecl, importc: "nk_rect_size".}
+proc nk_strlen*(str: cstring): cint {.cdecl, importc: "nk_strlen".}
+proc nk_stricmp*(s1: cstring; s2: cstring): cint {.cdecl, importc: "nk_stricmp".}
 proc nk_stricmpn*(s1: cstring; s2: cstring; n: cint): cint {.cdecl,
-    importc: "nk_stricmpn", dynlib: libnuklear.}
+    importc: "nk_stricmpn".}
 proc nk_strtoi*(str: cstring; endptr: cstringArray): cint {.cdecl,
-    importc: "nk_strtoi", dynlib: libnuklear.}
+    importc: "nk_strtoi".}
 proc nk_strtof*(str: cstring; endptr: cstringArray): cfloat {.cdecl,
-    importc: "nk_strtof", dynlib: libnuklear.}
+    importc: "nk_strtof".}
 proc nk_strtod*(str: cstring; endptr: cstringArray): cdouble {.cdecl,
-    importc: "nk_strtod", dynlib: libnuklear.}
+    importc: "nk_strtod".}
 proc nk_strfilter*(text: cstring; regexp: cstring): cint {.cdecl,
-    importc: "nk_strfilter", dynlib: libnuklear.}
+    importc: "nk_strfilter".}
 proc nk_strmatch_fuzzy_string*(str: cstring; pattern: cstring; out_score: ptr cint): cint {.
-    cdecl, importc: "nk_strmatch_fuzzy_string", dynlib: libnuklear.}
+    cdecl, importc: "nk_strmatch_fuzzy_string".}
 proc nk_strmatch_fuzzy_text*(txt: cstring; txt_len: cint; pattern: cstring;
                             out_score: ptr cint): cint {.cdecl,
-    importc: "nk_strmatch_fuzzy_text", dynlib: libnuklear.}
+    importc: "nk_strmatch_fuzzy_text".}
 proc nk_utf_decode*(a2: cstring; a3: ptr nk_rune; a4: cint): cint {.cdecl,
-    importc: "nk_utf_decode", dynlib: libnuklear.}
+    importc: "nk_utf_decode".}
 proc nk_utf_encode*(a2: nk_rune; a3: cstring; a4: cint): cint {.cdecl,
-    importc: "nk_utf_encode", dynlib: libnuklear.}
-proc nk_utf_len*(a2: cstring; byte_len: cint): cint {.cdecl, importc: "nk_utf_len",
-    dynlib: libnuklear.}
+    importc: "nk_utf_encode".}
+proc nk_utf_len*(a2: cstring; byte_len: cint): cint {.cdecl, importc: "nk_utf_len".}
 proc nk_utf_at*(buffer: cstring; length: cint; index: cint; unicode: ptr nk_rune;
-               len: ptr cint): cstring {.cdecl, importc: "nk_utf_at",
-                                     dynlib: libnuklear.}
+               len: ptr cint): cstring {.cdecl, importc: "nk_utf_at".}
 
 
 type
@@ -2421,50 +2315,48 @@ type
 
 
 proc nk_font_default_glyph_ranges*(): ptr nk_rune {.cdecl,
-    importc: "nk_font_default_glyph_ranges", dynlib: libnuklear.}
+    importc: "nk_font_default_glyph_ranges".}
 proc nk_font_chinese_glyph_ranges*(): ptr nk_rune {.cdecl,
-    importc: "nk_font_chinese_glyph_ranges", dynlib: libnuklear.}
+    importc: "nk_font_chinese_glyph_ranges".}
 proc nk_font_cyrillic_glyph_ranges*(): ptr nk_rune {.cdecl,
-    importc: "nk_font_cyrillic_glyph_ranges", dynlib: libnuklear.}
+    importc: "nk_font_cyrillic_glyph_ranges".}
 proc nk_font_korean_glyph_ranges*(): ptr nk_rune {.cdecl,
-    importc: "nk_font_korean_glyph_ranges", dynlib: libnuklear.}
+    importc: "nk_font_korean_glyph_ranges".}
 proc nk_font_atlas_init_default*(a2: ptr nk_font_atlas) {.cdecl,
-    importc: "nk_font_atlas_init_default", dynlib: libnuklear.}
+    importc: "nk_font_atlas_init_default".}
 proc nk_font_atlas_init*(a2: ptr nk_font_atlas; a3: ptr nk_allocator) {.cdecl,
-    importc: "nk_font_atlas_init", dynlib: libnuklear.}
+    importc: "nk_font_atlas_init".}
 proc nk_font_atlas_init_custom*(a2: ptr nk_font_atlas; persistent: ptr nk_allocator;
                                transient: ptr nk_allocator) {.cdecl,
-    importc: "nk_font_atlas_init_custom", dynlib: libnuklear.}
+    importc: "nk_font_atlas_init_custom".}
 proc nk_font_atlas_begin*(a2: ptr nk_font_atlas) {.cdecl,
-    importc: "nk_font_atlas_begin", dynlib: libnuklear.}
+    importc: "nk_font_atlas_begin".}
 proc nk_font_atlas_add*(a2: ptr nk_font_atlas; a3: ptr nk_font_config): ptr nk_font {.
-    cdecl, importc: "nk_font_atlas_add", dynlib: libnuklear.}
+    cdecl, importc: "nk_font_atlas_add".}
 proc nk_font_atlas_add_from_memory*(atlas: ptr nk_font_atlas; memory: pointer;
                                    size: nk_size; height: cfloat;
                                    config: ptr nk_font_config): ptr nk_font {.cdecl,
-    importc: "nk_font_atlas_add_from_memory", dynlib: libnuklear.}
+    importc: "nk_font_atlas_add_from_memory".}
 proc nk_font_atlas_add_compressed*(a2: ptr nk_font_atlas; memory: pointer;
                                   size: nk_size; height: cfloat;
                                   a6: ptr nk_font_config): ptr nk_font {.cdecl,
-    importc: "nk_font_atlas_add_compressed", dynlib: libnuklear.}
+    importc: "nk_font_atlas_add_compressed".}
 proc nk_font_atlas_add_compressed_base85*(a2: ptr nk_font_atlas; data: cstring;
     height: cfloat; config: ptr nk_font_config): ptr nk_font {.cdecl,
-    importc: "nk_font_atlas_add_compressed_base85", dynlib: libnuklear.}
+    importc: "nk_font_atlas_add_compressed_base85".}
 proc nk_font_atlas_bake*(a2: ptr nk_font_atlas; width: ptr cint; height: ptr cint;
                         a5: nk_font_atlas_format): pointer {.cdecl,
-    importc: "nk_font_atlas_bake", dynlib: libnuklear.}
+    importc: "nk_font_atlas_bake".}
 proc nk_font_atlas_end*(a2: ptr nk_font_atlas; tex: nk_handle;
                        a4: ptr nk_draw_null_texture) {.cdecl,
-    importc: "nk_font_atlas_end", dynlib: libnuklear.}
+    importc: "nk_font_atlas_end".}
 proc nk_font_find_glyph*(a2: ptr nk_font; unicode: nk_rune): ptr nk_font_glyph {.cdecl,
-    importc: "nk_font_find_glyph", dynlib: libnuklear.}
+    importc: "nk_font_find_glyph".}
 proc nk_font_atlas_cleanup*(atlas: ptr nk_font_atlas) {.cdecl,
-    importc: "nk_font_atlas_cleanup", dynlib: libnuklear.}
+    importc: "nk_font_atlas_cleanup".}
 proc nk_font_atlas_clear*(a2: ptr nk_font_atlas) {.cdecl,
-    importc: "nk_font_atlas_clear", dynlib: libnuklear.}
+    importc: "nk_font_atlas_clear".}
 proc nk_font_atlas_add_default*(a2: ptr nk_font_atlas; height: cfloat;
-                               a4: ptr nk_font_config): ptr nk_font {.cdecl, importc: "nk_font_atlas_add_default",
-                                     dynlib: libnuklear.}
+                               a4: ptr nk_font_config): ptr nk_font {.cdecl, importc: "nk_font_atlas_add_default".}
 proc nk_font_atlas_add_from_file*(atlas: ptr nk_font_atlas; file_path: cstring;
-                                 height: cfloat; a5: ptr nk_font_config): ptr nk_font {.cdecl, importc: "nk_font_atlas_add_from_file",
-                                     dynlib: libnuklear.}
+                                 height: cfloat; a5: ptr nk_font_config): ptr nk_font {.cdecl, importc: "nk_font_atlas_add_from_file".}
