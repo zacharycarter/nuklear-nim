@@ -49,8 +49,6 @@ var vertex_layout {.global.} = @[
   )
 ]
 
-echo NK_VERTEX_ATTRIBUTE_COUNT
-
 type device = object
   cmds: nk_buffer
   null: nk_draw_null_texture
@@ -163,10 +161,18 @@ proc device_init() =
 
 if not glfw.Init() == 1:
   quit(QUIT_FAILURE)
+
+proc glfwErrorHandler(error: cint; message: cstring): void {.cdecl.} =
+  echo "got glfw error: ", message
+  quit(QUIT_FAILURE)
+
+discard glfw.SetErrorCallback(glfwErrorHandler)
+
 glfw.WindowHint(CONTEXT_VERSION_MAJOR, 3)
 glfw.WindowHint(CONTEXT_VERSION_MINOR, 3)
 glfw.WindowHint(OPENGL_PROFILE, OPENGL_CORE_PROFILE)
-glfw.WindowHint(OPENGL_FORWARD_COMPAT, GL_TRUE.cint)
+if defined(macosx):
+  glfw.WindowHint(OPENGL_FORWARD_COMPAT, GL_TRUE.cint)
 win = glfw.CreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Demo", nil, nil)
 glfw.MakeContextCurrent(win)
 glfw.GetWindowSize(win, addr width, addr height)
@@ -272,7 +278,6 @@ while glfw.WindowShouldClose(win) == 0:
   var vbuf, ebuf : nk_buffer
   nk_buffer_init_fixed(addr vbuf, vertices, MAX_VERTEX_BUFFER)
   nk_buffer_init_fixed(addr ebuf, elements, MAX_ELEMENT_BUFFER)
-
 
   nk_convert(addr ctx, addr dev.cmds, addr vbuf, addr ebuf, addr config)
 
