@@ -1087,9 +1087,6 @@ type
     NK_WINDOW_TITLE = (1 shl (6)), NK_WINDOW_SCROLL_AUTO_HIDE = (1 shl (7)),
     NK_WINDOW_BACKGROUND = (1 shl (8)), NK_WINDOW_SCALE_LEFT = (1 shl (9))
 
-proc nk_memset*(`ptr`: pointer; c0: cint; size: nk_size) {.cdecl,
-    importc: "nk_buffer_init_default".}
-
 proc nk_buffer_init_default*(a2: ptr nk_buffer) {.cdecl,
     importc: "nk_buffer_init_default".}
 proc nk_buffer_init*(a2: ptr nk_buffer; a3: ptr nk_allocator; size: nk_size) {.cdecl,
