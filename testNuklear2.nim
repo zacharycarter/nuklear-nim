@@ -1,5 +1,7 @@
 import glfw3 as glfw, opengl
 
+import roboto_regular
+
 import nuklear/nuklearpp
 
 const WINDOW_WIDTH = 800
@@ -24,13 +26,7 @@ type
 
 var config : nk_convert_config
 
-var test = [nk_draw_vertex_layout_element(
-    attribute: nk_draw_vertex_layout_attribute NK_VERTEX_POSITION.cint,
-    format: NK_FORMAT_FLOAT, 
-    offset: offsetof(nk_glfw_vertex, position)
-  )]
-
-let vertex_layout {.global.} : array[4, nk_draw_vertex_layout_element] = [
+var vertex_layout {.global.} = @[
   nk_draw_vertex_layout_element(
     attribute: NK_VERTEX_POSITION,
     format: NK_FORMAT_FLOAT, 
@@ -52,6 +48,8 @@ let vertex_layout {.global.} : array[4, nk_draw_vertex_layout_element] = [
     offset: 0
   )
 ]
+
+echo NK_VERTEX_ATTRIBUTE_COUNT
 
 type device = object
   cmds: nk_buffer
@@ -116,6 +114,7 @@ proc device_init() =
   let vertCStringArray = allocCStringArray([vertex_shader])
   let fragCStringArray = allocCStringArray([fragment_shader])
   glShaderSource(dev.vert_shader, 1, vertCStringArray, nil)
+
   glShaderSource(dev.frag_shader, 1, fragCStringArray, nil)
   
   glCompileShader(dev.vert_shader);
@@ -179,7 +178,9 @@ nk_font_atlas_init_default(addr fontAtlas)
 
 nk_font_atlas_begin(addr fontAtlas)
 
-let font =  nk_font_atlas_add_default(addr fontAtlas, 13, nil)
+let roboto_ttf = addr s_robotoRegularTtf
+
+let font = nk_font_atlas_add_from_memory(addr fontAtlas, roboto_ttf, nk_size sizeof(s_robotoRegularTtf), 13, nil)
 
 let image = nk_font_atlas_bake(addr fontAtlas, addr w, addr h, NK_FONT_ATLAS_RGBA32)
 
@@ -255,8 +256,9 @@ while glfw.WindowShouldClose(win) == 0:
 
   ##  fill convert configuration
   
-  nk_memset(addr config, 0, nk_size sizeof(config))
-  config.vertex_layout = addr test[0]
+  #nk_memset(addr config, 0, nk_size sizeof(config))
+  config = nk_convert_config()
+  config.vertex_layout = addr vertex_layout[0]
   config.vertex_size = nk_size sizeof(nk_glfw_vertex);
   config.vertex_alignment = alignof(nk_glfw_vertex);
   config.null = dev.null;
