@@ -86,7 +86,6 @@ type device = object
   font_tex: GLuint
 
 var ctx : nk_context
-var ctxp : ptr nk_context
 var dev {.global.} : device = device()
 
 var fontAtlas : nk_font_atlas
@@ -98,7 +97,8 @@ var display_width, display_height : cint = 0
 
 proc device_init(allocator: var nk_allocator) =
   var status: GLint
-  nk_buffer_init(addr dev.cmds, addr allocator, 512 * 1024)
+  #nk_buffer_init(addr dev.cmds, addr allocator, 512 * 1024)
+  nk_buffer_init_default(addr dev.cmds)
   dev.prog = glCreateProgram();
   dev.vert_shader = glCreateShader(GL_VERTEX_SHADER);
   dev.frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -206,8 +206,8 @@ nk_font_atlas_begin(addr fontAtlas)
 
 let roboto_ttf = addr s_robotoRegularTtf
 
-var font = nk_font_atlas_add_from_memory(addr fontAtlas, roboto_ttf, nk_size sizeof(s_robotoRegularTtf), 13, nil)
-#var font = nk_font_atlas_add_default(addr fontAtlas, 13, nil)
+#var font = nk_font_atlas_add_from_memory(addr fontAtlas, roboto_ttf, nk_size sizeof(s_robotoRegularTtf), 13, nil)
+var font = nk_font_atlas_add_default(addr fontAtlas, 13, nil)
 
 let image = nk_font_atlas_bake(addr fontAtlas, addr w, addr h, NK_FONT_ATLAS_RGBA32)
 echo repr image
@@ -232,10 +232,15 @@ discard nk_init_default(addr ctx, addr font.handle)
 #discard nk_init(addr ctx, addr customAllocator, cast[ptr nk_user_font](addr font))
 
 var background = nk_rgb(28,48,62)
+var mouseX, mouseY: float
 while glfw.WindowShouldClose(win) == 0:
   glfw.PollEvents();
 
   nk_input_begin(addr ctx)
+
+  glfw.GetCursorPos(win, addr mouseX, addr mouseY)
+  nk_input_motion(addr ctx, cint mouseX, cint mouseY)
+
   nk_input_end(addr ctx)
 
   if nk_begin(addr ctx, "test", nk_rect(50, 50, 230, 250), nk_flags NK_WINDOW_BORDER.ord or NK_WINDOW_MOVABLE.ord or NK_WINDOW_SCALABLE.ord or NK_WINDOW_MINIMIZABLE.ord or NK_WINDOW_TITLE.ord) == 1:
@@ -245,7 +250,7 @@ while glfw.WindowShouldClose(win) == 0:
 
     var op: cint = EASY
 
-    var property: cint = 20
+    var property {.global.}: cint = 20
 
     nk_layout_row_static(addr ctx, 30, 80, 1)
     if nk_button_label(addr ctx, "button") == 1: echo "button pressed"
@@ -351,12 +356,13 @@ while glfw.WindowShouldClose(win) == 0:
     if b.elem_count == 0:
       continue
     else:
+      echo b.elem_count
       glBindTexture(GL_TEXTURE_2D, GLuint b.texture.id)
-      glScissor(
-                  (GLint)(b.clip_rect.x * fb_scale.x),
-                  (GLint)((float(height) - float(b.clip_rect.y + b.clip_rect.h)) * fb_scale.y),
-                  (GLint)(b.clip_rect.w * fb_scale.x),
-                  (GLint)(b.clip_rect.h * fb_scale.y));
+      #glScissor(
+      #            (GLint)(b.clip_rect.x * fb_scale.x),
+      #            (GLint)((float(height) - float(b.clip_rect.y + b.clip_rect.h)) * fb_scale.y),
+      #            (GLint)(b.clip_rect.w * fb_scale.x),
+      #            (GLint)(b.clip_rect.h * fb_scale.y));
       glDrawElements(GL_TRIANGLES, (GLsizei)b.elem_count, GL_UNSIGNED_SHORT, offset);
 
       offset = offset  + int b.elem_count

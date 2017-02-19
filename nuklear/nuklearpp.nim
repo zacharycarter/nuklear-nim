@@ -142,6 +142,11 @@ type
 
 type
   nk_user_font_glyph* = object
+    uv*: array[2, nuk_vec2]      ##  texture coordinates
+    offset*: nuk_vec2           ##  offset between top left and glyph
+    width*: cfloat
+    height*: cfloat            ##  size of the glyph
+    xadvance*: cfloat          ##  offset to the next glyph
   
   nk_text_width_f* = proc (a2: nk_handle; h: cfloat; a4: cstring; len: cint): cfloat {.cdecl.}
   nk_query_font_glyph_f* = proc (handle: nk_handle; font_height: cfloat;
@@ -151,6 +156,8 @@ type
     userdata*: nk_handle
     height*: cfloat
     width*: nk_text_width_f
+    query* :nk_query_font_glyph_f
+    texture*: nk_handle
 
   nk_font_coord_type* {.size: sizeof(cint).} = enum
     NK_COORD_UV, NK_COORD_PIXEL
