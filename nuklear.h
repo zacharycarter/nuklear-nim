@@ -1,10 +1,3 @@
-#define NK_INCLUDE_FIXED_TYPES
-#define NK_INCLUDE_STANDARD_IO
-#define NK_INCLUDE_STANDARD_VARARGS
-#define NK_INCLUDE_DEFAULT_ALLOCATOR
-#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-#define NK_INCLUDE_FONT_BAKING
-#define NK_INCLUDE_DEFAULT_FONT
 /*
  Nuklear - 1.33.0 - public domain
  no warrenty implied; use at your own risk.
@@ -6939,8 +6932,7 @@ nk_draw_vertex(void *dst, const struct nk_convert_config *config,
         void *address = (void*)((char*)dst + elem_iter->offset);
         switch (elem_iter->attribute) {
         case NK_VERTEX_ATTRIBUTE_COUNT:
-        default: 
-            NK_ASSERT(0 && "wrong element attribute");
+        default: NK_ASSERT(0 && "wrong element attribute");
         case NK_VERTEX_POSITION: nk_draw_vertex_element(address, &pos.x, 2, elem_iter->format); break;
         case NK_VERTEX_TEXCOORD: nk_draw_vertex_element(address, &uv.x, 2, elem_iter->format); break;
         case NK_VERTEX_COLOR: nk_draw_vertex_color(address, &color.r, elem_iter->format); break;
@@ -7708,7 +7700,6 @@ nk_convert(struct nk_context *ctx, struct nk_buffer *cmds,
     NK_ASSERT(elements);
     NK_ASSERT(config);
     NK_ASSERT(config->vertex_layout);
-    printf("LAALALA %d\n", config->vertex_layout[0].attribute);
     NK_ASSERT(config->vertex_size);
     if (!ctx || !cmds || !vertices || !elements || !config || !config->vertex_layout)
         return;

@@ -10,7 +10,15 @@ const WINDOW_HEIGHT = 600
 const MAX_VERTEX_BUFFER = 512 * 1024
 const MAX_ELEMENT_BUFFER = 128 * 1024
 
-template offsetof(typ, field): expr = (var dummy: typ; cast[uint](addr(dummy.field)) - cast[uint](addr(dummy)))
+var fb_scale : nuk_vec2 = nk_vec2(0.0, 0.0)
+
+proc `+`[T](a: ptr T, b: int): ptr T =
+    if b >= 0:
+        cast[ptr T](cast[uint](a) + cast[uint](b * a[].sizeof))
+    else:
+        cast[ptr T](cast[uint](a) - cast[uint](-1 * b * a[].sizeof))
+
+template offsetof(typ, field): untyped = (var dummy: typ; cast[uint](addr(dummy.field)) - cast[uint](addr(dummy)))
 
 template alignof(typ) : uint =
   if sizeof(typ) > 1:
@@ -26,6 +34,20 @@ type
 
 var config : nk_convert_config
 
+proc allocate(a2: nk_handle; old: pointer; a4: nk_size): pointer {.cdecl.} =
+  if not old.isNil:
+    old.dealloc()
+  
+  return alloc(a4)
+
+proc deallocate(a2: nk_handle; old: pointer) {.cdecl.} =
+  dealloc(old)
+
+var allocator : nk_plugin_alloc = allocate
+var deallocator : nk_plugin_free = deallocate
+
+var win : glfw.Window
+
 var vertex_layout {.global.} = @[
   nk_draw_vertex_layout_element(
     attribute: NK_VERTEX_POSITION,
@@ -39,7 +61,7 @@ var vertex_layout {.global.} = @[
   ),
   nk_draw_vertex_layout_element(
     attribute: NK_VERTEX_COLOR,
-    format: NK_FORMAT_FLOAT, 
+    format: NK_FORMAT_R8G8B8A8, 
     offset: offsetof(nk_glfw_vertex, col)
   ),
   nk_draw_vertex_layout_element(
@@ -74,11 +96,9 @@ var w, h: cint = 0
 var width,height: cint = 0
 var display_width, display_height : cint = 0
 
-var win {.global.} : glfw.Window
-
-proc device_init() =
+proc device_init(allocator: var nk_allocator) =
   var status: GLint
-  nk_buffer_init_default(addr dev.cmds)
+  nk_buffer_init(addr dev.cmds, addr allocator, 512 * 1024)
   dev.prog = glCreateProgram();
   dev.vert_shader = glCreateShader(GL_VERTEX_SHADER);
   dev.frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -158,7 +178,7 @@ proc device_init() =
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
-
+ 
 if not glfw.Init() == 1:
   quit(QUIT_FAILURE)
 
@@ -186,32 +206,70 @@ nk_font_atlas_begin(addr fontAtlas)
 
 let roboto_ttf = addr s_robotoRegularTtf
 
-let font = nk_font_atlas_add_from_memory(addr fontAtlas, roboto_ttf, nk_size sizeof(s_robotoRegularTtf), 13, nil)
+var font = nk_font_atlas_add_from_memory(addr fontAtlas, roboto_ttf, nk_size sizeof(s_robotoRegularTtf), 13, nil)
+#var font = nk_font_atlas_add_default(addr fontAtlas, 13, nil)
 
 let image = nk_font_atlas_bake(addr fontAtlas, addr w, addr h, NK_FONT_ATLAS_RGBA32)
+echo repr image
+glGenTextures(1, addr dev.font_tex);
+glBindTexture(GL_TEXTURE_2D, dev.font_tex);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+glTexImage2D(GL_TEXTURE_2D, 0, GLint GL_RGBA, (GLsizei)w, (GLsizei)h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
 nk_font_atlas_end(addr fontAtlas, nk_handle_id(cint dev.font_tex), addr dev.null)
 
+var customAllocator = nk_allocator(
+    userdata: nk_handle(),
+    alloc: allocator,
+    free: deallocator
+  )
+
+device_init(customAllocator)
+
 discard nk_init_default(addr ctx, addr font.handle)
 
-device_init()
-
+#discard nk_init(addr ctx, addr customAllocator, cast[ptr nk_user_font](addr font))
 
 var background = nk_rgb(28,48,62)
 while glfw.WindowShouldClose(win) == 0:
   glfw.PollEvents();
 
-  if nk_begin(addr ctx, "test", nk_rect(50, 50, 230, 250), nk_flags NK_WINDOW_BORDER.cint or NK_WINDOW_MOVABLE.cint or NK_WINDOW_SCALABLE.cint or NK_WINDOW_MINIMIZABLE.cint or NK_WINDOW_TITLE.cint) == 1:
+  nk_input_begin(addr ctx)
+  nk_input_end(addr ctx)
+
+  if nk_begin(addr ctx, "test", nk_rect(50, 50, 230, 250), nk_flags NK_WINDOW_BORDER.ord or NK_WINDOW_MOVABLE.ord or NK_WINDOW_SCALABLE.ord or NK_WINDOW_MINIMIZABLE.ord or NK_WINDOW_TITLE.ord) == 1:
     const
       EASY = 0
       HARD = 1
 
     var op: cint = EASY
+
     var property: cint = 20
 
     nk_layout_row_static(addr ctx, 30, 80, 1)
-    if nk_button_label(addr ctx, "button") == 1:
-      echo "Button Pressed"
+    if nk_button_label(addr ctx, "button") == 1: echo "button pressed"
+    nk_layout_row_dynamic(addr ctx, 30, 2)
+
+    if nk_option_label(addr ctx, "easy", op) == EASY:
+      op = HARD
+    if nk_option_label(addr ctx, "hard", op) == HARD:
+      op = EASY
+    nk_layout_row_dynamic(addr ctx, 25, 1)
+    nk_property_int(addr ctx, "Compression:", 0, addr(property), 100, 10, 1)
+    nk_layout_row_dynamic(addr ctx, 20, 1)
+    nk_label(addr ctx, "background:", nk_flags NK_TEXT_LEFT)
+    nk_layout_row_dynamic(addr ctx, 25, 1)
+    if nk_combo_begin_color(addr ctx, background, nk_vec2(nk_widget_width(addr ctx), 400)) == 1:
+      nk_layout_row_dynamic(addr ctx, 120, 1)
+      background = nk_color_picker(addr ctx, background, NK_RGBA)
+      nk_layout_row_dynamic(addr ctx, 25, 1)
+      
+      background.r = cast[nk_byte](nk_propertyi(addr ctx, "#R:", 0, background.r.cint, 255, 1, 1.0))
+      background.g = cast[nk_byte](nk_propertyi(addr ctx, "#G:", 0, background.g.cint, 255, 1, 1.0))
+      background.b = cast[nk_byte](nk_propertyi(addr ctx, "#B:", 0, background.b.cint, 255, 1, 1.0))
+      background.a = cast[nk_byte](nk_propertyi(addr ctx, "#A:", 0, background.a.cint, 255, 1, 1.0))
+      nk_combo_end(addr ctx)
     
   nk_end(addr ctx)
 
@@ -221,6 +279,8 @@ while glfw.WindowShouldClose(win) == 0:
 
   glfw.GetWindowSize(win, addr width, addr height);
   glfw.GetFramebufferSize(win, addr display_width, addr display_height)
+  fb_scale.x = display_width / width
+  fb_scale.y = display_height / height
   glViewport(0, 0, width, height)
   glClear(GL_COLOR_BUFFER_BIT)
   glClearColor(bg[0], bg[1], bg[2], bg[3])
@@ -245,10 +305,11 @@ while glfw.WindowShouldClose(win) == 0:
   glUseProgram(dev.prog);
   glUniform1i(dev.uniform_tex, 0);
   
-  glUniformMatrix4fv(0, 1, GL_FALSE, addr ortho[0][0])
+  glUniformMatrix4fv(dev.uniform_proj, 1, GL_FALSE, addr ortho[0][0])
   glViewport(0,0,(GLsizei)display_width,(GLsizei)display_height);
 
   var cmd : ptr nk_draw_command
+  var offset: ptr nk_draw_index
 
   glBindVertexArray(dev.vao);
   glBindBuffer(GL_ARRAY_BUFFER, dev.vbo);
@@ -262,8 +323,7 @@ while glfw.WindowShouldClose(win) == 0:
 
   ##  fill convert configuration
   
-  #nk_memset(addr config, 0, nk_size sizeof(config))
-  config = nk_convert_config()
+  nk_memset(addr config, 0, nk_size sizeof(config))
   config.vertex_layout = addr vertex_layout[0]
   config.vertex_size = nk_size sizeof(nk_glfw_vertex);
   config.vertex_alignment = alignof(nk_glfw_vertex);
@@ -286,8 +346,21 @@ while glfw.WindowShouldClose(win) == 0:
 
   var b = nk_draw_begin(addr ctx, addr dev.cmds)
   while not b.isNil:
-    b = nk_draw_next(cmd, addr dev.cmds, addr ctx)
+    if b.isNil: 
+      break
+    if b.elem_count == 0:
+      continue
+    else:
+      glBindTexture(GL_TEXTURE_2D, GLuint b.texture.id)
+      glScissor(
+                  (GLint)(b.clip_rect.x * fb_scale.x),
+                  (GLint)((float(height) - float(b.clip_rect.y + b.clip_rect.h)) * fb_scale.y),
+                  (GLint)(b.clip_rect.w * fb_scale.x),
+                  (GLint)(b.clip_rect.h * fb_scale.y));
+      glDrawElements(GL_TRIANGLES, (GLsizei)b.elem_count, GL_UNSIGNED_SHORT, offset);
 
+      offset = offset  + int b.elem_count
+      b = nk_draw_next(cmd, addr dev.cmds, addr ctx)
   nk_clear(addr ctx)
 
 
@@ -299,3 +372,16 @@ while glfw.WindowShouldClose(win) == 0:
   glDisable(GL_SCISSOR_TEST);
 
   glfw.SwapBuffers(win);
+
+nk_font_atlas_clear(addr(fontAtlas))
+nk_free(addr(ctx))
+glDetachShader(dev.prog, dev.vert_shader);
+glDetachShader(dev.prog, dev.frag_shader);
+glDeleteShader(dev.vert_shader);
+glDeleteShader(dev.frag_shader);
+glDeleteProgram(dev.prog);
+glDeleteTextures(1, addr dev.font_tex);
+glDeleteBuffers(1, addr dev.vbo);
+glDeleteBuffers(1, addr dev.ebo);
+nk_buffer_free(addr dev.cmds);
+glfw.Terminate()
