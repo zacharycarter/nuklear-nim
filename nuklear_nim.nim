@@ -1,6 +1,6 @@
 {.deadCodeElim: on.}
 
-{.compile: "bind.c".}
+{.compile: "src/bind.c".}
 
 type
   nk_char* = char
