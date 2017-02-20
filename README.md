@@ -3,7 +3,7 @@ Nim bindings for https://github.com/vurtun/nuklear/
 
 These are Nim bindings to the Nuklear Immediate Mode GUI library : https://github.com/vurtun/nuklear/ 
 
-The bindings do work - see https://github.com/zacharycarter/nuklear-nim/blob/master/testNuklear2.nim - 
+The bindings do work - see [this test](https://github.com/zacharycarter/nuklear-nim/blob/master/examples/nuklear_nim_glfw3_opengl3.nim) - 
 for an example using GLFW and OpenGL.
 
 ![nuklear-nim]
