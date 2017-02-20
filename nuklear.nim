@@ -12,60 +12,9 @@ type
   dummy_array413* = array[if (sizeof((uint32)) >= 4): 1 else: - 1, char]
   dummy_array414* = array[if (sizeof((uint)) >= sizeof(pointer)): 1 else: - 1, char]
   dummy_array415* = array[if (sizeof((uint)) >= sizeof(pointer)): 1 else: - 1, char]
- #nk_buffer* = object
-  
-
-## struct nk_allocator;
-
-
-#type
-  #nk_command_buffer* = object
-  
-  #nk_draw_command* = object
-  
-
-## struct nk_convert_config;
 
 type
-  #nk_style_item* = object
-  
-  #nk_text_edit* = object
-  
-  #nk_draw_list* = object
-  
-  #nk_user_font* = object
-  
-  #nk_panel* = object
-  
-  #nk_context* = object
-  
-  #nk_draw_vertex_layout_element* = object
-  
-  #nk_style_button* = object
-  
-  #nk_style_toggle* = object
-  
-  #nk_style_selectable* = object
-  
   nk_style_slide* = object
-  
-  #nk_style_progress* = object
-  
-  #nk_style_scrollbar* = object
-  
-  #nk_style_edit* = object
-  
-  #nk_style_property* = object
-  
-  #nk_style_chart* = object
-  
-  #nk_style_combo* = object
-  
-  #nk_style_tab* = object
-  
-  #nk_style_window_header* = object
-  
-  #nk_style_window* = object
   
 
 const
