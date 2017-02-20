@@ -30,11 +30,11 @@ type
   nk_glfw_vertex = object
     position: array[2, float]
     uv: array[2, float]
-    col: array[4, nk_byte]
+    col: array[4, char]
 
 var config : nk_convert_config
 
-proc allocate(a2: nk_handle; old: pointer; a4: nk_size): pointer {.cdecl.} =
+proc allocate(a2: nk_handle; old: pointer; a4: uint): pointer {.cdecl.} =
   if not old.isNil:
     old.dealloc()
   
@@ -206,7 +206,7 @@ nk_font_atlas_begin(addr fontAtlas)
 
 let roboto_ttf = addr s_robotoRegularTtf
 
-var font = nk_font_atlas_add_from_memory(addr fontAtlas, roboto_ttf, nk_size sizeof(s_robotoRegularTtf), 13, nil)
+var font = nk_font_atlas_add_from_memory(addr fontAtlas, roboto_ttf, uint sizeof(s_robotoRegularTtf), 13, nil)
 #var font = nk_font_atlas_add_default(addr fontAtlas, 13, nil)
 
 let image = nk_font_atlas_bake(addr fontAtlas, addr w, addr h, NK_FONT_ATLAS_RGBA32)
@@ -243,7 +243,7 @@ while glfw.WindowShouldClose(win) == 0:
 
   nk_input_end(addr ctx)
 
-  if nk_begin(addr ctx, "test", nk_rect(50, 50, 230, 250), nk_flags NK_WINDOW_BORDER.ord or NK_WINDOW_MOVABLE.ord or NK_WINDOW_SCALABLE.ord or NK_WINDOW_MINIMIZABLE.ord or NK_WINDOW_TITLE.ord) == 1:
+  if nk_begin(addr ctx, "test", nk_rect(50, 50, 230, 250), uint32 NK_WINDOW_BORDER.ord or NK_WINDOW_MOVABLE.ord or NK_WINDOW_SCALABLE.ord or NK_WINDOW_MINIMIZABLE.ord or NK_WINDOW_TITLE.ord) == 1:
     const
       EASY = 0
       HARD = 1
@@ -263,17 +263,17 @@ while glfw.WindowShouldClose(win) == 0:
     nk_layout_row_dynamic(addr ctx, 25, 1)
     nk_property_int(addr ctx, "Compression:", 0, addr(property), 100, 10, 1)
     nk_layout_row_dynamic(addr ctx, 20, 1)
-    nk_label(addr ctx, "background:", nk_flags NK_TEXT_LEFT)
+    nk_label(addr ctx, "background:", uint32 NK_TEXT_LEFT)
     nk_layout_row_dynamic(addr ctx, 25, 1)
     if nk_combo_begin_color(addr ctx, background, nk_vec2(nk_widget_width(addr ctx), 400)) == 1:
       nk_layout_row_dynamic(addr ctx, 120, 1)
       background = nk_color_picker(addr ctx, background, NK_RGBA)
       nk_layout_row_dynamic(addr ctx, 25, 1)
       
-      background.r = cast[nk_byte](nk_propertyi(addr ctx, "#R:", 0, background.r.cint, 255, 1, 1.0))
-      background.g = cast[nk_byte](nk_propertyi(addr ctx, "#G:", 0, background.g.cint, 255, 1, 1.0))
-      background.b = cast[nk_byte](nk_propertyi(addr ctx, "#B:", 0, background.b.cint, 255, 1, 1.0))
-      background.a = cast[nk_byte](nk_propertyi(addr ctx, "#A:", 0, background.a.cint, 255, 1, 1.0))
+      background.r = cast[char](nk_propertyi(addr ctx, "#R:", 0, background.r.cint, 255, 1, 1.0))
+      background.g = cast[char](nk_propertyi(addr ctx, "#G:", 0, background.g.cint, 255, 1, 1.0))
+      background.b = cast[char](nk_propertyi(addr ctx, "#B:", 0, background.b.cint, 255, 1, 1.0))
+      background.a = cast[char](nk_propertyi(addr ctx, "#A:", 0, background.a.cint, 255, 1, 1.0))
       nk_combo_end(addr ctx)
     
   nk_end(addr ctx)
@@ -328,7 +328,7 @@ while glfw.WindowShouldClose(win) == 0:
 
   ##  fill convert configuration
   config.vertex_layout = addr vertex_layout[0]
-  config.vertex_size = nk_size sizeof(nk_glfw_vertex);
+  config.vertex_size = uint sizeof(nk_glfw_vertex);
   config.vertex_alignment = alignof(nk_glfw_vertex);
   config.null = dev.null;
   config.circle_segment_count = 22;
