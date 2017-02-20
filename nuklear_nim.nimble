@@ -5,6 +5,8 @@ author        = "Zachary Carter"
 description   = "nim nuklear bindings"
 license       = "MIT"
 
+srcDir        = "nuklear-nim"
+
 # Dependencies
 
 requires "nim >= 0.16.1"
