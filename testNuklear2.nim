@@ -347,24 +347,22 @@ while glfw.WindowShouldClose(win) == 0:
   discard glUnmapBuffer(GL_ARRAY_BUFFER);
   discard glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
-  var b = nk_draw_begin(addr ctx, addr dev.cmds)
-  while not b.isNil:
-    if b.isNil: 
-      break
-    if b.elem_count == 0:
+  cmd = nk_draw_begin(addr ctx, addr dev.cmds)
+  while not isNil(cmd):
+    if cmd.elem_count == 0:
       continue
-    else:
-      echo b.elem_count
-      glBindTexture(GL_TEXTURE_2D, GLuint b.texture.id)
-      #glScissor(
-      #            (GLint)(b.clip_rect.x * fb_scale.x),
-      #            (GLint)((float(height) - float(b.clip_rect.y + b.clip_rect.h)) * fb_scale.y),
-      #            (GLint)(b.clip_rect.w * fb_scale.x),
-      #            (GLint)(b.clip_rect.h * fb_scale.y));
-      glDrawElements(GL_TRIANGLES, (GLsizei)b.elem_count, GL_UNSIGNED_SHORT, offset);
+    glBindTexture(GL_TEXTURE_2D, GLuint cmd.texture.id)
+    glScissor(
+                (GLint)(cmd.clip_rect.x * fb_scale.x),
+                (GLint)((float(height) - float(cmd.clip_rect.y + cmd.clip_rect.h)) * fb_scale.y),
+                (GLint)(cmd.clip_rect.w * fb_scale.x),
+                (GLint)(cmd.clip_rect.h * fb_scale.y));
+    glDrawElements(GL_TRIANGLES, (GLsizei)cmd.elem_count, GL_UNSIGNED_SHORT, offset);
+    offset = offset  + int cmd.elem_count
 
-      offset = offset  + int b.elem_count
-      b = nk_draw_next(cmd, addr dev.cmds, addr ctx)
+    cmd = nk_draw_next(cmd, addr dev.cmds, addr ctx)
+
+      
   nk_clear(addr ctx)
 
 
