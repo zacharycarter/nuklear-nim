@@ -3,17 +3,6 @@
 {.compile: "src/bind.c".}
 
 type
-  dummy_array407* = array[if (sizeof((int16)) == 2): 1 else: - 1, char]
-  dummy_array408* = array[if (sizeof((int16)) == 2): 1 else: - 1, char]
-  dummy_array409* = array[if (sizeof((uint32)) == 4): 1 else: - 1, char]
-  dummy_array410* = array[if (sizeof((int32)) == 4): 1 else: - 1, char]
-  dummy_array411* = array[if (sizeof((char)) == 1): 1 else: - 1, char]
-  dummy_array412* = array[if (sizeof((uint32)) >= 4): 1 else: - 1, char]
-  dummy_array413* = array[if (sizeof((uint32)) >= 4): 1 else: - 1, char]
-  dummy_array414* = array[if (sizeof((uint)) >= sizeof(pointer)): 1 else: - 1, char]
-  dummy_array415* = array[if (sizeof((uint)) >= sizeof(pointer)): 1 else: - 1, char]
-
-type
   nk_style_slide* = object
   
 
