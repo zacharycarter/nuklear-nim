@@ -2,7 +2,7 @@ import glfw3 as glfw, opengl
 
 import roboto_regular
 
-import ../nuklear_nim
+import ../nuklear
 
 const WINDOW_WIDTH = 800
 const WINDOW_HEIGHT = 600
