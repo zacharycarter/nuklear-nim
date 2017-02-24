@@ -48,7 +48,7 @@ type
     pointr*: pointer
     id*: cint
 
-  nuk_image* = object
+  nuk_image* = object {.byCopy.}
     handle*: nk_handle
     w*: cushort
     h*: cushort
