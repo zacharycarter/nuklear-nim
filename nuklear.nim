@@ -45,7 +45,7 @@ type
 
   nk_glyph* = array[4, char]
   nk_handle* = object {.union.}
-    `ptr`*: pointer
+    pointr*: pointer
     id*: cint
 
   nuk_image* = object
@@ -90,7 +90,7 @@ type
 
   nk_memory_status* = object
     memory*: pointer
-    `type`*: cuint
+    typ*: cuint
     size*: uint
     allocated*: uint
     needed*: uint
@@ -121,13 +121,13 @@ type
     offset*: uint
 
   nk_memory* = object
-    `ptr`*: pointer
+    pointr*: pointer
     size*: uint
 
   nk_buffer* = object
     marker*: array[NK_BUFFER_MAX, nk_buffer_marker]
     pool*: nk_allocator
-    `type`*: nk_allocation_type
+    typ*: nk_allocation_type
     memory*: nk_memory
     grow_factor*: cfloat
     allocated*: uint
@@ -142,7 +142,7 @@ type
     use_clipping*: cint
     userdata*: nk_handle
     begin*: uint
-    `end`*: uint
+    e*: uint
     last*: uint
 
 type
@@ -242,7 +242,7 @@ type
 
   nk_list_view* = object
     begin*: cint
-    `end`*: cint
+    e*: cint
     count*: cint
     total_height*: cint
     ctx*: ptr nk_context
@@ -263,7 +263,7 @@ type
     offset*: nk_scroll
 
   nk_row_layout* = object
-    `type`*: nk_panel_row_layout_type
+    typ*: nk_panel_row_layout_type
     index*: cint
     height*: cfloat
     columns*: cint
@@ -280,11 +280,11 @@ type
     begin*: uint
     parent*: uint
     last*: uint
-    `end`*: uint
+    e*: uint
     active*: cint
 
   chart_slot* = object
-    `type`*: chart_type
+    typ*: chart_type
     color*: nk_color
     highlight*: nk_color
     min*: cfloat
@@ -308,7 +308,7 @@ type
     NK_LAYOUT_STATIC_FREE, NK_LAYOUT_STATIC, NK_LAYOUT_TEMPLATE, NK_LAYOUT_COUNT
 
   nk_panel* = object
-    `type`*: nk_panel_type
+    typ*: nk_panel_type
     flags*: uint32
     bounds*: nuk_rect
     offset_x*: ptr uint32
@@ -329,7 +329,7 @@ type
     parent*: ptr nk_panel
 
   nk_window* = object
-    `seq`*: cuint
+    s*: cuint
     name*: uint32
     name_string*: array[64, char]
     flags*: uint32
@@ -351,7 +351,7 @@ type
 
   nk_popup_state* = object
     win*: ptr nk_window
-    `type`*: nk_panel_type
+    typ*: nk_panel_type
     name*: uint32
     active*: cint
     combo_count*: cuint
@@ -362,7 +362,7 @@ type
 
   nk_edit_state* = object
     name*: uint32
-    `seq`*: cuint
+    s*: cuint
     old*: cuint
     active*: cint
     prev*: cint
@@ -380,7 +380,7 @@ type
     length*: cint
     cursor*: cint
     name*: uint32
-    `seq`*: cuint
+    s*: cuint
     old*: cuint
     state*: cint
 
@@ -389,7 +389,7 @@ type
     color*: nk_color
 
   nk_style_item* = object
-    `type`*: nk_style_item_type
+    typ*: nk_style_item_type
     data*: nk_style_item_data
 
   nk_config_stack_style_item_element* = object
@@ -458,7 +458,7 @@ type
     button_behaviors*: nk_config_stack_button_behavior
 
   nk_table* = object
-    `seq`*: cuint
+    s*: cuint
     #keys*: array[(((if (sizeof(nk_window)) < (sizeof(nk_panel)): (sizeof(nk_panel)) else: (
        # sizeof(nk_window))) div sizeof((uint32))) div 2), uint32]
     #values*: array[(((if (sizeof(nk_window)) < (sizeof(nk_panel)): (sizeof(nk_panel)) else: (
@@ -483,7 +483,7 @@ type
 
   nk_pool* = object
     alloc*: nk_allocator
-    `type`*: nk_allocation_type
+    typ*: nk_allocation_type
     page_count*: cuint
     pages*: ptr nk_page
     freelist*: ptr nk_page_element
@@ -535,12 +535,12 @@ type
     use_pool*: cint
     pool*: nk_pool
     begin*: ptr nk_window
-    `end`*: ptr nk_window
+    e*: ptr nk_window
     active*: ptr nk_window
     current*: ptr nk_window
     freelist*: ptr nk_page_element
     count*: cuint
-    `seq`*: cuint
+    s*: cuint
 
   nk_plugin_paste* = proc (a2: nk_handle; a3: ptr nk_text_edit) {.cdecl.}
   nk_plugin_copy* = proc (a2: nk_handle; a3: cstring; len: cint) {.cdecl.}
@@ -552,7 +552,7 @@ type
     
   nk_text_edit* = object
     clip*: nk_clipboard
-    `string`*: nk_str
+    str*: nk_str
     filter*: nk_plugin_filter
     scrollbar*: nuk_vec2
     cursor*: cint
@@ -1021,12 +1021,12 @@ proc nk_buffer_init_fixed*(a2: ptr nk_buffer; memory: pointer; size: uint) {.cde
     importc: "nk_buffer_init_fixed".}
 proc nk_buffer_info*(a2: ptr nk_memory_status; a3: ptr nk_buffer) {.cdecl,
     importc: "nk_buffer_info".}
-proc nk_buffer_push*(a2: ptr nk_buffer; `type`: nk_buffer_allocation_type;
+proc nk_buffer_push*(a2: ptr nk_buffer; typ: nk_buffer_allocation_type;
                     memory: pointer; size: uint; align: uint) {.cdecl,
     importc: "nk_buffer_push".}
-proc nk_buffer_mark*(a2: ptr nk_buffer; `type`: nk_buffer_allocation_type) {.cdecl,
+proc nk_buffer_mark*(a2: ptr nk_buffer; typ: nk_buffer_allocation_type) {.cdecl,
     importc: "nk_buffer_mark".}
-proc nk_buffer_reset*(a2: ptr nk_buffer; `type`: nk_buffer_allocation_type) {.cdecl,
+proc nk_buffer_reset*(a2: ptr nk_buffer; typ: nk_buffer_allocation_type) {.cdecl,
     importc: "nk_buffer_reset".}
 proc nk_buffer_clear*(a2: ptr nk_buffer) {.cdecl, importc: "nk_buffer_clear".}
 proc nk_buffer_free*(a2: ptr nk_buffer) {.cdecl, importc: "nk_buffer_free".}
@@ -1143,7 +1143,7 @@ type
 
 type
   nk_command* = object
-    `type`*: nk_command_type
+    typ*: nk_command_type
     next*: uint
 
   nk_command_scissor* = object
@@ -1157,14 +1157,14 @@ type
     header*: nk_command
     line_thickness*: cushort
     begin*: nuk_vec2i
-    `end`*: nuk_vec2i
+    e*: nuk_vec2i
     color*: nk_color
 
   nk_command_curve* = object
     header*: nk_command
     line_thickness*: cushort
     begin*: nuk_vec2i
-    `end`*: nuk_vec2i
+    e*: nuk_vec2i
     ctrl*: array[2, nuk_vec2i]
     color*: nk_color
 
@@ -1619,7 +1619,7 @@ proc nk_group_scrolled_begin*(a2: ptr nk_context; a3: ptr nk_scroll; title: cstr
 proc nk_group_scrolled_end*(a2: ptr nk_context) {.cdecl,
     importc: "nk_group_scrolled_end".}
 proc nk_group_end*(a2: ptr nk_context) {.cdecl, importc: "nk_group_end".}
-proc nk_list_view_begin*(a2: ptr nk_context; `out`: ptr nk_list_view; id: cstring;
+proc nk_list_view_begin*(a2: ptr nk_context; o: ptr nk_list_view; id: cstring;
                         a5: uint32; row_height: cint; row_count: cint): cint {.cdecl,
     importc: "nk_list_view_begin".}
 proc nk_list_view_end*(a2: ptr nk_list_view) {.cdecl, importc: "nk_list_view_end".}
