@@ -11,3 +11,5 @@ for an example using GLFW and OpenGL.
 
 This repository is a WIP and will be undergoing heavy changes over the next month or so. The bindings should be relatively stable - 
 some more functionality from Nuklear will be added over time.
+
+If you notice anything missing / not working / have suggestions for improvement, please submit an issue or pull request for review.
