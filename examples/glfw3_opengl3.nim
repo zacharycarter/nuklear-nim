@@ -95,7 +95,39 @@ var w, h: cint = 0
 var width,height: cint = 0
 var display_width, display_height : cint = 0
 
-proc device_init(allocator: var nk_allocator) =
+proc nk_set_style(ctx: ptr nk_context) =
+  var style : array[NK_COLOR_COUNT.ord, nk_color]
+  style[NK_COLOR_TEXT.ord] = nk_rgba( 70, 70, 70, 255 )
+  style[NK_COLOR_WINDOW.ord] = nk_rgba( 175, 175, 175, 255 )
+  style[NK_COLOR_HEADER.ord] = nk_rgba( 175, 175, 175, 255 )
+  style[NK_COLOR_BORDER.ord] = nk_rgba( 175, 175, 175, 255 )
+  style[NK_COLOR_BUTTON.ord] = nk_rgba( 175, 175, 175, 255 )
+  style[NK_COLOR_BUTTON_HOVER.ord] = nk_rgba( 175, 175, 175, 255 )
+  style[NK_COLOR_BUTTON_ACTIVE.ord] = nk_rgba( 175, 175, 175, 255 )
+  style[NK_COLOR_TOGGLE.ord] = nk_rgba( 175, 175, 175, 255 )
+  style[NK_COLOR_TOGGLE_HOVER.ord] = nk_rgba( 175, 175, 175, 255 )
+  style[NK_COLOR_TOGGLE_CURSOR.ord] = nk_rgba( 175, 175, 175, 255 )
+  style[NK_COLOR_SELECT.ord] = nk_rgba( 175, 175, 175, 255 )
+  style[NK_COLOR_SELECT_ACTIVE.ord] = nk_rgba( 0, 0, 0, 255 )
+  style[NK_COLOR_SLIDER.ord] = nk_rgba( 0, 0, 0, 255 )
+  style[NK_COLOR_SLIDER_CURSOR.ord] = nk_rgba( 0, 0, 0, 255 )
+  style[NK_COLOR_SLIDER_CURSOR_HOVER.ord] = nk_rgba( 0, 0, 0, 255 )
+  style[NK_COLOR_SLIDER_CURSOR_ACTIVE.ord] = nk_rgba( 0, 0, 0, 255 )
+  style[NK_COLOR_PROPERTY.ord] = nk_rgba( 0, 0, 0, 255 )
+  style[NK_COLOR_EDIT.ord] = nk_rgba( 0, 0, 0, 255 )
+  style[NK_COLOR_EDIT_CURSOR.ord] = nk_rgba( 0, 0, 0, 255 )
+  style[NK_COLOR_COMBO.ord] = nk_rgba( 0, 0, 0, 255 )
+  style[NK_COLOR_CHART_COLOR.ord] = nk_rgba( 0, 0, 0, 255 )
+  style[NK_COLOR_CHART_COLOR_HIGHLIGHT.ord] = nk_rgba( 0, 0, 0, 255 )
+  style[NK_COLOR_SCROLLBAR.ord] = nk_rgba( 0, 0, 0, 255 )
+  style[NK_COLOR_SCROLLBAR_CURSOR.ord] = nk_rgba( 0, 0, 0, 255 )
+  style[NK_COLOR_SCROLLBAR_CURSOR_HOVER.ord] = nk_rgba( 0, 0, 0, 255 )
+  style[NK_COLOR_SCROLLBAR_CURSOR_ACTIVE.ord] = nk_rgba( 0, 0, 0, 255 )
+  style[NK_COLOR_TAB_HEADER.ord] = nk_rgba( 0, 0, 0, 255 )
+  
+  nk_style_from_table(ctx, addr style[0])
+
+proc device_init() =
   var status: GLint
   #nk_buffer_init(addr dev.cmds, addr allocator, 512 * 1024)
   nk_buffer_init_default(addr dev.cmds)
@@ -210,7 +242,6 @@ var font = nk_font_atlas_add_from_memory(addr fontAtlas, roboto_ttf, uint sizeof
 #var font = nk_font_atlas_add_default(addr fontAtlas, 13, nil)
 
 let image = nk_font_atlas_bake(addr fontAtlas, addr w, addr h, NK_FONT_ATLAS_RGBA32)
-echo repr image
 glGenTextures(1, addr dev.font_tex);
 glBindTexture(GL_TEXTURE_2D, dev.font_tex);
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -219,15 +250,10 @@ glTexImage2D(GL_TEXTURE_2D, 0, GLint GL_RGBA, (GLsizei)w, (GLsizei)h, 0, GL_RGBA
 
 nk_font_atlas_end(addr fontAtlas, nk_handle_id(cint dev.font_tex), addr dev.null)
 
-var customAllocator = nk_allocator(
-    userdata: nk_handle(),
-    alloc: allocator,
-    free: deallocator
-  )
-
-device_init(customAllocator)
-
 discard nk_init_default(addr ctx, addr font.handle)
+device_init()
+
+nk_set_style(addr ctx)
 
 #discard nk_init(addr ctx, addr customAllocator, cast[ptr nk_user_font](addr font))
 
@@ -275,7 +301,6 @@ while glfw.WindowShouldClose(win) == 0:
       background.b = cast[char](nk_propertyi(addr ctx, "#B:", 0, background.b.cint, 255, 1, 1.0))
       background.a = cast[char](nk_propertyi(addr ctx, "#A:", 0, background.a.cint, 255, 1, 1.0))
       nk_combo_end(addr ctx)
-    
   nk_end(addr ctx)
 
   var bg : array[4, cfloat]
@@ -351,7 +376,7 @@ while glfw.WindowShouldClose(win) == 0:
   while not isNil(cmd):
     if cmd.elem_count == 0:
       continue
-    glBindTexture(GL_TEXTURE_2D, GLuint cmd.texture.id)
+    glBindTexture(GL_TEXTURE_2D, GLuint cast[int](cmd.texture))
     glScissor(
                 (GLint)(cmd.clip_rect.x * fb_scale.x),
                 (GLint)((float(height) - float(cmd.clip_rect.y + cmd.clip_rect.h)) * fb_scale.y),

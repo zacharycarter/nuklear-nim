@@ -2,6 +2,14 @@
 
 {.compile: "src/bind.c".}
 
+import macros
+
+macro find_size(a,b: untyped): untyped =
+  if sizeof(a) < sizeof(b):
+    sizeof(b)
+  else:
+    sizeof(a) div sizeof(uint32) div 2
+
 type
   nk_style_slide* = object
   
@@ -9,8 +17,11 @@ type
 const
   nk_false* = 0
   nk_true* = 1
+    
 
 type
+  nk_handle* = pointer
+  
   nk_color* = object
     r*: char
     g*: char
@@ -44,9 +55,9 @@ type
     h*: cshort
 
   nk_glyph* = array[4, char]
-  nk_handle* = object {.union.}
-    pointr*: pointer
-    id*: cint
+  #nk_handle* = object {.union.}
+  #  pointr*: pointer
+  #  id*: cint
 
   nuk_image* = object {.byCopy.}
     handle*: nk_handle
@@ -459,10 +470,8 @@ type
 
   nk_table* = object
     s*: cuint
-    #keys*: array[(((if (sizeof(nk_window)) < (sizeof(nk_panel)): (sizeof(nk_panel)) else: (
-       # sizeof(nk_window))) div sizeof((uint32))) div 2), uint32]
-    #values*: array[(((if (sizeof(nk_window)) < (sizeof(nk_panel)): (sizeof(nk_panel)) else: (
-     #   sizeof(nk_window))) div sizeof((uint32))) div 2), uint32]
+    keys: array[find_size(nk_window, nk_panel), uint32]
+    values: array[find_size(nk_window, nk_panel), uint32]
     next*: ptr nk_table
     prev*: ptr nk_table
 
