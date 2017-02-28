@@ -11,7 +11,7 @@ macro find_size(a,b: untyped): untyped =
     sizeof(a) div sizeof(uint32) div 2
 
 type
-  nk_style_slide* = object
+  style_slide* = object
   
 
 const
@@ -20,86 +20,86 @@ const
     
 
 type
-  nk_handle* = pointer
+  handle* = pointer
   
-  nk_color* = object
+  color* = object
     r*: char
     g*: char
     b*: char
     a*: char
 
-  nuk_colorf* = object
-    r*: cfloat
-    g*: cfloat
-    b*: cfloat
-    a*: cfloat
+  colorf* = object
+    r*: float32
+    g*: float32
+    b*: float32
+    a*: float32
 
-  nuk_vec2* = object
-    x*: cfloat
-    y*: cfloat
+  vec2* = object
+    x*: float32
+    y*: float32
 
-  nuk_vec2i* = object
-    x*: cshort
-    y*: cshort
+  vec2i* = object
+    x*: int16
+    y*: int16
 
-  nuk_rect* = object
-    x*: cfloat
-    y*: cfloat
-    w*: cfloat
-    h*: cfloat
+  rect* = object
+    x*: float32
+    y*: float32
+    w*: float32
+    h*: float32
 
-  nuk_recti* = object
-    x*: cshort
-    y*: cshort
-    w*: cshort
-    h*: cshort
+  recti* = object
+    x*: int16
+    y*: int16
+    w*: int16
+    h*: int16
 
-  nk_glyph* = array[4, char]
+  glyph* = array[4, char]
   #nk_handle* = object {.union.}
   #  pointr*: pointer
-  #  id*: cint
+  #  id*: int32
 
-  nuk_image* = object {.byCopy.}
-    handle*: nk_handle
-    w*: cushort
-    h*: cushort
-    region*: array[4, cushort]
+  image* = object {.byCopy.}
+    handle*: handle
+    w*: uint16
+    h*: uint16
+    region*: array[4, uint16]
 
-  nk_cursor* = object
-    img*: nuk_image
-    size*: nuk_vec2
-    offset*: nuk_vec2
+  cursor* = object
+    img*: image
+    size*: vec2
+    offset*: vec2
 
-  nk_scroll* = object
+  scroll* = object
     x*: uint32
     y*: uint32
 
-  nk_heading* {.size: sizeof(cint).} = enum
-    NK_UP, NK_RIGHT, NK_DOWN, NK_LEFT
+  heading* {.size: sizeof(int32).} = enum
+    UP, RIGHT, DOWN, LEFT
 
 type
-  nk_user_font_glyph* = object
-    uv*: array[2, nuk_vec2]      ##  texture coordinates
-    offset*: nuk_vec2           ##  offset between top left and glyph
-    width*: cfloat
-    height*: cfloat            ##  size of the glyph
-    xadvance*: cfloat          ##  offset to the next glyph
+  user_font_glyph* = object
+    uv*: array[2, vec2]      ##  texture coordinates
+    offset*: vec2           ##  offset between top left and glyph
+    width*: float32
+    height*: float32            ##  size of the glyph
+    xadvance*: float32          ##  offset to the next glyph
   
-  nk_text_width_f* = proc (a2: nk_handle; h: cfloat; a4: cstring; len: cint): cfloat {.cdecl.}
-  nk_query_font_glyph_f* = proc (handle: nk_handle; font_height: cfloat;
-                              glyph: ptr nk_user_font_glyph; codepoint: uint32;
+  text_width_f* = proc (a2: handle; h: float32; a4: cstring; len: int32): float32 {.cdecl.}
+  query_font_glyph_f* = proc (handle: handle; font_height: float32;
+                              glyph: ptr user_font_glyph; codepoint: uint32;
                               next_codepoint: uint32) {.cdecl.}
-  nk_user_font* = object
-    userdata*: nk_handle
-    height*: cfloat
-    width*: nk_text_width_f
-    query* :nk_query_font_glyph_f
-    texture*: nk_handle
+  user_font* = object
+    userdata*: handle
+    height*: float32
+    width*: text_width_f
+    query* :query_font_glyph_f
+    texture*: handle
 
-  nk_font_coord_type* {.size: sizeof(cint).} = enum
-    NK_COORD_UV, NK_COORD_PIXEL
+  font_coord_type* {.size: sizeof(int32).} = enum
+    COORD_UV, COORD_PIXEL
 
-  nk_memory_status* = object
+  memory_status* = object
     memory*: pointer
     typ*: cuint
     size*: uint
@@ -107,127 +107,127 @@ type
     needed*: uint
     calls*: uint
 
-  nk_allocation_type* {.size: sizeof(cint).} = enum
-    NK_BUFFER_FIXED, NK_BUFFER_DYNAMIC
+  allocation_type* {.size: sizeof(int32).} = enum
+    BUFFER_FIXED, BUFFER_DYNAMIC
 
 
 type
-  nk_buffer_allocation_type* {.size: sizeof(cint).} = enum
-    NK_BUFFER_FRONT, NK_BUFFER_BACK, NK_BUFFER_MAX
+  buffer_allocation_type* {.size: sizeof(int32).} = enum
+    BUFFER_FRONT, BUFFER_BACK, BUFFER_MAX
 
 type
-  nk_anti_aliasing* {.size: sizeof(cint).} = enum
-    NK_ANTI_ALIASING_OFF, NK_ANTI_ALIASING_ON
+  anti_aliasing* {.size: sizeof(int32).} = enum
+    ANTI_ALIASING_OFF, ANTI_ALIASING_ON
 
 type
-  nk_plugin_alloc* = proc (a2: nk_handle; old: pointer; a4: uint): pointer {.cdecl.}
-  nk_plugin_free* = proc (a2: nk_handle; old: pointer) {.cdecl.}
-  nk_allocator* = object
-    userdata*: nk_handle
-    alloc*: nk_plugin_alloc
-    free*: nk_plugin_free
+  plugin_alloc* = proc (a2: handle; old: pointer; a4: uint): pointer {.cdecl.}
+  plugin_free* = proc (a2: handle; old: pointer) {.cdecl.}
+  allocator* = object
+    userdata*: handle
+    alloc*: plugin_alloc
+    free*: plugin_free
 
-  nk_buffer_marker* = object
-    active*: cint
+  buffer_marker* = object
+    active*: int32
     offset*: uint
 
-  nk_memory* = object
+  memory* = object
     pointr*: pointer
     size*: uint
 
-  nk_buffer* = object
-    marker*: array[NK_BUFFER_MAX, nk_buffer_marker]
-    pool*: nk_allocator
-    typ*: nk_allocation_type
-    memory*: nk_memory
-    grow_factor*: cfloat
+  buffer* = object
+    marker*: array[BUFFER_MAX, buffer_marker]
+    pool*: allocator
+    typ*: allocation_type
+    memory*: memory
+    grow_factor*: float32
     allocated*: uint
     needed*: uint
     calls*: uint
     size*: uint
 
 type
-  nk_command_buffer* = object
-    base*: ptr nk_buffer
-    clip*: nuk_rect
-    use_clipping*: cint
-    userdata*: nk_handle
+  command_buffer* = object
+    base*: ptr buffer
+    clip*: rect
+    use_clipping*: int32
+    userdata*: handle
     begin*: uint
     e*: uint
     last*: uint
 
 type
-  nk_panel_type* {.size: sizeof(cint).} = enum
-    NK_PANEL_WINDOW = (1 shl (0)), NK_PANEL_GROUP = (1 shl (1)),
-    NK_PANEL_POPUP = (1 shl (2)), NK_PANEL_CONTEXTUAL = (1 shl (4)),
-    NK_PANEL_COMBO = (1 shl (5)), NK_PANEL_MENU = (1 shl (6)),
-    NK_PANEL_TOOLTIP = (1 shl (7))
+  panel_type* {.size: sizeof(int32).} = enum
+    PANEL_WINDOW = (1 shl (0)), PANEL_GROUP = (1 shl (1)),
+    PANEL_POPUP = (1 shl (2)), PANEL_CONTEXTUAL = (1 shl (4)),
+    PANEL_COMBO = (1 shl (5)), PANEL_MENU = (1 shl (6)),
+    PANEL_TOOLTIP = (1 shl (7))
 
 type
-  chart_type* {.size: sizeof(cint).} = enum
+  chart_type* {.size: sizeof(int32).} = enum
     charT_LINES, charT_COLUMN, charT_MAX
 
 type
-  nk_style_item_type* {.size: sizeof(cint).} = enum
-    NK_STYLE_ITEM_COLOR, NK_STYLE_ITEM_IMAGE
+  style_item_type* {.size: sizeof(int32).} = enum
+    STYLE_ITEM_COLOR, STYLE_ITEM_IMAGE
 
 type
-  nk_button_behavior* {.size: sizeof(cint).} = enum
-    NK_BUTTON_DEFAULT, NK_BUTTON_REPEATER
+  button_behavior* {.size: sizeof(int32).} = enum
+    BUTTON_DEFAULT, BUTTON_REPEATER
 
 type
-  nk_buttons* {.size: sizeof(cint).} = enum
-    NK_BUTTON_LEFT, NK_BUTTON_MIDDLE, NK_BUTTON_RIGHT, NK_BUTTON_MAX
+  buttons* {.size: sizeof(int32).} = enum
+    BUTTON_LEFT, BUTTON_MIDDLE, BUTTON_RIGHT, BUTTON_MAX
 
 type
-  nk_keys* {.size: sizeof(cint).} = enum
-    NK_KEY_NONE, NK_KEY_SHIFT, NK_KEY_CTRL, NK_KEY_DEL, NK_KEY_ENTER, NK_KEY_TAB,
-    NK_KEY_BACKSPACE, NK_KEY_COPY, NK_KEY_CUT, NK_KEY_PASTE, NK_KEY_UP, NK_KEY_DOWN,
-    NK_KEY_LEFT, NK_KEY_RIGHT, NK_KEY_TEXT_INSERT_MODE, NK_KEY_TEXT_REPLACE_MODE,
-    NK_KEY_TEXT_RESET_MODE, NK_KEY_TEXT_LINE_START, NK_KEY_TEXT_LINE_END,
-    NK_KEY_TEXT_START, NK_KEY_TEXT_END, NK_KEY_TEXT_UNDO, NK_KEY_TEXT_REDO,
-    NK_KEY_TEXT_SELECT_ALL, NK_KEY_TEXT_WORD_LEFT, NK_KEY_TEXT_WORD_RIGHT,
-    NK_KEY_SCROLL_START, NK_KEY_SCROLL_END, NK_KEY_SCROLL_DOWN, NK_KEY_SCROLL_UP,
-    NK_KEY_MAX
+  keys* {.size: sizeof(int32).} = enum
+    KEY_NONE, KEY_SHIFT, KEY_CTRL, KEY_DEL, KEY_ENTER, KEY_TAB,
+    KEY_BACKSPACE, KEY_COPY, KEY_CUT, KEY_PASTE, KEY_UP, KEY_DOWN,
+    KEY_LEFT, KEY_RIGHT, KEY_TEXT_INSERT_MODE, KEY_TEXT_REPLACE_MODE,
+    KEY_TEXT_RESET_MODE, KEY_TEXT_LINE_START, KEY_TEXT_LINE_END,
+    KEY_TEXT_START, KEY_TEXT_END, KEY_TEXT_UNDO, KEY_TEXT_REDO,
+    KEY_TEXT_SELECT_ALL, KEY_TEXT_WORD_LEFT, KEY_TEXT_WORD_RIGHT,
+    KEY_SCROLL_START, KEY_SCROLL_END, KEY_SCROLL_DOWN, KEY_SCROLL_UP,
+    KEY_MAX
 
 type
-  nk_style_cursor* {.size: sizeof(cint).} = enum
-    NK_CURSOR_ARROW, NK_CURSOR_TEXT, NK_CURSOR_MOVE, NK_CURSOR_RESIZE_VERTICAL,
-    NK_CURSOR_RESIZE_HORIZONTAL, NK_CURSOR_RESIZE_TOP_LEFT_DOWN_RIGHT,
-    NK_CURSOR_RESIZE_TOP_RIGHT_DOWN_LEFT, NK_CURSOR_COUNT
+  style_cursor* {.size: sizeof(int32).} = enum
+    CURSOR_ARROW, CURSOR_TEXT, CURSOR_MOVE, CURSOR_RESIZE_VERTICAL,
+    CURSOR_RESIZE_HORIZONTAL, CURSOR_RESIZE_TOP_LEFT_DOWN_RIGHT,
+    CURSOR_RESIZE_TOP_RIGHT_DOWN_LEFT, CURSOR_COUNT
 
 type
-  nk_draw_vertex_layout_attribute* {.size: sizeof(cint).} = enum
-    NK_VERTEX_POSITION, NK_VERTEX_COLOR, NK_VERTEX_TEXCOORD,
-    NK_VERTEX_ATTRIBUTE_COUNT
+  draw_vertex_layout_attribute* {.size: sizeof(int32).} = enum
+    VERTEX_POSITION, VERTEX_COLOR, VERTEX_TEXCOORD,
+    VERTEX_ATTRIBUTE_COUNT
 
 type
-  nk_draw_vertex_layout_format* {.size: sizeof(cint).} = enum
-    NK_FORMAT_SCHAR, NK_FORMAT_SSHORT, NK_FORMAT_SINT, NK_FORMAT_UCHAR,
-    NK_FORMAT_USHORT, NK_FORMAT_UINT, NK_FORMAT_FLOAT, NK_FORMAT_DOUBLE,
-    NK_FORMAT_COLOR_BEGIN, NK_FORMAT_R16G15B16, NK_FORMAT_R32G32B32,
-    NK_FORMAT_R8G8B8A8, NK_FORMAT_R16G15B16A16, NK_FORMAT_R32G32B32A32,
-    NK_FORMAT_R32G32B32A32_FLOAT, NK_FORMAT_R32G32B32A32_DOUBLE, NK_FORMAT_RGB32,
-    NK_FORMAT_RGBA32, NK_FORMAT_COUNT
+  draw_vertex_layout_format* {.size: sizeof(int32).} = enum
+    FORMAT_SCHAR, FORMAT_SSHORT, FORMAT_SINT, FORMAT_UCHAR,
+    FORMAT_USHORT, FORMAT_UINT, FORMAT_FLOAT, FORMAT_DOUBLE,
+    FORMAT_COLOR_BEGIN, FORMAT_R16G15B16, FORMAT_R32G32B32,
+    FORMAT_R8G8B8A8, FORMAT_R16G15B16A16, FORMAT_R32G32B32A32,
+    FORMAT_R32G32B32A32_FLOAT, FORMAT_R32G32B32A32_DOUBLE, FORMAT_RGB32,
+    FORMAT_RGBA32, FORMAT_COUNT
 
 type
-  nk_draw_vertex_layout_element* = object
-    attribute*: nk_draw_vertex_layout_attribute
-    format*: nk_draw_vertex_layout_format
+  draw_vertex_layout_element* = object
+    attribute*: draw_vertex_layout_attribute
+    format*: draw_vertex_layout_format
     offset*: uint
 
-  nk_draw_command* = object
+  draw_command* = object
     elem_count*: cuint
-    clip_rect*: nuk_rect
-    texture*: nk_handle
+    clip_rect*: rect
+    texture*: handle
 
-  nk_draw_list* = object
-    clip_rect*: nuk_rect
-    circle_vtx*: array[12, nuk_vec2]
-    config*: nk_convert_config
-    buffer*: ptr nk_buffer
-    vertices*: ptr nk_buffer
-    elements*: ptr nk_buffer
+  draw_list* = object
+    clip_rect*: rect
+    circle_vtx*: array[12, vec2]
+    config*: convert_config
+    buffer*: ptr buffer
+    vertices*: ptr buffer
+    elements*: ptr buffer
     element_count*: cuint
     vertex_count*: cuint
     cmd_count*: cuint
@@ -235,338 +235,338 @@ type
     path_count*: cuint
     path_offset*: cuint
 
-  nk_draw_null_texture* = object
-    texture*: nk_handle
-    uv*: nuk_vec2
+  draw_null_texture* = object
+    texture*: handle
+    uv*: vec2
 
-  nk_convert_config* = object
-    global_alpha*: cfloat
-    line_AA*: nk_anti_aliasing
-    shape_AA*: nk_anti_aliasing
+  convert_config* = object
+    global_alpha*: float32
+    line_AA*: anti_aliasing
+    shape_AA*: anti_aliasing
     circle_segment_count*: cuint
     arc_segment_count*: cuint
     curve_segment_count*: cuint
-    null*: nk_draw_null_texture
-    vertex_layout*: ptr nk_draw_vertex_layout_element
+    null*: draw_null_texture
+    vertex_layout*: ptr draw_vertex_layout_element
     vertex_size*: uint
     vertex_alignment*: uint
 
-  nk_list_view* = object
-    begin*: cint
-    e*: cint
-    count*: cint
-    total_height*: cint
-    ctx*: ptr nk_context
+  list_view* = object
+    begin*: int32
+    e*: int32
+    count*: int32
+    total_height*: int32
+    ctx*: ptr context
     scroll_pointer*: ptr uint32
     scroll_value*: uint32
 
-  nk_symbol_type* {.size: sizeof(cint).} = enum
-    NK_SYMBOL_NONE, NK_SYMBOL_X, NK_SYMBOL_UNDERSCORE, NK_SYMBOL_CIRCLE_SOLID,
-    NK_SYMBOL_CIRCLE_OUTLINE, NK_SYMBOL_RECT_SOLID, NK_SYMBOL_RECT_OUTLINE,
-    NK_SYMBOL_TRIANGLE_UP, NK_SYMBOL_TRIANGLE_DOWN, NK_SYMBOL_TRIANGLE_LEFT,
-    NK_SYMBOL_TRIANGLE_RIGHT, NK_SYMBOL_PLUS, NK_SYMBOL_MINUS, NK_SYMBOL_MAX
+  symbol_type* {.size: sizeof(int32).} = enum
+    SYMBOL_NONE, SYMBOL_X, SYMBOL_UNDERSCORE, SYMBOL_CIRCLE_SOLID,
+    SYMBOL_CIRCLE_OUTLINE, SYMBOL_RECT_SOLID, SYMBOL_RECT_OUTLINE,
+    SYMBOL_TRIANGLE_UP, SYMBOL_TRIANGLE_DOWN, SYMBOL_TRIANGLE_LEFT,
+    SYMBOL_TRIANGLE_RIGHT, SYMBOL_PLUS, SYMBOL_MINUS, SYMBOL_MAX
 
-  nk_menu_state* = object
-    x*: cfloat
-    y*: cfloat
-    w*: cfloat
-    h*: cfloat
-    offset*: nk_scroll
+  menu_state* = object
+    x*: float32
+    y*: float32
+    w*: float32
+    h*: float32
+    offset*: scroll
 
-  nk_row_layout* = object
-    typ*: nk_panel_row_layout_type
-    index*: cint
-    height*: cfloat
-    columns*: cint
-    ratio*: ptr cfloat
-    item_width*: cfloat
-    item_height*: cfloat
-    item_offset*: cfloat
-    filled*: cfloat
-    item*: nuk_rect
-    tree_depth*: cint
-    templates*: array[16, cfloat]
+  row_layout* = object
+    typ*: panel_row_layout_type
+    index*: int32
+    height*: float32
+    columns*: int32
+    ratio*: ptr float32
+    item_width*: float32
+    item_height*: float32
+    item_offset*: float32
+    filled*: float32
+    item*: rect
+    tree_depth*: int32
+    templates*: array[16, float32]
 
-  nk_popup_buffer* = object
+  popup_buffer* = object
     begin*: uint
     parent*: uint
     last*: uint
     e*: uint
-    active*: cint
+    active*: int32
 
   chart_slot* = object
     typ*: chart_type
-    color*: nk_color
-    highlight*: nk_color
-    min*: cfloat
-    max*: cfloat
-    range*: cfloat
-    count*: cint
-    last*: nuk_vec2
-    index*: cint
+    color*: color
+    highlight*: color
+    min*: float32
+    max*: float32
+    range*: float32
+    count*: int32
+    last*: vec2
+    index*: int32
 
   chart* = object
-    slot*: cint
-    x*: cfloat
-    y*: cfloat
-    w*: cfloat
-    h*: cfloat
+    slot*: int32
+    x*: float32
+    y*: float32
+    w*: float32
+    h*: float32
     slots*: array[4, chart_slot]
 
-  nk_panel_row_layout_type* {.size: sizeof(cint).} = enum
-    NK_LAYOUT_DYNAMIC_FIXED = 0, NK_LAYOUT_DYNAMIC_ROW, NK_LAYOUT_DYNAMIC_FREE,
-    NK_LAYOUT_DYNAMIC, NK_LAYOUT_STATIC_FIXED, NK_LAYOUT_STATIC_ROW,
-    NK_LAYOUT_STATIC_FREE, NK_LAYOUT_STATIC, NK_LAYOUT_TEMPLATE, NK_LAYOUT_COUNT
+  panel_row_layout_type* {.size: sizeof(int32).} = enum
+    LAYOUT_DYNAMIC_FIXED = 0, LAYOUT_DYNAMIC_ROW, LAYOUT_DYNAMIC_FREE,
+    LAYOUT_DYNAMIC, LAYOUT_STATIC_FIXED, LAYOUT_STATIC_ROW,
+    LAYOUT_STATIC_FREE, LAYOUT_STATIC, LAYOUT_TEMPLATE, LAYOUT_COUNT
 
-  nk_panel* = object
-    typ*: nk_panel_type
+  panel* = object
+    typ*: panel_type
     flags*: uint32
-    bounds*: nuk_rect
+    bounds*: rect
     offset_x*: ptr uint32
     offset_y*: ptr uint32
-    at_x*: cfloat
-    at_y*: cfloat
-    max_x*: cfloat
-    footer_height*: cfloat
-    header_height*: cfloat
-    border*: cfloat
+    at_x*: float32
+    at_y*: float32
+    max_x*: float32
+    footer_height*: float32
+    header_height*: float32
+    border*: float32
     has_scrolling*: cuint
-    clip*: nuk_rect
-    menu*: nk_menu_state
-    row*: nk_row_layout
+    clip*: rect
+    menu*: menu_state
+    row*: row_layout
     chart*: chart
-    popup_buffer*: nk_popup_buffer
-    buffer*: ptr nk_command_buffer
-    parent*: ptr nk_panel
+    popup_buffer*: popup_buffer
+    buffer*: ptr command_buffer
+    parent*: ptr panel
 
-  nk_window* = object
+  window* = object
     s*: cuint
     name*: uint32
     name_string*: array[64, char]
     flags*: uint32
-    bounds*: nuk_rect
-    scrollbar*: nk_scroll
-    buffer*: nk_command_buffer
-    layout*: ptr nk_panel
-    scrollbar_hiding_timer*: cfloat
-    property*: nk_property_state
-    popup*: nk_popup_state
-    edit*: nk_edit_state
+    bounds*: rect
+    scrollbar*: scroll
+    buffer*: command_buffer
+    layout*: ptr panel
+    scrollbar_hiding_timer*: float32
+    property*: property_state
+    popup*: popup_state
+    edit*: edit_state
     scrolled*: cuint
-    tables*: ptr nk_table
-    table_count*: cushort
-    table_size*: cushort
-    next*: ptr nk_window
-    prev*: ptr nk_window
-    parent*: ptr nk_window
+    tables*: ptr table
+    table_count*: uint16
+    table_size*: uint16
+    next*: ptr window
+    prev*: ptr window
+    parent*: ptr window
 
-  nk_popup_state* = object
-    win*: ptr nk_window
-    typ*: nk_panel_type
+  popup_state* = object
+    win*: ptr window
+    typ*: panel_type
     name*: uint32
-    active*: cint
+    active*: int32
     combo_count*: cuint
     con_count*: cuint
     con_old*: cuint
     active_con*: cuint
-    header*: nuk_rect
+    header*: rect
 
-  nk_edit_state* = object
+  edit_state* = object
     name*: uint32
     s*: cuint
     old*: cuint
-    active*: cint
-    prev*: cint
-    cursor*: cint
-    sel_start*: cint
-    sel_end*: cint
-    scrollbar*: nk_scroll
+    active*: int32
+    prev*: int32
+    cursor*: int32
+    sel_start*: int32
+    sel_end*: int32
+    scrollbar*: scroll
     mode*: cuchar
     single_line*: cuchar
 
-  nk_property_state* = object
-    active*: cint
-    prev*: cint
+  property_state* = object
+    active*: int32
+    prev*: int32
     buffer*: array[64, char]
-    length*: cint
-    cursor*: cint
+    length*: int32
+    cursor*: int32
     name*: uint32
     s*: cuint
     old*: cuint
-    state*: cint
+    state*: int32
 
-  nk_style_item_data* = object {.union.}
-    image*: nuk_image
-    color*: nk_color
+  style_item_data* = object {.union.}
+    image*: image
+    color*: color
 
-  nk_style_item* = object
-    typ*: nk_style_item_type
-    data*: nk_style_item_data
+  style_item* = object
+    typ*: style_item_type
+    data*: style_item_data
 
-  nk_config_stack_style_item_element* = object
-    address*: ptr nk_style_item
-    old_value*: nk_style_item
+  config_stack_style_item_element* = object
+    address*: ptr style_item
+    old_value*: style_item
 
-  nk_config_stack_float_element* = object
-    address*: ptr cfloat
-    old_value*: cfloat
+  config_stack_float_element* = object
+    address*: ptr float32
+    old_value*: float32
 
-  nk_config_stack_vec2_element* = object
-    address*: ptr nuk_vec2
-    old_value*: nuk_vec2
+  config_stack_vec2_element* = object
+    address*: ptr vec2
+    old_value*: vec2
 
-  nk_config_stack_flags_element* = object
+  config_stack_flags_element* = object
     address*: ptr uint32
     old_value*: uint32
 
-  nk_config_stack_color_element* = object
-    address*: ptr nk_color
-    old_value*: nk_color
+  config_stack_color_element* = object
+    address*: ptr color
+    old_value*: color
 
-  nk_config_stack_user_font_element* = object
-    address*: ptr ptr nk_user_font
-    old_value*: ptr nk_user_font
+  config_stack_user_font_element* = object
+    address*: ptr ptr user_font
+    old_value*: ptr user_font
 
-  nk_config_stack_button_behavior_element* = object
-    address*: ptr nk_button_behavior
-    old_value*: nk_button_behavior
+  config_stack_button_behavior_element* = object
+    address*: ptr button_behavior
+    old_value*: button_behavior
 
-  nk_config_stack_style_item* = object
-    head*: cint
-    elements*: array[16, nk_config_stack_style_item_element]
+  config_stack_style_item* = object
+    head*: int32
+    elements*: array[16, config_stack_style_item_element]
 
-  nk_config_stack_float* = object
-    head*: cint
-    elements*: array[32, nk_config_stack_float_element]
+  config_stack_float* = object
+    head*: int32
+    elements*: array[32, config_stack_float_element]
 
-  nk_config_stack_vec2* = object
-    head*: cint
-    elements*: array[16, nk_config_stack_vec2_element]
+  config_stack_vec2* = object
+    head*: int32
+    elements*: array[16, config_stack_vec2_element]
 
-  nk_config_stack_flags* = object
-    head*: cint
-    elements*: array[32, nk_config_stack_flags_element]
+  config_stack_flags* = object
+    head*: int32
+    elements*: array[32, config_stack_flags_element]
 
-  nk_config_stack_color* = object
-    head*: cint
-    elements*: array[32, nk_config_stack_color_element]
+  config_stack_color* = object
+    head*: int32
+    elements*: array[32, config_stack_color_element]
 
-  nk_config_stack_user_font* = object
-    head*: cint
-    elements*: array[8, nk_config_stack_user_font_element]
+  config_stack_user_font* = object
+    head*: int32
+    elements*: array[8, config_stack_user_font_element]
 
-  nk_config_stack_button_behavior* = object
-    head*: cint
-    elements*: array[8, nk_config_stack_button_behavior_element]
+  config_stack_button_behavior* = object
+    head*: int32
+    elements*: array[8, config_stack_button_behavior_element]
 
-  nk_configuration_stacks* = object
-    style_items*: nk_config_stack_style_item
-    floats*: nk_config_stack_float
-    vectors*: nk_config_stack_vec2
-    flags*: nk_config_stack_flags
-    colors*: nk_config_stack_color
-    fonts*: nk_config_stack_user_font
-    button_behaviors*: nk_config_stack_button_behavior
+  configuration_stacks* = object
+    style_items*: config_stack_style_item
+    floats*: config_stack_float
+    vectors*: config_stack_vec2
+    flags*: config_stack_flags
+    colors*: config_stack_color
+    fonts*: config_stack_user_font
+    button_behaviors*: config_stack_button_behavior
 
-  nk_table* = object
+  table* = object
     s*: cuint
-    keys: array[find_size(nk_window, nk_panel), uint32]
-    values: array[find_size(nk_window, nk_panel), uint32]
-    next*: ptr nk_table
-    prev*: ptr nk_table
+    keys: array[find_size(window, panel), uint32]
+    values: array[find_size(window, panel), uint32]
+    next*: ptr table
+    prev*: ptr table
 
-  nk_page_data* = object {.union.}
-    tbl*: nk_table
-    pan*: nk_panel
-    win*: nk_window
+  page_data* = object {.union.}
+    tbl*: table
+    pan*: panel
+    win*: window
 
-  nk_page_element* = object
-    data*: nk_page_data
-    next*: ptr nk_page_element
-    prev*: ptr nk_page_element
+  page_element* = object
+    data*: page_data
+    next*: ptr page_element
+    prev*: ptr page_element
 
-  nk_page* = object
+  page* = object
     size*: cuint
-    next*: ptr nk_page
-    win*: array[1, nk_page_element]
+    next*: ptr page
+    win*: array[1, page_element]
 
-  nk_pool* = object
-    alloc*: nk_allocator
-    typ*: nk_allocation_type
+  pool* = object
+    alloc*: allocator
+    typ*: allocation_type
     page_count*: cuint
-    pages*: ptr nk_page
-    freelist*: ptr nk_page_element
+    pages*: ptr page
+    freelist*: ptr page_element
     capacity*: cuint
     size*: uint
     cap*: uint
 
-  nk_mouse_button* = object
-    down*: cint
+  mouse_button* = object
+    down*: int32
     clicked*: cuint
-    clicked_pos*: nuk_vec2
+    clicked_pos*: vec2
 
-  nk_mouse* = object
-    buttons*: array[NK_BUTTON_MAX, nk_mouse_button]
-    pos*: nuk_vec2
-    prev*: nuk_vec2
-    delta*: nuk_vec2
-    scroll_delta*: cfloat
+  mouse* = object
+    buttons*: array[BUTTON_MAX, mouse_button]
+    pos*: vec2
+    prev*: vec2
+    delta*: vec2
+    scroll_delta*: float32
     grab*: cuchar
     grabbed*: cuchar
     ungrab*: cuchar
 
-  nk_key* = object
-    down*: cint
+  key* = object
+    down*: int32
     clicked*: cuint
 
-  nk_keyboard* = object
-    keys*: array[NK_KEY_MAX, nk_key]
+  keyboard* = object
+    keys*: array[KEY_MAX, key]
     text*: array[16, char]
-    text_len*: cint
+    text_len*: int32
 
-  nk_input* = object
-    keyboard*: nk_keyboard
-    mouse*: nk_mouse
+  input* = object
+    keyboard*: keyboard
+    mouse*: mouse
 
-  nk_context* = object
-    input*: nk_input
-    style*: nk_style
-    memory*: nk_buffer
-    clip*: nk_clipboard
+  context* = object
+    input*: input
+    style*: style
+    memory*: buffer
+    clip*: clipboard
     last_widget_state*: uint32
-    button_behavior*: nk_button_behavior
-    stacks*: nk_configuration_stacks
-    delta_time_seconds*: cfloat
-    draw_list*: nk_draw_list
-    text_edit*: nk_text_edit
-    overlay*: nk_command_buffer
-    build*: cint
-    use_pool*: cint
-    pool*: nk_pool
-    begin*: ptr nk_window
-    e*: ptr nk_window
-    active*: ptr nk_window
-    current*: ptr nk_window
-    freelist*: ptr nk_page_element
+    button_behavior*: button_behavior
+    stacks*: configuration_stacks
+    delta_time_seconds*: float32
+    draw_list*: draw_list
+    text_edit*: text_edit
+    overlay*: command_buffer
+    build*: int32
+    use_pool*: int32
+    pool*: pool
+    begin*: ptr window
+    e*: ptr window
+    active*: ptr window
+    current*: ptr window
+    freelist*: ptr page_element
     count*: cuint
     s*: cuint
 
-  nk_plugin_paste* = proc (a2: nk_handle; a3: ptr nk_text_edit) {.cdecl.}
-  nk_plugin_copy* = proc (a2: nk_handle; a3: cstring; len: cint) {.cdecl.}
+  plugin_paste* = proc (a2: handle; a3: ptr text_edit) {.cdecl.}
+  plugin_copy* = proc (a2: handle; a3: cstring; len: int32) {.cdecl.}
   
-  nk_clipboard* = object
-    userdata*: nk_handle
-    paste*: nk_plugin_paste
-    copy*: nk_plugin_copy
+  clipboard* = object
+    userdata*: handle
+    paste*: plugin_paste
+    copy*: plugin_copy
     
-  nk_text_edit* = object
-    clip*: nk_clipboard
-    str*: nk_str
-    filter*: nk_plugin_filter
-    scrollbar*: nuk_vec2
-    cursor*: cint
-    select_start*: cint
-    select_end*: cint
+  text_edit* = object
+    clip*: clipboard
+    str*: str
+    filter*: plugin_filter
+    scrollbar*: vec2
+    cursor*: int32
+    select_start*: int32
+    select_end*: int32
     mode*: cuchar
     cursor_at_end_of_line*: cuchar
     initialized*: cuchar
@@ -574,1624 +574,1294 @@ type
     single_line*: cuchar
     active*: cuchar
     padding1*: cuchar
-    preferred_x*: cfloat
-    undo*: nk_text_undo_state
+    preferred_x*: float32
+    undo*: text_undo_state
 
-  nk_plugin_filter* = proc (a2: ptr nk_text_edit; unicode: uint32): cint {.cdecl.}
+  plugin_filter* = proc (a2: ptr text_edit; unicode: uint32): int32 {.cdecl.}
 
-  nk_text_undo_record* = object
-    where*: cint
-    insert_length*: cshort
-    delete_length*: cshort
-    char_storage*: cshort
+  text_undo_record* = object
+    where*: int32
+    insert_length*: int16
+    delete_length*: int16
+    char_storage*: int16
 
-  nk_text_undo_state* = object
-    undo_rec*: array[99, nk_text_undo_record]
+  text_undo_state* = object
+    undo_rec*: array[99, text_undo_record]
     undo_char*: array[999, uint32]
-    undo_point*: cshort
-    redo_point*: cshort
-    undo_char_point*: cshort
-    redo_char_point*: cshort
+    undo_point*: int16
+    redo_point*: int16
+    undo_char_point*: int16
+    redo_char_point*: int16
 
-  nk_text_edit_type* {.size: sizeof(cint).} = enum
-    NK_TEXT_EDIT_SINGLE_LINE, NK_TEXT_EDIT_MULTI_LINE
+  text_edit_type* {.size: sizeof(int32).} = enum
+    TEXT_EDIT_SINGLE_LINE, TEXT_EDIT_MULTI_LINE
 
-  nk_style_text* = object
-    color*: nk_color
-    padding*: nuk_vec2
+  style_text* = object
+    color*: color
+    padding*: vec2
 
-  nk_style_button* = object
-    normal*: nk_style_item
-    hover*: nk_style_item
-    active*: nk_style_item
-    border_color*: nk_color
-    text_background*: nk_color
-    text_normal*: nk_color
-    text_hover*: nk_color
-    text_active*: nk_color
+  style_button* = object
+    normal*: style_item
+    hover*: style_item
+    active*: style_item
+    border_color*: color
+    text_background*: color
+    text_normal*: color
+    text_hover*: color
+    text_active*: color
     text_alignment*: uint32
-    border*: cfloat
-    rounding*: cfloat
-    padding*: nuk_vec2
-    image_padding*: nuk_vec2
-    touch_padding*: nuk_vec2
-    userdata*: nk_handle
-    draw_begin*: proc (a2: ptr nk_command_buffer; userdata: nk_handle) {.cdecl.}
-    draw_end*: proc (a2: ptr nk_command_buffer; userdata: nk_handle) {.cdecl.}
+    border*: float32
+    rounding*: float32
+    padding*: vec2
+    image_padding*: vec2
+    touch_padding*: vec2
+    userdata*: handle
+    draw_begin*: proc (a2: ptr command_buffer; userdata: handle) {.cdecl.}
+    draw_end*: proc (a2: ptr command_buffer; userdata: handle) {.cdecl.}
 
-  nk_style_toggle* = object
-    normal*: nk_style_item
-    hover*: nk_style_item
-    active*: nk_style_item
-    border_color*: nk_color
-    cursor_normal*: nk_style_item
-    cursor_hover*: nk_style_item
-    text_normal*: nk_color
-    text_hover*: nk_color
-    text_active*: nk_color
-    text_background*: nk_color
+  style_toggle* = object
+    normal*: style_item
+    hover*: style_item
+    active*: style_item
+    border_color*: color
+    cursor_normal*: style_item
+    cursor_hover*: style_item
+    text_normal*: color
+    text_hover*: color
+    text_active*: color
+    text_background*: color
     text_alignment*: uint32
-    padding*: nuk_vec2
-    touch_padding*: nuk_vec2
-    spacing*: cfloat
-    border*: cfloat
-    userdata*: nk_handle
-    draw_begin*: proc (a2: ptr nk_command_buffer; a3: nk_handle) {.cdecl.}
-    draw_end*: proc (a2: ptr nk_command_buffer; a3: nk_handle) {.cdecl.}
+    padding*: vec2
+    touch_padding*: vec2
+    spacing*: float32
+    border*: float32
+    userdata*: handle
+    draw_begin*: proc (a2: ptr command_buffer; a3: handle) {.cdecl.}
+    draw_end*: proc (a2: ptr command_buffer; a3: handle) {.cdecl.}
 
-  nk_style_selectable* = object
-    normal*: nk_style_item
-    hover*: nk_style_item
-    pressed*: nk_style_item
-    normal_active*: nk_style_item
-    hover_active*: nk_style_item
-    pressed_active*: nk_style_item
-    text_normal*: nk_color
-    text_hover*: nk_color
-    text_pressed*: nk_color
-    text_normal_active*: nk_color
-    text_hover_active*: nk_color
-    text_pressed_active*: nk_color
-    text_background*: nk_color
+  style_selectable* = object
+    normal*: style_item
+    hover*: style_item
+    pressed*: style_item
+    normal_active*: style_item
+    hover_active*: style_item
+    pressed_active*: style_item
+    text_normal*: color
+    text_hover*: color
+    text_pressed*: color
+    text_normal_active*: color
+    text_hover_active*: color
+    text_pressed_active*: color
+    text_background*: color
     text_alignment*: uint32
-    rounding*: cfloat
-    padding*: nuk_vec2
-    touch_padding*: nuk_vec2
-    image_padding*: nuk_vec2
-    userdata*: nk_handle
-    draw_begin*: proc (a2: ptr nk_command_buffer; a3: nk_handle) {.cdecl.}
-    draw_end*: proc (a2: ptr nk_command_buffer; a3: nk_handle) {.cdecl.}
+    rounding*: float32
+    padding*: vec2
+    touch_padding*: vec2
+    image_padding*: vec2
+    userdata*: handle
+    draw_begin*: proc (a2: ptr command_buffer; a3: handle) {.cdecl.}
+    draw_end*: proc (a2: ptr command_buffer; a3: handle) {.cdecl.}
 
-  nk_style_slider* = object
-    normal*: nk_style_item
-    hover*: nk_style_item
-    active*: nk_style_item
-    border_color*: nk_color
-    bar_normal*: nk_color
-    bar_hover*: nk_color
-    bar_active*: nk_color
-    bar_filled*: nk_color
-    cursor_normal*: nk_style_item
-    cursor_hover*: nk_style_item
-    cursor_active*: nk_style_item
-    border*: cfloat
-    rounding*: cfloat
-    bar_height*: cfloat
-    padding*: nuk_vec2
-    spacing*: nuk_vec2
-    cursor_size*: nuk_vec2
-    show_buttons*: cint
-    inc_button*: nk_style_button
-    dec_button*: nk_style_button
-    inc_symbol*: nk_symbol_type
-    dec_symbol*: nk_symbol_type
-    userdata*: nk_handle
-    draw_begin*: proc (a2: ptr nk_command_buffer; a3: nk_handle) {.cdecl.}
-    draw_end*: proc (a2: ptr nk_command_buffer; a3: nk_handle) {.cdecl.}
+  style_slider* = object
+    normal*: style_item
+    hover*: style_item
+    active*: style_item
+    border_color*: color
+    bar_normal*: color
+    bar_hover*: color
+    bar_active*: color
+    bar_filled*: color
+    cursor_normal*: style_item
+    cursor_hover*: style_item
+    cursor_active*: style_item
+    border*: float32
+    rounding*: float32
+    bar_height*: float32
+    padding*: vec2
+    spacing*: vec2
+    cursor_size*: vec2
+    show_buttons*: int32
+    inc_button*: style_button
+    dec_button*: style_button
+    inc_symbol*: symbol_type
+    dec_symbol*: symbol_type
+    userdata*: handle
+    draw_begin*: proc (a2: ptr command_buffer; a3: handle) {.cdecl.}
+    draw_end*: proc (a2: ptr command_buffer; a3: handle) {.cdecl.}
 
-  nk_style_progress* = object
-    normal*: nk_style_item
-    hover*: nk_style_item
-    active*: nk_style_item
-    border_color*: nk_color
-    cursor_normal*: nk_style_item
-    cursor_hover*: nk_style_item
-    cursor_active*: nk_style_item
-    cursor_border_color*: nk_color
-    rounding*: cfloat
-    border*: cfloat
-    cursor_border*: cfloat
-    cursor_rounding*: cfloat
-    padding*: nuk_vec2
-    userdata*: nk_handle
-    draw_begin*: proc (a2: ptr nk_command_buffer; a3: nk_handle) {.cdecl.}
-    draw_end*: proc (a2: ptr nk_command_buffer; a3: nk_handle) {.cdecl.}
+  style_progress* = object
+    normal*: style_item
+    hover*: style_item
+    active*: style_item
+    border_color*: color
+    cursor_normal*: style_item
+    cursor_hover*: style_item
+    cursor_active*: style_item
+    cursor_border_color*: color
+    rounding*: float32
+    border*: float32
+    cursor_border*: float32
+    cursor_rounding*: float32
+    padding*: vec2
+    userdata*: handle
+    draw_begin*: proc (a2: ptr command_buffer; a3: handle) {.cdecl.}
+    draw_end*: proc (a2: ptr command_buffer; a3: handle) {.cdecl.}
 
-  nk_style_scrollbar* = object
-    normal*: nk_style_item
-    hover*: nk_style_item
-    active*: nk_style_item
-    border_color*: nk_color
-    cursor_normal*: nk_style_item
-    cursor_hover*: nk_style_item
-    cursor_active*: nk_style_item
-    cursor_border_color*: nk_color
-    border*: cfloat
-    rounding*: cfloat
-    border_cursor*: cfloat
-    rounding_cursor*: cfloat
-    padding*: nuk_vec2
-    show_buttons*: cint
-    inc_button*: nk_style_button
-    dec_button*: nk_style_button
-    inc_symbol*: nk_symbol_type
-    dec_symbol*: nk_symbol_type
-    userdata*: nk_handle
-    draw_begin*: proc (a2: ptr nk_command_buffer; a3: nk_handle) {.cdecl.}
-    draw_end*: proc (a2: ptr nk_command_buffer; a3: nk_handle) {.cdecl.}
+  style_scrollbar* = object
+    normal*: style_item
+    hover*: style_item
+    active*: style_item
+    border_color*: color
+    cursor_normal*: style_item
+    cursor_hover*: style_item
+    cursor_active*: style_item
+    cursor_border_color*: color
+    border*: float32
+    rounding*: float32
+    border_cursor*: float32
+    rounding_cursor*: float32
+    padding*: vec2
+    show_buttons*: int32
+    inc_button*: style_button
+    dec_button*: style_button
+    inc_symbol*: symbol_type
+    dec_symbol*: symbol_type
+    userdata*: handle
+    draw_begin*: proc (a2: ptr command_buffer; a3: handle) {.cdecl.}
+    draw_end*: proc (a2: ptr command_buffer; a3: handle) {.cdecl.}
 
-  nk_style_edit* = object
-    normal*: nk_style_item
-    hover*: nk_style_item
-    active*: nk_style_item
-    border_color*: nk_color
-    scrollbar*: nk_style_scrollbar
-    cursor_normal*: nk_color
-    cursor_hover*: nk_color
-    cursor_text_normal*: nk_color
-    cursor_text_hover*: nk_color
-    text_normal*: nk_color
-    text_hover*: nk_color
-    text_active*: nk_color
-    selected_normal*: nk_color
-    selected_hover*: nk_color
-    selected_text_normal*: nk_color
-    selected_text_hover*: nk_color
-    border*: cfloat
-    rounding*: cfloat
-    cursor_size*: cfloat
-    scrollbar_size*: nuk_vec2
-    padding*: nuk_vec2
-    row_padding*: cfloat
+  style_edit* = object
+    normal*: style_item
+    hover*: style_item
+    active*: style_item
+    border_color*: color
+    scrollbar*: style_scrollbar
+    cursor_normal*: color
+    cursor_hover*: color
+    cursor_text_normal*: color
+    cursor_text_hover*: color
+    text_normal*: color
+    text_hover*: color
+    text_active*: color
+    selected_normal*: color
+    selected_hover*: color
+    selected_text_normal*: color
+    selected_text_hover*: color
+    border*: float32
+    rounding*: float32
+    cursor_size*: float32
+    scrollbar_size*: vec2
+    padding*: vec2
+    row_padding*: float32
 
-  nk_style_property* = object
-    normal*: nk_style_item
-    hover*: nk_style_item
-    active*: nk_style_item
-    border_color*: nk_color
-    label_normal*: nk_color
-    label_hover*: nk_color
-    label_active*: nk_color
-    sym_left*: nk_symbol_type
-    sym_right*: nk_symbol_type
-    border*: cfloat
-    rounding*: cfloat
-    padding*: nuk_vec2
-    edit*: nk_style_edit
-    inc_button*: nk_style_button
-    dec_button*: nk_style_button
-    userdata*: nk_handle
-    draw_begin*: proc (a2: ptr nk_command_buffer; a3: nk_handle) {.cdecl.}
-    draw_end*: proc (a2: ptr nk_command_buffer; a3: nk_handle) {.cdecl.}
+  style_property* = object
+    normal*: style_item
+    hover*: style_item
+    active*: style_item
+    border_color*: color
+    label_normal*: color
+    label_hover*: color
+    label_active*: color
+    sym_left*: symbol_type
+    sym_right*: symbol_type
+    border*: float32
+    rounding*: float32
+    padding*: vec2
+    edit*: style_edit
+    inc_button*: style_button
+    dec_button*: style_button
+    userdata*: handle
+    draw_begin*: proc (a2: ptr command_buffer; a3: handle) {.cdecl.}
+    draw_end*: proc (a2: ptr command_buffer; a3: handle) {.cdecl.}
 
-  nk_style_chart* = object
-    background*: nk_style_item
-    border_color*: nk_color
-    selected_color*: nk_color
-    color*: nk_color
-    border*: cfloat
-    rounding*: cfloat
-    padding*: nuk_vec2
+  style_chart* = object
+    background*: style_item
+    border_color*: color
+    selected_color*: color
+    color*: color
+    border*: float32
+    rounding*: float32
+    padding*: vec2
 
-  nk_style_combo* = object
-    normal*: nk_style_item
-    hover*: nk_style_item
-    active*: nk_style_item
-    border_color*: nk_color
-    label_normal*: nk_color
-    label_hover*: nk_color
-    label_active*: nk_color
-    symbol_normal*: nk_color
-    symbol_hover*: nk_color
-    symbol_active*: nk_color
-    button*: nk_style_button
-    sym_normal*: nk_symbol_type
-    sym_hover*: nk_symbol_type
-    sym_active*: nk_symbol_type
-    border*: cfloat
-    rounding*: cfloat
-    content_padding*: nuk_vec2
-    button_padding*: nuk_vec2
-    spacing*: nuk_vec2
+  style_combo* = object
+    normal*: style_item
+    hover*: style_item
+    active*: style_item
+    border_color*: color
+    label_normal*: color
+    label_hover*: color
+    label_active*: color
+    symbol_normal*: color
+    symbol_hover*: color
+    symbol_active*: color
+    button*: style_button
+    sym_normal*: symbol_type
+    sym_hover*: symbol_type
+    sym_active*: symbol_type
+    border*: float32
+    rounding*: float32
+    content_padding*: vec2
+    button_padding*: vec2
+    spacing*: vec2
 
-  nk_style_tab* = object
-    background*: nk_style_item
-    border_color*: nk_color
-    text*: nk_color
-    tab_maximize_button*: nk_style_button
-    tab_minimize_button*: nk_style_button
-    node_maximize_button*: nk_style_button
-    node_minimize_button*: nk_style_button
-    sym_minimize*: nk_symbol_type
-    sym_maximize*: nk_symbol_type
-    border*: cfloat
-    rounding*: cfloat
-    indent*: cfloat
-    padding*: nuk_vec2
-    spacing*: nuk_vec2
+  style_tab* = object
+    background*: style_item
+    border_color*: color
+    text*: color
+    tab_maximize_button*: style_button
+    tab_minimize_button*: style_button
+    node_maximize_button*: style_button
+    node_minimize_button*: style_button
+    sym_minimize*: symbol_type
+    sym_maximize*: symbol_type
+    border*: float32
+    rounding*: float32
+    indent*: float32
+    padding*: vec2
+    spacing*: vec2
 
-  nk_style_header_align* {.size: sizeof(cint).} = enum
-    NK_HEADER_LEFT, NK_HEADER_RIGHT
+  style_header_align* {.size: sizeof(int32).} = enum
+    HEADER_LEFT, HEADER_RIGHT
 
-  nk_style_window_header* = object
-    normal*: nk_style_item
-    hover*: nk_style_item
-    active*: nk_style_item
-    close_button*: nk_style_button
-    minimize_button*: nk_style_button
-    close_symbol*: nk_symbol_type
-    minimize_symbol*: nk_symbol_type
-    maximize_symbol*: nk_symbol_type
-    label_normal*: nk_color
-    label_hover*: nk_color
-    label_active*: nk_color
-    align*: nk_style_header_align
-    padding*: nuk_vec2
-    label_padding*: nuk_vec2
-    spacing*: nuk_vec2
+  style_window_header* = object
+    normal*: style_item
+    hover*: style_item
+    active*: style_item
+    close_button*: style_button
+    minimize_button*: style_button
+    close_symbol*: symbol_type
+    minimize_symbol*: symbol_type
+    maximize_symbol*: symbol_type
+    label_normal*: color
+    label_hover*: color
+    label_active*: color
+    align*: style_header_align
+    padding*: vec2
+    label_padding*: vec2
+    spacing*: vec2
 
-  nk_style_window* = object
-    header*: nk_style_window_header
-    fixed_background*: nk_style_item
-    background*: nk_color
-    border_color*: nk_color
-    popup_border_color*: nk_color
-    combo_border_color*: nk_color
-    contextual_border_color*: nk_color
-    menu_border_color*: nk_color
-    group_border_color*: nk_color
-    tooltip_border_color*: nk_color
-    scaler*: nk_style_item
-    border*: cfloat
-    combo_border*: cfloat
-    contextual_border*: cfloat
-    menu_border*: cfloat
-    group_border*: cfloat
-    tooltip_border*: cfloat
-    popup_border*: cfloat
-    rounding*: cfloat
-    spacing*: nuk_vec2
-    scrollbar_size*: nuk_vec2
-    min_size*: nuk_vec2
-    padding*: nuk_vec2
-    group_padding*: nuk_vec2
-    popup_padding*: nuk_vec2
-    combo_padding*: nuk_vec2
-    contextual_padding*: nuk_vec2
-    menu_padding*: nuk_vec2
-    tooltip_padding*: nuk_vec2
+  style_window* = object
+    header*: style_window_header
+    fixed_background*: style_item
+    background*: color
+    border_color*: color
+    popup_border_color*: color
+    combo_border_color*: color
+    contextual_border_color*: color
+    menu_border_color*: color
+    group_border_color*: color
+    tooltip_border_color*: color
+    scaler*: style_item
+    border*: float32
+    combo_border*: float32
+    contextual_border*: float32
+    menu_border*: float32
+    group_border*: float32
+    tooltip_border*: float32
+    popup_border*: float32
+    rounding*: float32
+    spacing*: vec2
+    scrollbar_size*: vec2
+    min_size*: vec2
+    padding*: vec2
+    group_padding*: vec2
+    popup_padding*: vec2
+    combo_padding*: vec2
+    contextual_padding*: vec2
+    menu_padding*: vec2
+    tooltip_padding*: vec2
 
-  nk_style* = object
-    font*: ptr nk_user_font
-    cursors*: array[NK_CURSOR_COUNT, ptr nk_cursor]
-    cursor_active*: ptr nk_cursor
-    cursor_last*: ptr nk_cursor
-    cursor_visible*: cint
-    text*: nk_style_text
-    button*: nk_style_button
-    contextual_button*: nk_style_button
-    menu_button*: nk_style_button
-    option*: nk_style_toggle
-    checkbox*: nk_style_toggle
-    selectable*: nk_style_selectable
-    slider*: nk_style_slider
-    progress*: nk_style_progress
-    property*: nk_style_property
-    edit*: nk_style_edit
-    chart*: nk_style_chart
-    scrollh*: nk_style_scrollbar
-    scrollv*: nk_style_scrollbar
-    tab*: nk_style_tab
-    combo*: nk_style_combo
-    window*: nk_style_window
+  style* = object
+    font*: ptr user_font
+    cursors*: array[CURSOR_COUNT, ptr cursor]
+    cursor_active*: ptr cursor
+    cursor_last*: ptr cursor
+    cursor_visible*: int32
+    text*: style_text
+    button*: style_button
+    contextual_button*: style_button
+    menu_button*: style_button
+    option*: style_toggle
+    checkbox*: style_toggle
+    selectable*: style_selectable
+    slider*: style_slider
+    progress*: style_progress
+    property*: style_property
+    edit*: style_edit
+    chart*: style_chart
+    scrollh*: style_scrollbar
+    scrollv*: style_scrollbar
+    tab*: style_tab
+    combo*: style_combo
+    window*: style_window
 
-  nk_str* = object
-    buffer*: nk_buffer
-    len*: cint
-
-type
-  nk_modify* {.size: sizeof(cint).} = enum
-    NK_FIXED = nk_false, NK_MODIFIABLE = nk_true
-
+  str* = object
+    buffer*: buffer
+    len*: int32
 
 type
-  nk_orientation* {.size: sizeof(cint).} = enum
-    NK_VERTICAL, NK_HORIZONTAL
+  modify* {.size: sizeof(int32).} = enum
+    FIXED = false, MODIFIABLE = true
 
 
 type
-  nk_collapse_states* {.size: sizeof(cint).} = enum
-    NK_MINIMIZED = nk_false, NK_MAXIMIZED = nk_true
+  orientation* {.size: sizeof(int32).} = enum
+    VERTICAL, HORIZONTAL
 
 
 type
-  nk_show_states* {.size: sizeof(cint).} = enum
-    NK_HIDDEN = nk_false, NK_SHOWN = nk_true
+  collapse_states* {.size: sizeof(int32).} = enum
+    MINIMIZED = false, MAXIMIZED = true
 
 
 type
-  chart_event* {.size: sizeof(cint).} = enum
+  show_states* {.size: sizeof(int32).} = enum
+    HIDDEN = false, SHOWN = true
+
+
+type
+  chart_event* {.size: sizeof(int32).} = enum
     charT_HOVERING = 0x00000001, charT_CLICKED = 0x00000002
 
 
 type
-  nk_color_format* {.size: sizeof(cint).} = enum
-    NK_RGB, NK_RGBA
+  color_format* {.size: sizeof(int32).} = enum
+    RGB, RGBA
 
 
 type
-  nk_popup_type* {.size: sizeof(cint).} = enum
-    NK_POPUP_STATIC, NK_POPUP_DYNAMIC
+  popup_type* {.size: sizeof(int32).} = enum
+    POPUP_STATIC, POPUP_DYNAMIC
 
 
 type
-  nk_layout_format* {.size: sizeof(cint).} = enum
-    NK_DYNAMIC, NK_STATIC
+  layout_format* {.size: sizeof(int32).} = enum
+    DYNAMIC, STATIC
 
 
 type
-  nk_tree_type* {.size: sizeof(cint).} = enum
-    NK_TREE_NODE, NK_TREE_TAB
+  tree_type* {.size: sizeof(int32).} = enum
+    TREE_NODE, TREE_TAB
 
 
 type
-  nk_style_colors* {.size: sizeof(cint).} = enum
-    NK_COLOR_TEXT, NK_COLOR_WINDOW, NK_COLOR_HEADER, NK_COLOR_BORDER,
-    NK_COLOR_BUTTON, NK_COLOR_BUTTON_HOVER, NK_COLOR_BUTTON_ACTIVE,
-    NK_COLOR_TOGGLE, NK_COLOR_TOGGLE_HOVER, NK_COLOR_TOGGLE_CURSOR,
-    NK_COLOR_SELECT, NK_COLOR_SELECT_ACTIVE, NK_COLOR_SLIDER,
-    NK_COLOR_SLIDER_CURSOR, NK_COLOR_SLIDER_CURSOR_HOVER,
-    NK_COLOR_SLIDER_CURSOR_ACTIVE, NK_COLOR_PROPERTY, NK_COLOR_EDIT,
-    NK_COLOR_EDIT_CURSOR, NK_COLOR_COMBO, NK_COLOR_CHART, NK_COLOR_CHART_COLOR,
-    NK_COLOR_CHART_COLOR_HIGHLIGHT, NK_COLOR_SCROLLBAR, NK_COLOR_SCROLLBAR_CURSOR,
-    NK_COLOR_SCROLLBAR_CURSOR_HOVER, NK_COLOR_SCROLLBAR_CURSOR_ACTIVE,
-    NK_COLOR_TAB_HEADER, NK_COLOR_COUNT
+  style_colors* {.size: sizeof(int32).} = enum
+    COLOR_TEXT, COLOR_WINDOW, COLOR_HEADER, COLOR_BORDER,
+    COLOR_BUTTON, COLOR_BUTTON_HOVER, COLOR_BUTTON_ACTIVE,
+    COLOR_TOGGLE, COLOR_TOGGLE_HOVER, COLOR_TOGGLE_CURSOR,
+    COLOR_SELECT, COLOR_SELECT_ACTIVE, COLOR_SLIDER,
+    COLOR_SLIDER_CURSOR, COLOR_SLIDER_CURSOR_HOVER,
+    COLOR_SLIDER_CURSOR_ACTIVE, COLOR_PROPERTY, COLOR_EDIT,
+    COLOR_EDIT_CURSOR, COLOR_COMBO, COLOR_CHART, COLOR_CHART_COLOR,
+    COLOR_CHART_COLOR_HIGHLIGHT, COLOR_SCROLLBAR, COLOR_SCROLLBAR_CURSOR,
+    COLOR_SCROLLBAR_CURSOR_HOVER, COLOR_SCROLLBAR_CURSOR_ACTIVE,
+    COLOR_TAB_HEADER, COLOR_COUNT
 
 
 type
-  nk_widget_layout_states* {.size: sizeof(cint).} = enum
-    NK_WIDGET_INVALID, NK_WIDGET_VALID, NK_WIDGET_ROM
+  widget_layout_states* {.size: sizeof(int32).} = enum
+    WIDGET_INVALID, WIDGET_VALID, WIDGET_ROM
 
 
 type
-  nk_widget_states* {.size: sizeof(cint).} = enum
-    NK_WIDGET_STATE_MODIFIED = (1 shl (1)), NK_WIDGET_STATE_INACTIVE = (1 shl (2)),
-    NK_WIDGET_STATE_ENTERED = (1 shl (3)), NK_WIDGET_STATE_HOVER = (1 shl (4)),
-    NK_WIDGET_STATE_ACTIVED = (1 shl (5)), NK_WIDGET_STATE_LEFT = (1 shl (6))
+  widget_states* {.size: sizeof(int32).} = enum
+    WIDGET_STATE_MODIFIED = (1 shl (1)), WIDGET_STATE_INACTIVE = (1 shl (2)),
+    WIDGET_STATE_ENTERED = (1 shl (3)), WIDGET_STATE_HOVER = (1 shl (4)),
+    WIDGET_STATE_ACTIVED = (1 shl (5)), WIDGET_STATE_LEFT = (1 shl (6))
     
-const NK_WIDGET_STATE_HOVERED = nk_widget_states(NK_WIDGET_STATE_HOVER.cint or NK_WIDGET_STATE_MODIFIED.cint) 
-const NK_WIDGET_STATE_ACTIVE = nk_widget_states(NK_WIDGET_STATE_ACTIVED.cint or NK_WIDGET_STATE_MODIFIED.cint)
+const WIDGET_STATE_HOVERED = widget_states(WIDGET_STATE_HOVER.int32 or WIDGET_STATE_MODIFIED.int32) 
+const WIDGET_STATE_ACTIVE = widget_states(WIDGET_STATE_ACTIVED.int32 or WIDGET_STATE_MODIFIED.int32)
 
 
 type
-  nk_text_align* {.size: sizeof(cint).} = enum
-    NK_TEXT_ALIGN_LEFT = 0x00000001, NK_TEXT_ALIGN_CENTERED = 0x00000002,
-    NK_TEXT_ALIGN_RIGHT = 0x00000004, NK_TEXT_ALIGN_TOP = 0x00000008,
-    NK_TEXT_ALIGN_MIDDLE = 0x00000010, NK_TEXT_ALIGN_BOTTOM = 0x00000020
+  text_align* {.size: sizeof(int32).} = enum
+    TEXT_ALIGN_LEFT = 0x00000001, TEXT_ALIGN_CENTERED = 0x00000002,
+    TEXT_ALIGN_RIGHT = 0x00000004, TEXT_ALIGN_TOP = 0x00000008,
+    TEXT_ALIGN_MIDDLE = 0x00000010, TEXT_ALIGN_BOTTOM = 0x00000020
 
 
 type
-  nk_text_alignment* {.size: sizeof(cint).} = enum
-    NK_TEXT_LEFT = NK_TEXT_ALIGN_MIDDLE.cint or NK_TEXT_ALIGN_LEFT.cint,
-    NK_TEXT_CENTERED = NK_TEXT_ALIGN_MIDDLE.cint or NK_TEXT_ALIGN_CENTERED.cint,
-    NK_TEXT_RIGHT = NK_TEXT_ALIGN_MIDDLE.cint or NK_TEXT_ALIGN_RIGHT.cint
+  text_alignment* {.size: sizeof(int32).} = enum
+    TEXT_LEFT = TEXT_ALIGN_MIDDLE.int32 or TEXT_ALIGN_LEFT.int32,
+    TEXT_CENTERED = TEXT_ALIGN_MIDDLE.int32 or TEXT_ALIGN_CENTERED.int32,
+    TEXT_RIGHT = TEXT_ALIGN_MIDDLE.int32 or TEXT_ALIGN_RIGHT.int32
 
 
 type
-  nk_edit_flags* {.size: sizeof(cint).} = enum
-    NK_EDIT_DEFAULT = 0, NK_EDIT_READ_ONLY = (1 shl (0)),
-    NK_EDIT_AUTO_SELECT = (1 shl (1)), NK_EDIT_SIG_ENTER = (1 shl (2)),
-    NK_EDIT_ALLOW_TAB = (1 shl (3)), NK_EDIT_NO_CURSOR = (1 shl (4)),
-    NK_EDIT_SELECTABLE = (1 shl (5)), NK_EDIT_CLIPBOARD = (1 shl (6)),
-    NK_EDIT_CTRL_ENTER_NEWLINE = (1 shl (7)),
-    NK_EDIT_NO_HORIZONTAL_SCROLL = (1 shl (8)),
-    NK_EDIT_ALWAYS_INSERT_MODE = (1 shl (9)), NK_EDIT_MULTILINE = (1 shl (11)),
-    NK_EDIT_GOTO_END_ON_ACTIVATE = (1 shl (12))
+  edit_flags* {.size: sizeof(int32).} = enum
+    EDIT_DEFAULT = 0, EDIT_READ_ONLY = (1 shl (0)),
+    EDIT_AUTO_SELECT = (1 shl (1)), EDIT_SIG_ENTER = (1 shl (2)),
+    EDIT_ALLOW_TAB = (1 shl (3)), EDIT_NO_CURSOR = (1 shl (4)),
+    EDIT_SELECTABLE = (1 shl (5)), EDIT_CLIPBOARD = (1 shl (6)),
+    EDIT_CTRL_ENTER_NEWLINE = (1 shl (7)),
+    EDIT_NO_HORIZONTAL_SCROLL = (1 shl (8)),
+    EDIT_ALWAYS_INSERT_MODE = (1 shl (9)), EDIT_MULTILINE = (1 shl (11)),
+    EDIT_GOTO_END_ON_ACTIVATE = (1 shl (12))
 
 
 type
-  nk_edit_types* {.size: sizeof(cint).} = enum
-    NK_EDIT_SIMPLE = NK_EDIT_ALWAYS_INSERT_MODE,
-    NK_EDIT_FIELD = NK_EDIT_SIMPLE.cint or NK_EDIT_SELECTABLE.cint or NK_EDIT_CLIPBOARD.cint,  
-    NK_EDIT_EDITOR = NK_EDIT_SELECTABLE.cint or NK_EDIT_MULTILINE.cint or NK_EDIT_ALLOW_TAB.cint or NK_EDIT_CLIPBOARD.cint,
-    NK_EDIT_BOX = NK_EDIT_ALWAYS_INSERT_MODE.cint or NK_EDIT_SELECTABLE.cint or NK_EDIT_MULTILINE.cint or NK_EDIT_ALLOW_TAB.cint or NK_EDIT_CLIPBOARD.cint
+  edit_types* {.size: sizeof(int32).} = enum
+    EDIT_SIMPLE = EDIT_ALWAYS_INSERT_MODE,
+    EDIT_FIELD = EDIT_SIMPLE.int32 or EDIT_SELECTABLE.int32 or EDIT_CLIPBOARD.int32,  
+    EDIT_EDITOR = EDIT_SELECTABLE.int32 or EDIT_MULTILINE.int32 or EDIT_ALLOW_TAB.int32 or EDIT_CLIPBOARD.int32,
+    EDIT_BOX = EDIT_ALWAYS_INSERT_MODE.int32 or EDIT_SELECTABLE.int32 or EDIT_MULTILINE.int32 or EDIT_ALLOW_TAB.int32 or EDIT_CLIPBOARD.int32
 
 
 type
-  nk_edit_events* {.size: sizeof(cint).} = enum
-    NK_EDIT_ACTIVE = (1 shl (0)), NK_EDIT_INACTIVE = (1 shl (1)),
-    NK_EDIT_ACTIVATED = (1 shl (2)), NK_EDIT_DEACTIVATED = (1 shl (3)),
-    NK_EDIT_COMMITED = (1 shl (4))
+  edit_events* {.size: sizeof(int32).} = enum
+    EDIT_ACTIVE = (1 shl (0)), EDIT_INACTIVE = (1 shl (1)),
+    EDIT_ACTIVATED = (1 shl (2)), EDIT_DEACTIVATED = (1 shl (3)),
+    EDIT_COMMITED = (1 shl (4))
 
 
 type
-  nk_panel_flags* {.size: sizeof(cint).} = enum
-    NK_WINDOW_BORDER = (1 shl (0)), NK_WINDOW_MOVABLE = (1 shl (1)),
-    NK_WINDOW_SCALABLE = (1 shl (2)), NK_WINDOW_CLOSABLE = (1 shl (3)),
-    NK_WINDOW_MINIMIZABLE = (1 shl (4)), NK_WINDOW_NO_SCROLLBAR = (1 shl (5)),
-    NK_WINDOW_TITLE = (1 shl (6)), NK_WINDOW_SCROLL_AUTO_HIDE = (1 shl (7)),
-    NK_WINDOW_BACKGROUND = (1 shl (8)), NK_WINDOW_SCALE_LEFT = (1 shl (9))
+  panel_flags* {.size: sizeof(int32).} = enum
+    WINDOW_BORDER = (1 shl (0)), WINDOW_MOVABLE = (1 shl (1)),
+    WINDOW_SCALABLE = (1 shl (2)), WINDOW_CLOSABLE = (1 shl (3)),
+    WINDOW_MINIMIZABLE = (1 shl (4)), WINDOW_NO_SCROLLBAR = (1 shl (5)),
+    WINDOW_TITLE = (1 shl (6)), WINDOW_SCROLL_AUTO_HIDE = (1 shl (7)),
+    WINDOW_BACKGROUND = (1 shl (8)), WINDOW_SCALE_LEFT = (1 shl (9))
 
-proc nk_buffer_init_default*(a2: ptr nk_buffer) {.cdecl,
-    importc: "nk_buffer_init_default".}
-proc nk_buffer_init*(a2: ptr nk_buffer; a3: ptr nk_allocator; size: uint) {.cdecl,
-    importc: "nk_buffer_init".}
-proc nk_buffer_init_fixed*(a2: ptr nk_buffer; memory: pointer; size: uint) {.cdecl,
-    importc: "nk_buffer_init_fixed".}
-proc nk_buffer_info*(a2: ptr nk_memory_status; a3: ptr nk_buffer) {.cdecl,
-    importc: "nk_buffer_info".}
-proc nk_buffer_push*(a2: ptr nk_buffer; typ: nk_buffer_allocation_type;
-                    memory: pointer; size: uint; align: uint) {.cdecl,
-    importc: "nk_buffer_push".}
-proc nk_buffer_mark*(a2: ptr nk_buffer; typ: nk_buffer_allocation_type) {.cdecl,
-    importc: "nk_buffer_mark".}
-proc nk_buffer_reset*(a2: ptr nk_buffer; typ: nk_buffer_allocation_type) {.cdecl,
-    importc: "nk_buffer_reset".}
-proc nk_buffer_clear*(a2: ptr nk_buffer) {.cdecl, importc: "nk_buffer_clear".}
-proc nk_buffer_free*(a2: ptr nk_buffer) {.cdecl, importc: "nk_buffer_free".}
-proc nk_buffer_memory*(a2: ptr nk_buffer): pointer {.cdecl,
-    importc: "nk_buffer_memory".}
-proc nk_buffer_memory_const*(a2: ptr nk_buffer): pointer {.cdecl,
-    importc: "nk_buffer_memory_const".}
-proc nk_buffer_total*(a2: ptr nk_buffer): uint {.cdecl, importc: "nk_buffer_total".}
+proc buffer_init_default*(a2: ptr buffer) {.importc: "nk_buffer_init_default".}
+proc init*(b: var buffer) =
+    buffer_init_default(addr b)
+
+proc buffer_init*(a2: ptr buffer; a3: ptr allocator; size: uint) {.importc: "nk_buffer_init".}
+proc init*(b: var buffer, a: var allocator, size: uint) =
+    buffer_init(addr b, addr a, size)
+
+proc buffer_init_fixed*(a2: ptr buffer; memory: pointer; size: uint) {.importc: "nk_buffer_init_fixed".}
+proc init*(b: var buffer, memory: pointer, size:uint) =
+  buffer_init_fixed(addr b, memory, size)
+
+proc buffer_info*(a2: ptr memory_status; a3: ptr buffer) {.importc: "nk_buffer_info".}
+proc buffer_push*(a2: ptr buffer; typ: buffer_allocation_type;
+                    memory: pointer; size: uint; align: uint) {.importc: "nk_buffer_push".}
+proc buffer_mark*(a2: ptr buffer; typ: buffer_allocation_type) {.importc: "nk_buffer_mark".}
+proc buffer_reset*(a2: ptr buffer; typ: buffer_allocation_type) {.importc: "nk_buffer_reset".}
+proc buffer_clear*(a2: ptr buffer) {.importc: "nk_buffer_clear".}
+proc buffer_free*(a2: ptr buffer) {.importc: "nk_buffer_free".}
+proc buffer_memory*(a2: ptr buffer): pointer {.importc: "nk_buffer_memory".}
+proc buffer_memory_const*(a2: ptr buffer): pointer {.importc: "nk_buffer_memory_const".}
+proc buffer_total*(a2: ptr buffer): uint {.importc: "nk_buffer_total".}
 
 
-proc nk_str_init*(a2: ptr nk_str; a3: ptr nk_allocator; size: uint) {.cdecl,
-    importc: "nk_str_init".}
-proc nk_str_init_fixed*(a2: ptr nk_str; memory: pointer; size: uint) {.cdecl,
-    importc: "nk_str_init_fixed".}
-proc nk_str_clear*(a2: ptr nk_str) {.cdecl, importc: "nk_str_clear".}
-proc nk_str_free*(a2: ptr nk_str) {.cdecl, importc: "nk_str_free".}
-proc nk_str_append_text_char*(a2: ptr nk_str; a3: cstring; a4: cint): cint {.cdecl,
-    importc: "nk_str_append_text_char".}
-proc nk_str_append_str_char*(a2: ptr nk_str; a3: cstring): cint {.cdecl,
-    importc: "nk_str_append_str_char".}
-proc nk_str_append_text_utf8*(a2: ptr nk_str; a3: cstring; a4: cint): cint {.cdecl,
-    importc: "nk_str_append_text_utf8".}
-proc nk_str_append_str_utf8*(a2: ptr nk_str; a3: cstring): cint {.cdecl,
-    importc: "nk_str_append_str_utf8".}
-proc nk_str_append_text_runes*(a2: ptr nk_str; a3: ptr uint32; a4: cint): cint {.cdecl,
-    importc: "nk_str_append_text_runes".}
-proc nk_str_append_str_runes*(a2: ptr nk_str; a3: ptr uint32): cint {.cdecl,
-    importc: "nk_str_append_str_runes".}
-proc nk_str_insert_at_char*(a2: ptr nk_str; pos: cint; a4: cstring; a5: cint): cint {.
-    cdecl, importc: "nk_str_insert_at_char".}
-proc nk_str_insert_at_rune*(a2: ptr nk_str; pos: cint; a4: cstring; a5: cint): cint {.
-    cdecl, importc: "nk_str_insert_at_rune".}
-proc nk_str_insert_text_char*(a2: ptr nk_str; pos: cint; a4: cstring; a5: cint): cint {.
-    cdecl, importc: "nk_str_insert_text_char".}
-proc nk_str_insert_str_char*(a2: ptr nk_str; pos: cint; a4: cstring): cint {.cdecl,
-    importc: "nk_str_insert_str_char".}
-proc nk_str_insert_text_utf8*(a2: ptr nk_str; pos: cint; a4: cstring; a5: cint): cint {.
-    cdecl, importc: "nk_str_insert_text_utf8".}
-proc nk_str_insert_str_utf8*(a2: ptr nk_str; pos: cint; a4: cstring): cint {.cdecl,
-    importc: "nk_str_insert_str_utf8".}
-proc nk_str_insert_text_runes*(a2: ptr nk_str; pos: cint; a4: ptr uint32; a5: cint): cint {.
-    cdecl, importc: "nk_str_insert_text_runes".}
-proc nk_str_insert_str_runes*(a2: ptr nk_str; pos: cint; a4: ptr uint32): cint {.cdecl,
-    importc: "nk_str_insert_str_runes".}
-proc nk_str_remove_chars*(a2: ptr nk_str; len: cint) {.cdecl,
-    importc: "nk_str_remove_chars".}
-proc nk_str_remove_runes*(str: ptr nk_str; len: cint) {.cdecl,
-    importc: "nk_str_remove_runes".}
-proc nk_str_delete_chars*(a2: ptr nk_str; pos: cint; len: cint) {.cdecl,
-    importc: "nk_str_delete_chars".}
-proc nk_str_delete_runes*(a2: ptr nk_str; pos: cint; len: cint) {.cdecl,
-    importc: "nk_str_delete_runes".}
-proc nk_str_at_char*(a2: ptr nk_str; pos: cint): cstring {.cdecl,
-    importc: "nk_str_at_char".}
-proc nk_str_at_rune*(a2: ptr nk_str; pos: cint; unicode: ptr uint32; len: ptr cint): cstring {.
-    cdecl, importc: "nk_str_at_rune".}
-proc nk_str_rune_at*(a2: ptr nk_str; pos: cint): uint32 {.cdecl,
-    importc: "nk_str_rune_at".}
-proc nk_str_at_char_const*(a2: ptr nk_str; pos: cint): cstring {.cdecl,
-    importc: "nk_str_at_char_const".}
-proc nk_str_at_const*(a2: ptr nk_str; pos: cint; unicode: ptr uint32; len: ptr cint): cstring {.
-    cdecl, importc: "nk_str_at_const".}
-proc nk_str_get*(a2: ptr nk_str): cstring {.cdecl, importc: "nk_str_get".}
-proc nk_str_get_const*(a2: ptr nk_str): cstring {.cdecl, importc: "nk_str_get_const".}
-proc nk_str_len*(a2: ptr nk_str): cint {.cdecl, importc: "nk_str_len".}
-proc nk_str_len_char*(a2: ptr nk_str): cint {.cdecl, importc: "nk_str_len_char".}
+proc nk_str_init*(a2: ptr str; a3: ptr allocator; size: uint) {.importc: "nk_str_init".}
+proc nk_str_init_fixed*(a2: ptr str; memory: pointer; size: uint) {.importc: "nk_str_init_fixed".}
+proc nk_str_clear*(a2: ptr str) {.importc: "nk_str_clear".}
+proc nk_str_free*(a2: ptr str) {.importc: "nk_str_free".}
+proc nk_str_append_text_char*(a2: ptr str; a3: cstring; a4: int32): int32 {.importc: "nk_str_append_text_char".}
+proc nk_str_append_str_char*(a2: ptr str; a3: cstring): int32 {.importc: "nk_str_append_str_char".}
+proc nk_str_append_text_utf8*(a2: ptr str; a3: cstring; a4: int32): int32 {.importc: "nk_str_append_text_utf8".}
+proc nk_str_append_str_utf8*(a2: ptr str; a3: cstring): int32 {.importc: "nk_str_append_str_utf8".}
+proc nk_str_append_text_runes*(a2: ptr str; a3: ptr uint32; a4: int32): int32 {.importc: "nk_str_append_text_runes".}
+proc nk_str_append_str_runes*(a2: ptr str; a3: ptr uint32): int32 {.importc: "nk_str_append_str_runes".}
+proc nk_str_insert_at_char*(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_at_char".}
+proc nk_str_insert_at_rune*(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_at_rune".}
+proc nk_str_insert_text_char*(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_text_char".}
+proc nk_str_insert_str_char*(a2: ptr str; pos: int32; a4: cstring): int32 {.importc: "nk_str_insert_str_char".}
+proc nk_str_insert_text_utf8*(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_text_utf8".}
+proc nk_str_insert_str_utf8*(a2: ptr str; pos: int32; a4: cstring): int32 {.importc: "nk_str_insert_str_utf8".}
+proc nk_str_insert_text_runes*(a2: ptr str; pos: int32; a4: ptr uint32; a5: int32): int32 {. importc: "nk_str_insert_text_runes".}
+proc nk_str_insert_str_runes*(a2: ptr str; pos: int32; a4: ptr uint32): int32 {.importc: "nk_str_insert_str_runes".}
+proc nk_str_remove_chars*(a2: ptr str; len: int32) {.importc: "nk_str_remove_chars".}
+proc nk_str_remove_runes*(str: ptr str; len: int32) {.importc: "nk_str_remove_runes".}
+proc nk_str_delete_chars*(a2: ptr str; pos: int32; len: int32) {.importc: "nk_str_delete_chars".}
+proc nk_str_delete_runes*(a2: ptr str; pos: int32; len: int32) {.importc: "nk_str_delete_runes".}
+proc nk_str_at_char*(a2: ptr str; pos: int32): cstring {.importc: "nk_str_at_char".}
+proc nk_str_at_rune*(a2: ptr str; pos: int32; unicode: ptr uint32; len: ptr int32): cstring {. importc: "nk_str_at_rune".}
+proc nk_str_rune_at*(a2: ptr str; pos: int32): uint32 {.importc: "nk_str_rune_at".}
+proc nk_str_at_char_const*(a2: ptr str; pos: int32): cstring {.importc: "nk_str_at_char_const".}
+proc nk_str_at_const*(a2: ptr str; pos: int32; unicode: ptr uint32; len: ptr int32): cstring {. importc: "nk_str_at_const".}
+proc nk_str_get*(a2: ptr str): cstring {.importc: "nk_str_get".}
+proc nk_str_get_const*(a2: ptr str): cstring {.importc: "nk_str_get_const".}
+proc nk_str_len*(a2: ptr str): int32 {.importc: "nk_str_len".}
+proc nk_str_len_char*(a2: ptr str): int32 {.importc: "nk_str_len_char".}
 
 type
-  nk_text_edit_mode* {.size: sizeof(cint).} = enum
-    NK_TEXT_EDIT_MODE_VIEW, NK_TEXT_EDIT_MODE_INSERT, NK_TEXT_EDIT_MODE_REPLACE
+  text_edit_mode* {.size: sizeof(int32).} = enum
+    TEXT_EDIT_MODE_VIEW, TEXT_EDIT_MODE_INSERT, TEXT_EDIT_MODE_REPLACE
 
 
-proc nk_filter_default*(a2: ptr nk_text_edit; unicode: uint32): cint {.cdecl,
-    importc: "nk_filter_default".}
-proc nk_filter_ascii*(a2: ptr nk_text_edit; unicode: uint32): cint {.cdecl,
-    importc: "nk_filter_ascii".}
-proc nk_filter_float*(a2: ptr nk_text_edit; unicode: uint32): cint {.cdecl,
-    importc: "nk_filter_float".}
-proc nk_filter_decimal*(a2: ptr nk_text_edit; unicode: uint32): cint {.cdecl,
-    importc: "nk_filter_decimal".}
-proc nk_filter_hex*(a2: ptr nk_text_edit; unicode: uint32): cint {.cdecl,
-    importc: "nk_filter_hex".}
-proc nk_filter_oct*(a2: ptr nk_text_edit; unicode: uint32): cint {.cdecl,
-    importc: "nk_filter_oct".}
-proc nk_filter_binary*(a2: ptr nk_text_edit; unicode: uint32): cint {.cdecl,
-    importc: "nk_filter_binary".}
-proc nk_textedit_init*(a2: ptr nk_text_edit; a3: ptr nk_allocator; size: uint) {.
-    cdecl, importc: "nk_textedit_init".}
-proc nk_textedit_init_fixed*(a2: ptr nk_text_edit; memory: pointer; size: uint) {.
-    cdecl, importc: "nk_textedit_init_fixed".}
-proc nk_textedit_free*(a2: ptr nk_text_edit) {.cdecl, importc: "nk_textedit_free".}
-proc nk_textedit_text*(a2: ptr nk_text_edit; a3: cstring; total_len: cint) {.cdecl,
-    importc: "nk_textedit_text".}
-proc nk_textedit_delete*(a2: ptr nk_text_edit; where: cint; len: cint) {.cdecl,
-    importc: "nk_textedit_delete".}
-proc nk_textedit_delete_selection*(a2: ptr nk_text_edit) {.cdecl,
-    importc: "nk_textedit_delete_selection".}
-proc nk_textedit_select_all*(a2: ptr nk_text_edit) {.cdecl,
-    importc: "nk_textedit_select_all".}
-proc nk_textedit_cut*(a2: ptr nk_text_edit): cint {.cdecl, importc: "nk_textedit_cut".}
-proc nk_textedit_paste*(a2: ptr nk_text_edit; a3: cstring; len: cint): cint {.cdecl,
-    importc: "nk_textedit_paste".}
-proc nk_textedit_undo*(a2: ptr nk_text_edit) {.cdecl, importc: "nk_textedit_undo".}
-proc nk_textedit_redo*(a2: ptr nk_text_edit) {.cdecl, importc: "nk_textedit_redo".}
+proc nk_filter_default*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_default".}
+proc nk_filter_ascii*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_ascii".}
+proc nk_filter_float*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_float".}
+proc nk_filter_decimal*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_decimal".}
+proc nk_filter_hex*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_hex".}
+proc nk_filter_oct*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_oct".}
+proc nk_filter_binary*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_binary".}
+proc nk_textedit_init*(a2: ptr text_edit; a3: ptr allocator; size: uint) {. importc: "nk_textedit_init".}
+proc nk_textedit_init_fixed*(a2: ptr text_edit; memory: pointer; size: uint) {. importc: "nk_textedit_init_fixed".}
+proc nk_textedit_free*(a2: ptr text_edit) {.importc: "nk_textedit_free".}
+proc nk_textedit_text*(a2: ptr text_edit; a3: cstring; total_len: int32) {.importc: "nk_textedit_text".}
+proc nk_textedit_delete*(a2: ptr text_edit; where: int32; len: int32) {.importc: "nk_textedit_delete".}
+proc nk_textedit_delete_selection*(a2: ptr text_edit) {.importc: "nk_textedit_delete_selection".}
+proc nk_textedit_select_all*(a2: ptr text_edit) {.importc: "nk_textedit_select_all".}
+proc nk_textedit_cut*(a2: ptr text_edit): int32 {.importc: "nk_textedit_cut".}
+proc nk_textedit_paste*(a2: ptr text_edit; a3: cstring; len: int32): int32 {.importc: "nk_textedit_paste".}
+proc nk_textedit_undo*(a2: ptr text_edit) {.importc: "nk_textedit_undo".}
+proc nk_textedit_redo*(a2: ptr text_edit) {.importc: "nk_textedit_redo".}
+
 type
-  nk_command_type* {.size: sizeof(cint).} = enum
-    NK_COMMAND_NOP, NK_COMMAND_SCISSOR, NK_COMMAND_LINE, NK_COMMAND_CURVE,
-    NK_COMMAND_RECT, NK_COMMAND_RECT_FILLED, NK_COMMAND_RECT_MULTI_COLOR,
-    NK_COMMAND_CIRCLE, NK_COMMAND_CIRCLE_FILLED, NK_COMMAND_ARC,
-    NK_COMMAND_ARC_FILLED, NK_COMMAND_TRIANGLE, NK_COMMAND_TRIANGLE_FILLED,
-    NK_COMMAND_POLYGON, NK_COMMAND_POLYGON_FILLED, NK_COMMAND_POLYLINE,
-    NK_COMMAND_TEXT, NK_COMMAND_IMAGE
+  command_type* {.size: sizeof(int32).} = enum
+    COMMAND_NOP, COMMAND_SCISSOR, COMMAND_LINE, COMMAND_CURVE,
+    COMMAND_RECT, COMMAND_RECT_FILLED, COMMAND_RECT_MULTI_COLOR,
+    COMMAND_CIRCLE, COMMAND_CIRCLE_FILLED, COMMAND_ARC,
+    COMMAND_ARC_FILLED, COMMAND_TRIANGLE, COMMAND_TRIANGLE_FILLED,
+    COMMAND_POLYGON, COMMAND_POLYGON_FILLED, COMMAND_POLYLINE,
+    COMMAND_TEXT, COMMAND_IMAGE
 
 
 type
-  nk_command* = object
-    typ*: nk_command_type
+  command* = object
+    typ*: command_type
     next*: uint
 
-  nk_command_scissor* = object
-    header*: nk_command
-    x*: cshort
-    y*: cshort
-    w*: cushort
-    h*: cushort
+  command_scissor* = object
+    header*: command
+    x*: int16
+    y*: int16
+    w*: uint16
+    h*: uint16
 
-  nk_command_line* = object
-    header*: nk_command
-    line_thickness*: cushort
-    begin*: nuk_vec2i
-    e*: nuk_vec2i
-    color*: nk_color
+  command_line* = object
+    header*: command
+    line_thickness*: uint16
+    begin*: vec2i
+    e*: vec2i
+    color*: color
 
-  nk_command_curve* = object
-    header*: nk_command
-    line_thickness*: cushort
-    begin*: nuk_vec2i
-    e*: nuk_vec2i
-    ctrl*: array[2, nuk_vec2i]
-    color*: nk_color
+  command_curve* = object
+    header*: command
+    line_thickness*: uint16
+    begin*: vec2i
+    e*: vec2i
+    ctrl*: array[2, vec2i]
+    color*: color
 
-  nk_command_rect* = object
-    header*: nk_command
-    rounding*: cushort
-    line_thickness*: cushort
-    x*: cshort
-    y*: cshort
-    w*: cushort
-    h*: cushort
-    color*: nk_color
+  command_rect* = object
+    header*: command
+    rounding*: uint16
+    line_thickness*: uint16
+    x*: int16
+    y*: int16
+    w*: uint16
+    h*: uint16
+    color*: color
 
-  nk_command_rect_filled* = object
-    header*: nk_command
-    rounding*: cushort
-    x*: cshort
-    y*: cshort
-    w*: cushort
-    h*: cushort
-    color*: nk_color
+  command_rect_filled* = object
+    header*: command
+    rounding*: uint16
+    x*: int16
+    y*: int16
+    w*: uint16
+    h*: uint16
+    color*: color
 
-  nk_command_rect_multi_color* = object
-    header*: nk_command
-    x*: cshort
-    y*: cshort
-    w*: cushort
-    h*: cushort
-    left*: nk_color
-    top*: nk_color
-    bottom*: nk_color
-    right*: nk_color
+  command_rect_multi_color* = object
+    header*: command
+    x*: int16
+    y*: int16
+    w*: uint16
+    h*: uint16
+    left*: color
+    top*: color
+    bottom*: color
+    right*: color
 
-  nk_command_triangle* = object
-    header*: nk_command
-    line_thickness*: cushort
-    a*: nuk_vec2i
-    b*: nuk_vec2i
-    c*: nuk_vec2i
-    color*: nk_color
+  command_triangle* = object
+    header*: command
+    line_thickness*: uint16
+    a*: vec2i
+    b*: vec2i
+    c*: vec2i
+    color*: color
 
-  nk_command_triangle_filled* = object
-    header*: nk_command
-    a*: nuk_vec2i
-    b*: nuk_vec2i
-    c*: nuk_vec2i
-    color*: nk_color
+  command_triangle_filled* = object
+    header*: command
+    a*: vec2i
+    b*: vec2i
+    c*: vec2i
+    color*: color
 
-  nk_command_circle* = object
-    header*: nk_command
-    x*: cshort
-    y*: cshort
-    line_thickness*: cushort
-    w*: cushort
-    h*: cushort
-    color*: nk_color
+  command_circle* = object
+    header*: command
+    x*: int16
+    y*: int16
+    line_thickness*: uint16
+    w*: uint16
+    h*: uint16
+    color*: color
 
-  nk_command_circle_filled* = object
-    header*: nk_command
-    x*: cshort
-    y*: cshort
-    w*: cushort
-    h*: cushort
-    color*: nk_color
+  command_circle_filled* = object
+    header*: command
+    x*: int16
+    y*: int16
+    w*: uint16
+    h*: uint16
+    color*: color
 
-  nk_command_arc* = object
-    header*: nk_command
-    cx*: cshort
-    cy*: cshort
-    r*: cushort
-    line_thickness*: cushort
-    a*: array[2, cfloat]
-    color*: nk_color
+  command_arc* = object
+    header*: command
+    cx*: int16
+    cy*: int16
+    r*: uint16
+    line_thickness*: uint16
+    a*: array[2, float32]
+    color*: color
 
-  nk_command_arc_filled* = object
-    header*: nk_command
-    cx*: cshort
-    cy*: cshort
-    r*: cushort
-    a*: array[2, cfloat]
-    color*: nk_color
+  command_arc_filled* = object
+    header*: command
+    cx*: int16
+    cy*: int16
+    r*: uint16
+    a*: array[2, float32]
+    color*: color
 
-  nk_command_polygon* = object
-    header*: nk_command
-    color*: nk_color
-    line_thickness*: cushort
-    point_count*: cushort
-    points*: array[1, nuk_vec2i]
+  command_polygon* = object
+    header*: command
+    color*: color
+    line_thickness*: uint16
+    point_count*: uint16
+    points*: array[1, vec2i]
 
-  nk_command_polygon_filled* = object
-    header*: nk_command
-    color*: nk_color
-    point_count*: cushort
-    points*: array[1, nuk_vec2i]
+  command_polygon_filled* = object
+    header*: command
+    color*: color
+    point_count*: uint16
+    points*: array[1, vec2i]
 
-  nk_command_polyline* = object
-    header*: nk_command
-    color*: nk_color
-    line_thickness*: cushort
-    point_count*: cushort
-    points*: array[1, nuk_vec2i]
+  command_polyline* = object
+    header*: command
+    color*: color
+    line_thickness*: uint16
+    point_count*: uint16
+    points*: array[1, vec2i]
 
-  nk_command_image* = object
-    header*: nk_command
-    x*: cshort
-    y*: cshort
-    w*: cushort
-    h*: cushort
-    img*: nuk_image
-    col*: nk_color
+  command_image* = object
+    header*: command
+    x*: int16
+    y*: int16
+    w*: uint16
+    h*: uint16
+    img*: image
+    col*: color
 
-  nk_command_text* = object
-    header*: nk_command
-    font*: ptr nk_user_font
-    background*: nk_color
-    foreground*: nk_color
-    x*: cshort
-    y*: cshort
-    w*: cushort
-    h*: cushort
-    height*: cfloat
-    length*: cint
+  command_text* = object
+    header*: command
+    font*: ptr user_font
+    background*: color
+    foreground*: color
+    x*: int16
+    y*: int16
+    w*: uint16
+    h*: uint16
+    height*: float32
+    length*: int32
     string*: array[1, char]
 
-  nk_command_clipping* {.size: sizeof(cint).} = enum
-    NK_CLIPPING_OFF = nk_false, NK_CLIPPING_ON = nk_true
+  command_clipping* {.size: sizeof(int32).} = enum
+    CLIPPING_OFF = nk_false, CLIPPING_ON = nk_true
 
 
-proc nk_stroke_line*(b: ptr nk_command_buffer; x0: cfloat; y0: cfloat; x1: cfloat;
-                    y1: cfloat; line_thickness: cfloat; a8: nk_color) {.cdecl,
-    importc: "nk_stroke_line".}
-proc nk_stroke_curve*(a2: ptr nk_command_buffer; a3: cfloat; a4: cfloat; a5: cfloat;
-                     a6: cfloat; a7: cfloat; a8: cfloat; a9: cfloat; a10: cfloat;
-                     line_thickness: cfloat; a12: nk_color) {.cdecl,
-    importc: "nk_stroke_curve".}
-proc nk_stroke_rect*(a2: ptr nk_command_buffer; a3: nuk_rect; rounding: cfloat;
-                    line_thickness: cfloat; a6: nk_color) {.cdecl,
-    importc: "nk_stroke_rect".}
-proc nk_stroke_circle*(a2: ptr nk_command_buffer; a3: nuk_rect; line_thickness: cfloat;
-                      a5: nk_color) {.cdecl, importc: "nk_stroke_circle".}
-proc nk_stroke_arc*(a2: ptr nk_command_buffer; cx: cfloat; cy: cfloat; radius: cfloat;
-                   a_min: cfloat; a_max: cfloat; line_thickness: cfloat; a9: nk_color) {.
-    cdecl, importc: "nk_stroke_arc".}
-proc nk_stroke_triangle*(a2: ptr nk_command_buffer; a3: cfloat; a4: cfloat; a5: cfloat;
-                        a6: cfloat; a7: cfloat; a8: cfloat; line_thichness: cfloat;
-                        a10: nk_color) {.cdecl, importc: "nk_stroke_triangle".}
-proc nk_stroke_polyline*(a2: ptr nk_command_buffer; points: ptr cfloat;
-                        point_count: cint; line_thickness: cfloat; col: nk_color) {.
-    cdecl, importc: "nk_stroke_polyline".}
-proc nk_stroke_polygon*(a2: ptr nk_command_buffer; a3: ptr cfloat; point_count: cint;
-                       line_thickness: cfloat; a6: nk_color) {.cdecl,
-    importc: "nk_stroke_polygon".}
-proc nk_fill_rect*(a2: ptr nk_command_buffer; a3: nuk_rect; rounding: cfloat;
-                  a5: nk_color) {.cdecl, importc: "nk_fill_rect".}
-proc nk_fill_rect_multi_color*(a2: ptr nk_command_buffer; a3: nuk_rect; left: nk_color;
-                              top: nk_color; right: nk_color; bottom: nk_color) {.
-    cdecl, importc: "nk_fill_rect_multi_color".}
-proc nk_fill_circle*(a2: ptr nk_command_buffer; a3: nuk_rect; a4: nk_color) {.cdecl,
-    importc: "nk_fill_circle".}
-proc nk_fill_arc*(a2: ptr nk_command_buffer; cx: cfloat; cy: cfloat; radius: cfloat;
-                 a_min: cfloat; a_max: cfloat; a8: nk_color) {.cdecl,
-    importc: "nk_fill_arc".}
-proc nk_fill_triangle*(a2: ptr nk_command_buffer; x0: cfloat; y0: cfloat; x1: cfloat;
-                      y1: cfloat; x2: cfloat; y2: cfloat; a9: nk_color) {.cdecl,
-    importc: "nk_fill_triangle".}
-proc nk_fill_polygon*(a2: ptr nk_command_buffer; a3: ptr cfloat; point_count: cint;
-                     a5: nk_color) {.cdecl, importc: "nk_fill_polygon".}
-proc nk_push_scissor*(a2: ptr nk_command_buffer; a3: nuk_rect) {.cdecl,
-    importc: "nk_push_scissor".}
-proc nk_draw_image*(a2: ptr nk_command_buffer; a3: nuk_rect; a4: ptr nuk_image;
-                   a5: nk_color) {.cdecl, importc: "nk_draw_image".}
-proc nk_draw_text*(a2: ptr nk_command_buffer; a3: nuk_rect; text: cstring; len: cint;
-                  a6: ptr nk_user_font; a7: nk_color; a8: nk_color) {.cdecl,
-    importc: "nk_draw_text".}
-proc nk_next*(a2: ptr nk_context; a3: ptr nk_command): ptr nk_command {.cdecl,
-    importc: "nk__next".}
-proc nk_begin*(a2: ptr nk_context): ptr nk_command {.cdecl, importc: "nk__begin".}
+proc stroke_line*(b: ptr command_buffer; x0: float32; y0: float32; x1: float32;
+                    y1: float32; line_thickness: float32; a8: color) {.importc: "nk_stroke_line".}
+proc stroke_curve*(a2: ptr command_buffer; a3: float32; a4: float32; a5: float32;
+                     a6: float32; a7: float32; a8: float32; a9: float32; a10: float32;
+                     line_thickness: float32; a12: color) {.importc: "nk_stroke_curve".}
+proc stroke_rect*(a2: ptr command_buffer; a3: rect; rounding: float32;
+                    line_thickness: float32; a6: color) {.importc: "nk_stroke_rect".}
+proc stroke_circle*(a2: ptr command_buffer; a3: rect; line_thickness: float32;
+                      a5: color) {.importc: "nk_stroke_circle".}
+proc stroke_arc*(a2: ptr command_buffer; cx: float32; cy: float32; radius: float32;
+                   a_min: float32; a_max: float32; line_thickness: float32; a9: color) {. importc: "nk_stroke_arc".}
+proc stroke_triangle*(a2: ptr command_buffer; a3: float32; a4: float32; a5: float32;
+                        a6: float32; a7: float32; a8: float32; line_thichness: float32;
+                        a10: color) {.importc: "nk_stroke_triangle".}
+proc stroke_polyline*(a2: ptr command_buffer; points: ptr float32;
+                        point_count: int32; line_thickness: float32; col: color) {. importc: "nk_stroke_polyline".}
+proc stroke_polygon*(a2: ptr command_buffer; a3: ptr float32; point_count: int32;
+                       line_thickness: float32; a6: color) {.importc: "nk_stroke_polygon".}
+proc fill_rect*(a2: ptr command_buffer; a3: rect; rounding: float32;
+                  a5: color) {.importc: "nk_fill_rect".}
+proc fill_rect_multi_color*(a2: ptr command_buffer; a3: rect; left: color;
+                              top: color; right: color; bottom: color) {. importc: "nk_fill_rect_multi_color".}
+proc fill_circle*(a2: ptr command_buffer; a3: rect; a4: color) {.importc: "nk_fill_circle".}
+proc fill_arc*(a2: ptr command_buffer; cx: float32; cy: float32; radius: float32;
+                 a_min: float32; a_max: float32; a8: color) {.importc: "nk_fill_arc".}
+proc fill_triangle*(a2: ptr command_buffer; x0: float32; y0: float32; x1: float32;
+                      y1: float32; x2: float32; y2: float32; a9: color) {.importc: "nk_fill_triangle".}
+proc fill_polygon*(a2: ptr command_buffer; a3: ptr float32; point_count: int32;
+                     a5: color) {.importc: "nk_fill_polygon".}
+proc push_scissor*(a2: ptr command_buffer; a3: rect) {.importc: "nk_push_scissor".}
+proc draw_image*(a2: ptr command_buffer; a3: rect; a4: ptr image;
+                   a5: color) {.importc: "nk_draw_image".}
+proc draw_text*(a2: ptr command_buffer; a3: rect; text: cstring; len: int32;
+                  a6: ptr user_font; a7: color; a8: color) {.importc: "nk_draw_text".}
+proc next*(a2: ptr context; a3: ptr command): ptr command {.importc: "nk__next".}
+proc begin*(a2: ptr context): ptr command {.importc: "nk__begin".}
 
 
-proc nk_input_has_mouse_click*(a2: ptr nk_input; a3: nk_buttons): cint {.cdecl,
-    importc: "nk_input_has_mouse_click".}
-proc nk_input_has_mouse_click_in_rect*(a2: ptr nk_input; a3: nk_buttons; a4: nuk_rect): cint {.
-    cdecl, importc: "nk_input_has_mouse_click_in_rect".}
-proc nk_input_has_mouse_click_down_in_rect*(a2: ptr nk_input; a3: nk_buttons;
-    a4: nuk_rect; down: cint): cint {.cdecl, importc: "nk_input_has_mouse_click_down_in_rect".}
-proc nk_input_is_mouse_click_in_rect*(a2: ptr nk_input; a3: nk_buttons; a4: nuk_rect): cint {.
-    cdecl, importc: "nk_input_is_mouse_click_in_rect".}
-proc nk_input_is_mouse_click_down_in_rect*(i: ptr nk_input; id: nk_buttons;
-    b: nuk_rect; down: cint): cint {.cdecl,
-                               importc: "nk_input_is_mouse_click_down_in_rect".}
-proc nk_input_any_mouse_click_in_rect*(a2: ptr nk_input; a3: nuk_rect): cint {.cdecl,
-    importc: "nk_input_any_mouse_click_in_rect".}
-proc nk_input_is_mouse_prev_hovering_rect*(a2: ptr nk_input; a3: nuk_rect): cint {.
-    cdecl, importc: "nk_input_is_mouse_prev_hovering_rect".}
-proc nk_input_is_mouse_hovering_rect*(a2: ptr nk_input; a3: nuk_rect): cint {.cdecl,
-    importc: "nk_input_is_mouse_hovering_rect".}
-proc nk_input_mouse_clicked*(a2: ptr nk_input; a3: nk_buttons; a4: nuk_rect): cint {.
-    cdecl, importc: "nk_input_mouse_clicked".}
-proc nk_input_is_mouse_down*(a2: ptr nk_input; a3: nk_buttons): cint {.cdecl,
-    importc: "nk_input_is_mouse_down".}
-proc nk_input_is_mouse_pressed*(a2: ptr nk_input; a3: nk_buttons): cint {.cdecl,
-    importc: "nk_input_is_mouse_pressed".}
-proc nk_input_is_mouse_released*(a2: ptr nk_input; a3: nk_buttons): cint {.cdecl,
-    importc: "nk_input_is_mouse_released".}
-proc nk_input_is_key_pressed*(a2: ptr nk_input; a3: nk_keys): cint {.cdecl,
-    importc: "nk_input_is_key_pressed".}
-proc nk_input_is_key_released*(a2: ptr nk_input; a3: nk_keys): cint {.cdecl,
-    importc: "nk_input_is_key_released".}
-proc nk_input_is_key_down*(a2: ptr nk_input; a3: nk_keys): cint {.cdecl,
-    importc: "nk_input_is_key_down".}
+proc input_has_mouse_click*(a2: ptr input; a3: buttons): int32 {.importc: "nk_input_has_mouse_click".}
+proc input_has_mouse_click_in_rect*(a2: ptr input; a3: buttons; a4: rect): int32 {. importc: "nk_input_has_mouse_click_in_rect".}
+proc input_has_mouse_click_down_in_rect*(a2: ptr input; a3: buttons;
+    a4: rect; down: int32): int32 {.importc: "nk_input_has_mouse_click_down_in_rect".}
+proc input_is_mouse_click_in_rect*(a2: ptr input; a3: buttons; a4: rect): int32 {. importc: "nk_input_is_mouse_click_in_rect".}
+proc input_is_mouse_click_down_in_rect*(i: ptr input; id: buttons;
+    b: rect; down: int32): int32 {.                           importc: "nk_input_is_mouse_click_down_in_rect".}
+proc input_any_mouse_click_in_rect*(a2: ptr input; a3: rect): int32 {.importc: "nk_input_any_mouse_click_in_rect".}
+proc input_is_mouse_prev_hovering_rect*(a2: ptr input; a3: rect): int32 {. importc: "nk_input_is_mouse_prev_hovering_rect".}
+proc input_is_mouse_hovering_rect*(a2: ptr input; a3: rect): int32 {.importc: "nk_input_is_mouse_hovering_rect".}
+proc input_mouse_clicked*(a2: ptr input; a3: buttons; a4: rect): int32 {. importc: "nk_input_mouse_clicked".}
+proc input_is_mouse_down*(a2: ptr input; a3: buttons): int32 {.importc: "nk_input_is_mouse_down".}
+proc input_is_mouse_pressed*(a2: ptr input; a3: buttons): int32 {.importc: "nk_input_is_mouse_pressed".}
+proc input_is_mouse_released*(a2: ptr input; a3: buttons): int32 {.importc: "nk_input_is_mouse_released".}
+proc input_is_key_pressed*(a2: ptr input; a3: keys): int32 {.importc: "nk_input_is_key_pressed".}
+proc input_is_key_released*(a2: ptr input; a3: keys): int32 {.importc: "nk_input_is_key_released".}
+proc input_is_key_down*(a2: ptr input; a3: keys): int32 {.importc: "nk_input_is_key_down".}
   
 type
-  nk_draw_index* = int16
-  nk_draw_list_stroke* = enum
-    NK_STROKE_OPEN = nk_false, NK_STROKE_CLOSED = nk_true
+  draw_index* = int16
+  draw_list_stroke* = enum
+    STROKE_OPEN = nk_false, STROKE_CLOSED = nk_true
 
 const
-  NK_FORMAT_R8G8B8 = NK_FORMAT_COLOR_BEGIN
-  NK_FORMAT_COLOR_END = NK_FORMAT_RGBA32
+  FORMAT_R8G8B8 = FORMAT_COLOR_BEGIN
+  FORMAT_COLOR_END = FORMAT_RGBA32
 
 
-proc nk_draw_list_init*(a2: ptr nk_draw_list) {.cdecl, importc: "nk_draw_list_init".}
-proc nk_draw_list_setup*(a2: ptr nk_draw_list; a3: ptr nk_convert_config;
-                        cmds: ptr nk_buffer; vertices: ptr nk_buffer;
-                        elements: ptr nk_buffer) {.cdecl,
-    importc: "nk_draw_list_setup".}
-proc nk_draw_list_clear*(a2: ptr nk_draw_list) {.cdecl,
-    importc: "nk_draw_list_clear".}
-proc nk_draw_list_begin*(a2: ptr nk_draw_list; a3: ptr nk_buffer): ptr nk_draw_command {.
-    cdecl, importc: "nk__draw_list_begin".}
-proc nk_draw_list_next*(a2: ptr nk_draw_command; a3: ptr nk_buffer;
-                        a4: ptr nk_draw_list): ptr nk_draw_command {.cdecl,
-    importc: "nk__draw_list_next".}
-proc nk_draw_list_end*(a2: ptr nk_draw_list; a3: ptr nk_buffer): ptr nk_draw_command {.
-    cdecl, importc: "nk__draw_list_end".}
-proc nk_draw_list_clear*(list: ptr nk_draw_list) {.cdecl,
-    importc: "nk_draw_list_clear".}
-proc nk_draw_list_path_clear*(a2: ptr nk_draw_list) {.cdecl,
-    importc: "nk_draw_list_path_clear".}
-proc nk_draw_list_path_line_to*(a2: ptr nk_draw_list; pos: nuk_vec2) {.cdecl,
-    importc: "nk_draw_list_path_line_to".}
-proc nk_draw_list_path_arc_to_fast*(a2: ptr nk_draw_list; center: nuk_vec2;
-                                   radius: cfloat; a_min: cint; a_max: cint) {.cdecl,
-    importc: "nk_draw_list_path_arc_to_fast".}
-proc nk_draw_list_path_arc_to*(a2: ptr nk_draw_list; center: nuk_vec2; radius: cfloat;
-                              a_min: cfloat; a_max: cfloat; segments: cuint) {.cdecl,
-    importc: "nk_draw_list_path_arc_to".}
-proc nk_draw_list_path_rect_to*(a2: ptr nk_draw_list; a: nuk_vec2; b: nuk_vec2;
-                               rounding: cfloat) {.cdecl,
-    importc: "nk_draw_list_path_rect_to".}
-proc nk_draw_list_path_curve_to*(a2: ptr nk_draw_list; p2: nuk_vec2; p3: nuk_vec2;
-                                p4: nuk_vec2; num_segments: cuint) {.cdecl,
-    importc: "nk_draw_list_path_curve_to".}
-proc nk_draw_list_path_fill*(a2: ptr nk_draw_list; a3: nk_color) {.cdecl,
-    importc: "nk_draw_list_path_fill".}
-proc nk_draw_list_path_stroke*(a2: ptr nk_draw_list; a3: nk_color;
-                              closed: nk_draw_list_stroke; thickness: cfloat) {.
-    cdecl, importc: "nk_draw_list_path_stroke".}
-proc nk_draw_list_stroke_line*(a2: ptr nk_draw_list; a: nuk_vec2; b: nuk_vec2;
-                              a5: nk_color; thickness: cfloat) {.cdecl,
-    importc: "nk_draw_list_stroke_line".}
-proc nk_draw_list_stroke_rect*(a2: ptr nk_draw_list; rect: nuk_rect; a4: nk_color;
-                              rounding: cfloat; thickness: cfloat) {.cdecl,
-    importc: "nk_draw_list_stroke_rect".}
-proc nk_draw_list_stroke_triangle*(a2: ptr nk_draw_list; a: nuk_vec2; b: nuk_vec2;
-                                  c: nuk_vec2; a6: nk_color; thickness: cfloat) {.
-    cdecl, importc: "nk_draw_list_stroke_triangle".}
-proc nk_draw_list_stroke_circle*(a2: ptr nk_draw_list; center: nuk_vec2;
-                                radius: cfloat; a5: nk_color; segs: cuint;
-                                thickness: cfloat) {.cdecl,
-    importc: "nk_draw_list_stroke_circle".}
-proc nk_draw_list_stroke_curve*(a2: ptr nk_draw_list; p0: nuk_vec2; cp0: nuk_vec2;
-                               cp1: nuk_vec2; p1: nuk_vec2; a7: nk_color;
-                               segments: cuint; thickness: cfloat) {.cdecl,
-    importc: "nk_draw_list_stroke_curve".}
-proc nk_draw_list_stroke_poly_line*(a2: ptr nk_draw_list; pnts: ptr nuk_vec2;
-                                   cnt: cuint; a5: nk_color;
-                                   a6: nk_draw_list_stroke; thickness: cfloat;
-                                   a8: nk_anti_aliasing) {.cdecl,
-    importc: "nk_draw_list_stroke_poly_line".}
-proc nk_draw_list_fill_rect*(a2: ptr nk_draw_list; rect: nuk_rect; a4: nk_color;
-                            rounding: cfloat) {.cdecl,
-    importc: "nk_draw_list_fill_rect".}
-proc nk_draw_list_fill_rect_multi_color*(a2: ptr nk_draw_list; rect: nuk_rect;
-                                        left: nk_color; top: nk_color;
-                                        right: nk_color; bottom: nk_color) {.cdecl,
-    importc: "nk_draw_list_fill_rect_multi_color".}
-proc nk_draw_list_fill_triangle*(a2: ptr nk_draw_list; a: nuk_vec2; b: nuk_vec2;
-                                c: nuk_vec2; a6: nk_color) {.cdecl,
-    importc: "nk_draw_list_fill_triangle".}
-proc nk_draw_list_fill_circle*(a2: ptr nk_draw_list; center: nuk_vec2; radius: cfloat;
-                              col: nk_color; segs: cuint) {.cdecl,
-    importc: "nk_draw_list_fill_circle".}
-proc nk_draw_list_fill_poly_convex*(a2: ptr nk_draw_list; points: ptr nuk_vec2;
-                                   count: cuint; a5: nk_color; a6: nk_anti_aliasing) {.
-    cdecl, importc: "nk_draw_list_fill_poly_convex".}
-proc nk_draw_list_add_image*(a2: ptr nk_draw_list; texture: nuk_image; rect: nuk_rect;
-                            a5: nk_color) {.cdecl,
-    importc: "nk_draw_list_add_image".}
-proc nk_draw_list_add_text*(a2: ptr nk_draw_list; a3: ptr nk_user_font; a4: nuk_rect;
-                           text: cstring; len: cint; font_height: cfloat; a8: nk_color) {.
-    cdecl, importc: "nk_draw_list_add_text".}
+proc draw_list_init*(a2: ptr draw_list) {.importc: "nk_draw_list_init".}
+proc draw_list_setup*(a2: ptr draw_list; a3: ptr convert_config;
+                        cmds: ptr buffer; vertices: ptr buffer;
+                        elements: ptr buffer) {.importc: "nk_draw_list_setup".}
+proc draw_list_clear*(a2: ptr draw_list) {.importc: "nk_draw_list_clear".}
+proc draw_list_begin*(a2: ptr draw_list; a3: ptr buffer): ptr draw_command {. importc: "nk__draw_list_begin".}
+proc draw_list_next*(a2: ptr draw_command; a3: ptr buffer;
+                        a4: ptr draw_list): ptr draw_command {.importc: "nk__draw_list_next".}
+proc draw_list_end*(a2: ptr draw_list; a3: ptr buffer): ptr draw_command {. importc: "nk__draw_list_end".}
+proc draw_list_clear*(list: ptr draw_list) {.importc: "nk_draw_list_clear".}
+proc draw_list_path_clear*(a2: ptr draw_list) {.importc: "nk_draw_list_path_clear".}
+proc draw_list_path_line_to*(a2: ptr draw_list; pos: vec2) {.importc: "nk_draw_list_path_line_to".}
+proc draw_list_path_arc_to_fast*(a2: ptr draw_list; center: vec2;
+                                   radius: float32; a_min: int32; a_max: int32) {.importc: "nk_draw_list_path_arc_to_fast".}
+proc draw_list_path_arc_to*(a2: ptr draw_list; center: vec2; radius: float32;
+                              a_min: float32; a_max: float32; segments: cuint) {.importc: "nk_draw_list_path_arc_to".}
+proc draw_list_path_rect_to*(a2: ptr draw_list; a: vec2; b: vec2;
+                               rounding: float32) {.importc: "nk_draw_list_path_rect_to".}
+proc draw_list_path_curve_to*(a2: ptr draw_list; p2: vec2; p3: vec2;
+                                p4: vec2; num_segments: cuint) {.importc: "nk_draw_list_path_curve_to".}
+proc draw_list_path_fill*(a2: ptr draw_list; a3: color) {.importc: "nk_draw_list_path_fill".}
+proc draw_list_path_stroke*(a2: ptr draw_list; a3: color;
+                              closed: draw_list_stroke; thickness: float32) {. importc: "nk_draw_list_path_stroke".}
+proc draw_list_stroke_line*(a2: ptr draw_list; a: vec2; b: vec2;
+                              a5: color; thickness: float32) {.importc: "nk_draw_list_stroke_line".}
+proc draw_list_stroke_rect*(a2: ptr draw_list; rect: rect; a4: color;
+                              rounding: float32; thickness: float32) {.importc: "nk_draw_list_stroke_rect".}
+proc draw_list_stroke_triangle*(a2: ptr draw_list; a: vec2; b: vec2;
+                                  c: vec2; a6: color; thickness: float32) {. importc: "nk_draw_list_stroke_triangle".}
+proc draw_list_stroke_circle*(a2: ptr draw_list; center: vec2;
+                                radius: float32; a5: color; segs: cuint;
+                                thickness: float32) {.importc: "nk_draw_list_stroke_circle".}
+proc draw_list_stroke_curve*(a2: ptr draw_list; p0: vec2; cp0: vec2;
+                               cp1: vec2; p1: vec2; a7: color;
+                               segments: cuint; thickness: float32) {.importc: "nk_draw_list_stroke_curve".}
+proc draw_list_stroke_poly_line*(a2: ptr draw_list; pnts: ptr vec2;
+                                   cnt: cuint; a5: color;
+                                   a6: draw_list_stroke; thickness: float32;
+                                   a8: anti_aliasing) {.importc: "nk_draw_list_stroke_poly_line".}
+proc draw_list_fill_rect*(a2: ptr draw_list; rect: rect; a4: color;
+                            rounding: float32) {.importc: "nk_draw_list_fill_rect".}
+proc draw_list_fill_rect_multi_color*(a2: ptr draw_list; rect: rect;
+                                        left: color; top: color;
+                                        right: color; bottom: color) {.importc: "nk_draw_list_fill_rect_multi_color".}
+proc draw_list_fill_triangle*(a2: ptr draw_list; a: vec2; b: vec2;
+                                c: vec2; a6: color) {.importc: "nk_draw_list_fill_triangle".}
+proc draw_list_fill_circle*(a2: ptr draw_list; center: vec2; radius: float32;
+                              col: color; segs: cuint) {.importc: "nk_draw_list_fill_circle".}
+proc draw_list_fill_poly_convex*(a2: ptr draw_list; points: ptr vec2;
+                                   count: cuint; a5: color; a6: anti_aliasing) {. importc: "nk_draw_list_fill_poly_convex".}
+proc draw_list_add_image*(a2: ptr draw_list; texture: image; rect: rect;
+                            a5: color) {.importc: "nk_draw_list_add_image".}
+proc draw_list_add_text*(a2: ptr draw_list; a3: ptr user_font; a4: rect;
+                           text: cstring; len: int32; font_height: float32; a8: color) {. importc: "nk_draw_list_add_text".}
 
-proc nk_style_item_image*(img: nuk_image): nk_style_item {.cdecl,
-    importc: "nk_style_item_image".}
-proc nk_style_item_color*(a2: nk_color): nk_style_item {.cdecl,
-    importc: "nk_style_item_color".}
-proc nk_style_item_hide*(): nk_style_item {.cdecl, importc: "nk_style_item_hide".}
+proc style_item_image*(img: image): style_item {.importc: "nk_style_item_image".}
+proc style_item_color*(a2: color): style_item {.importc: "nk_style_item_color".}
+proc style_item_hide*(): style_item {.importc: "nk_style_item_hide".}
 
 
 type
-  nk_panel_set* {.size: sizeof(cint).} = enum
-    NK_PANEL_SET_NONBLOCK = NK_PANEL_CONTEXTUAL.cint or NK_PANEL_COMBO.cint or NK_PANEL_MENU.cint or
-        NK_PANEL_TOOLTIP.cint,
-    NK_PANEL_SET_POPUP = NK_PANEL_SET_NONBLOCK.cint or NK_PANEL_POPUP.cint,
-    NK_PANEL_SET_SUB = NK_PANEL_SET_POPUP.cint or NK_PANEL_GROUP.cint
+  panel_set* {.size: sizeof(int32).} = enum
+    PANEL_SET_NONBLOCK = PANEL_CONTEXTUAL.int32 or PANEL_COMBO.int32 or PANEL_MENU.int32 or
+        PANEL_TOOLTIP.int32,
+    PANEL_SET_POPUP = PANEL_SET_NONBLOCK.int32 or PANEL_POPUP.int32,
+    PANEL_SET_SUB = PANEL_SET_POPUP.int32 or PANEL_GROUP.int32
 
 
 type
   #nk_table* = object
   
-  nk_window_flags* {.size: sizeof(cint).} = enum
-    NK_WINDOW_PRIVATE = (1 shl (10)), NK_WINDOW_ROM = (1 shl (11)),
-    NK_WINDOW_HIDDEN = (1 shl (12)), NK_WINDOW_CLOSED = (1 shl (13)),
-    NK_WINDOW_MINIMIZED = (1 shl (14)), NK_WINDOW_REMOVE_ROM = (1 shl (15))
+  window_flags* {.size: sizeof(int32).} = enum
+    WINDOW_PRIVATE = (1 shl (10)), WINDOW_ROM = (1 shl (11)),
+    WINDOW_HIDDEN = (1 shl (12)), WINDOW_CLOSED = (1 shl (13)),
+    WINDOW_MINIMIZED = (1 shl (14)), WINDOW_REMOVE_ROM = (1 shl (15))
 
 const
-  NK_WINDOW_DYNAMIC = NK_WINDOW_PRIVATE
+  WINDOW_DYNAMIC = WINDOW_PRIVATE
 
-proc nk_init_default*(a2: ptr nk_context; a3: ptr nk_user_font): cint {.cdecl, importc: "nk_init_default".}
-proc nk_init_fixed*(a2: ptr nk_context; memory: pointer; size: uint;
-                   a5: ptr nk_user_font): cint {.cdecl, importc: "nk_init_fixed".}
-proc nk_init*(a2: ptr nk_context; a3: ptr nk_allocator; a4: ptr nk_user_font): cint {.
-    cdecl, importc: "nk_init".}
-proc nk_init_custom*(a2: ptr nk_context; cmds: ptr nk_buffer; pool: ptr nk_buffer;
-                    a5: ptr nk_user_font): cint {.cdecl, importc: "nk_init_custom".}
-proc nk_clear*(a2: ptr nk_context) {.cdecl, importc: "nk_clear".}
-proc nk_free*(a2: ptr nk_context) {.cdecl, importc: "nk_free".}
-proc nk_begin*(a2: ptr nk_context; title: cstring; bounds: nuk_rect; flags: uint32): cint {.
-    cdecl, importc: "nk_begin".}
-proc nk_begin_titled*(a2: ptr nk_context; name: cstring; title: cstring;
-                     bounds: nuk_rect; flags: uint32): cint {.cdecl,
-    importc: "nk_begin_titled".}
-proc nk_end*(a2: ptr nk_context) {.cdecl, importc: "nk_end".}
-proc nk_window_find*(ctx: ptr nk_context; name: cstring): ptr nk_window {.cdecl,
-    importc: "nk_window_find".}
-proc nk_window_get_bounds*(a2: ptr nk_context): nuk_rect {.cdecl,
-    importc: "nk_window_get_bounds".}
-proc nk_window_get_position*(a2: ptr nk_context): nuk_vec2 {.cdecl,
-    importc: "nk_window_get_position".}
-proc nk_window_get_size*(a2: ptr nk_context): nuk_vec2 {.cdecl,
-    importc: "nk_window_get_size".}
-proc nk_window_get_width*(a2: ptr nk_context): cfloat {.cdecl,
-    importc: "nk_window_get_width".}
-proc nk_window_get_height*(a2: ptr nk_context): cfloat {.cdecl,
-    importc: "nk_window_get_height".}
-proc nk_window_get_panel*(a2: ptr nk_context): ptr nk_panel {.cdecl,
-    importc: "nk_window_get_panel".}
-proc nk_window_get_content_region*(a2: ptr nk_context): nuk_rect {.cdecl,
-    importc: "nk_window_get_content_region".}
-proc nk_window_get_content_region_min*(a2: ptr nk_context): nuk_vec2 {.cdecl,
-    importc: "nk_window_get_content_region_min".}
-proc nk_window_get_content_region_max*(a2: ptr nk_context): nuk_vec2 {.cdecl,
-    importc: "nk_window_get_content_region_max".}
-proc nk_window_get_content_region_size*(a2: ptr nk_context): nuk_vec2 {.cdecl,
-    importc: "nk_window_get_content_region_size".}
-proc nk_window_get_canvas*(a2: ptr nk_context): ptr nk_command_buffer {.cdecl,
-    importc: "nk_window_get_canvas".}
-proc nk_window_has_focus*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_window_has_focus".}
-proc nk_window_is_collapsed*(a2: ptr nk_context; a3: cstring): cint {.cdecl,
-    importc: "nk_window_is_collapsed".}
-proc nk_window_is_closed*(a2: ptr nk_context; a3: cstring): cint {.cdecl,
-    importc: "nk_window_is_closed".}
-proc nk_window_is_hidden*(a2: ptr nk_context; a3: cstring): cint {.cdecl,
-    importc: "nk_window_is_hidden".}
-proc nk_window_is_active*(a2: ptr nk_context; a3: cstring): cint {.cdecl,
-    importc: "nk_window_is_active".}
-proc nk_window_is_hovered*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_window_is_hovered".}
-proc nk_window_is_any_hovered*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_window_is_any_hovered".}
-proc nk_item_is_any_active*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_item_is_any_active".}
-proc nk_window_set_bounds*(a2: ptr nk_context; a3: nuk_rect) {.cdecl,
-    importc: "nk_window_set_bounds".}
-proc nk_window_set_position*(a2: ptr nk_context; a3: nuk_vec2) {.cdecl,
-    importc: "nk_window_set_position".}
-proc nk_window_set_size*(a2: ptr nk_context; a3: nuk_vec2) {.cdecl,
-    importc: "nk_window_set_size".}
-proc nk_window_set_focus*(a2: ptr nk_context; name: cstring) {.cdecl,
-    importc: "nk_window_set_focus".}
-proc nk_window_close*(ctx: ptr nk_context; name: cstring) {.cdecl,
-    importc: "nk_window_close".}
-proc nk_window_collapse*(a2: ptr nk_context; name: cstring; a4: nk_collapse_states) {.
-    cdecl, importc: "nk_window_collapse".}
-proc nk_window_collapse_if*(a2: ptr nk_context; name: cstring; a4: nk_collapse_states;
-                           cond: cint) {.cdecl, importc: "nk_window_collapse_if".}
-proc nk_window_show*(a2: ptr nk_context; name: cstring; a4: nk_show_states) {.cdecl,
-    importc: "nk_window_show".}
-proc nk_window_show_if*(a2: ptr nk_context; name: cstring; a4: nk_show_states;
-                       cond: cint) {.cdecl, importc: "nk_window_show_if".}
-proc nk_layout_row_dynamic*(a2: ptr nk_context; height: cfloat; cols: cint) {.cdecl,
-    importc: "nk_layout_row_dynamic".}
-proc nk_layout_row_static*(a2: ptr nk_context; height: cfloat; item_width: cint;
-                          cols: cint) {.cdecl, importc: "nk_layout_row_static".}
-proc nk_layout_row_begin*(a2: ptr nk_context; a3: nk_layout_format;
-                         row_height: cfloat; cols: cint) {.cdecl,
-    importc: "nk_layout_row_begin".}
-proc nk_layout_row_push*(a2: ptr nk_context; value: cfloat) {.cdecl,
-    importc: "nk_layout_row_push".}
-proc nk_layout_row_end*(a2: ptr nk_context) {.cdecl, importc: "nk_layout_row_end".}
-proc nk_layout_row*(a2: ptr nk_context; a3: nk_layout_format; height: cfloat;
-                   cols: cint; ratio: ptr cfloat) {.cdecl, importc: "nk_layout_row".}
-proc nk_layout_row_template_begin*(a2: ptr nk_context; height: cfloat) {.cdecl,
-    importc: "nk_layout_row_template_begin".}
-proc nk_layout_row_template_push_dynamic*(a2: ptr nk_context) {.cdecl,
-    importc: "nk_layout_row_template_push_dynamic".}
-proc nk_layout_row_template_push_variable*(a2: ptr nk_context; min_width: cfloat) {.
-    cdecl, importc: "nk_layout_row_template_push_variable".}
-proc nk_layout_row_template_push_static*(a2: ptr nk_context; width: cfloat) {.cdecl,
-    importc: "nk_layout_row_template_push_static".}
-proc nk_layout_row_template_end*(a2: ptr nk_context) {.cdecl,
-    importc: "nk_layout_row_template_end".}
-proc nk_layout_space_begin*(a2: ptr nk_context; a3: nk_layout_format; height: cfloat;
-                           widget_count: cint) {.cdecl,
-    importc: "nk_layout_space_begin".}
-proc nk_layout_space_push*(a2: ptr nk_context; a3: nuk_rect) {.cdecl,
-    importc: "nk_layout_space_push".}
-proc nk_layout_space_end*(a2: ptr nk_context) {.cdecl,
-    importc: "nk_layout_space_end".}
-proc nk_layout_space_bounds*(a2: ptr nk_context): nuk_rect {.cdecl,
-    importc: "nk_layout_space_bounds".}
-proc nk_layout_space_to_screen*(a2: ptr nk_context; a3: nuk_vec2): nuk_vec2 {.cdecl,
-    importc: "nk_layout_space_to_screen".}
-proc nk_layout_space_to_local*(a2: ptr nk_context; a3: nuk_vec2): nuk_vec2 {.cdecl,
-    importc: "nk_layout_space_to_local".}
-proc nk_layout_space_rect_to_screen*(a2: ptr nk_context; a3: nuk_rect): nuk_rect {.cdecl,
-    importc: "nk_layout_space_rect_to_screen".}
-proc nk_layout_space_rect_to_local*(a2: ptr nk_context; a3: nuk_rect): nuk_rect {.cdecl,
-    importc: "nk_layout_space_rect_to_local".}
-proc nk_layout_ratio_from_pixel*(a2: ptr nk_context; pixel_width: cfloat): cfloat {.
-    cdecl, importc: "nk_layout_ratio_from_pixel".}
-proc nk_group_begin*(a2: ptr nk_context; title: cstring; a4: uint32): cint {.cdecl,
-    importc: "nk_group_begin".}
-proc nk_group_scrolled_offset_begin*(a2: ptr nk_context; x_offset: ptr uint32;
-                                    y_offset: ptr uint32; a5: cstring; a6: uint32): cint {.
-    cdecl, importc: "nk_group_scrolled_offset_begin".}
-proc nk_group_scrolled_begin*(a2: ptr nk_context; a3: ptr nk_scroll; title: cstring;
-                             a5: uint32): cint {.cdecl,
-    importc: "nk_group_scrolled_begin".}
-proc nk_group_scrolled_end*(a2: ptr nk_context) {.cdecl,
-    importc: "nk_group_scrolled_end".}
-proc nk_group_end*(a2: ptr nk_context) {.cdecl, importc: "nk_group_end".}
-proc nk_list_view_begin*(a2: ptr nk_context; o: ptr nk_list_view; id: cstring;
-                        a5: uint32; row_height: cint; row_count: cint): cint {.cdecl,
-    importc: "nk_list_view_begin".}
-proc nk_list_view_end*(a2: ptr nk_list_view) {.cdecl, importc: "nk_list_view_end".}
-proc nk_tree_push_hashed*(a2: ptr nk_context; a3: nk_tree_type; title: cstring;
-                         initial_state: nk_collapse_states; hash: cstring;
-                         len: cint; seed: cint): cint {.cdecl,
-    importc: "nk_tree_push_hashed".}
-proc nk_tree_image_push_hashed*(a2: ptr nk_context; a3: nk_tree_type; a4: nuk_image;
-                               title: cstring; initial_state: nk_collapse_states;
-                               hash: cstring; len: cint; seed: cint): cint {.cdecl,
-    importc: "nk_tree_image_push_hashed".}
-proc nk_tree_pop*(a2: ptr nk_context) {.cdecl, importc: "nk_tree_pop".}
-proc nk_tree_state_push*(a2: ptr nk_context; a3: nk_tree_type; title: cstring;
-                        state: ptr nk_collapse_states): cint {.cdecl,
-    importc: "nk_tree_state_push".}
-proc nk_tree_state_image_push*(a2: ptr nk_context; a3: nk_tree_type; a4: nuk_image;
-                              title: cstring; state: ptr nk_collapse_states): cint {.
-    cdecl, importc: "nk_tree_state_image_push".}
-proc nk_tree_state_pop*(a2: ptr nk_context) {.cdecl, importc: "nk_tree_state_pop".}
-proc nk_text*(a2: ptr nk_context; a3: cstring; a4: cint; a5: uint32) {.cdecl,
-    importc: "nk_text".}
-proc nk_text_colored*(a2: ptr nk_context; a3: cstring; a4: cint; a5: uint32;
-                     a6: nk_color) {.cdecl, importc: "nk_text_colored".}
-proc nk_text_wrap*(a2: ptr nk_context; a3: cstring; a4: cint) {.cdecl,
-    importc: "nk_text_wrap".}
-proc nk_text_wrap_colored*(a2: ptr nk_context; a3: cstring; a4: cint; a5: nk_color) {.
-    cdecl, importc: "nk_text_wrap_colored".}
-proc nk_label*(a2: ptr nk_context; a3: cstring; align: uint32) {.cdecl,
-    importc: "nk_label".}
-proc nk_label_colored*(a2: ptr nk_context; a3: cstring; align: uint32; a5: nk_color) {.
-    cdecl, importc: "nk_label_colored".}
-proc nk_label_wrap*(a2: ptr nk_context; a3: cstring) {.cdecl, importc: "nk_label_wrap".}
-proc nk_label_colored_wrap*(a2: ptr nk_context; a3: cstring; a4: nk_color) {.cdecl,
-    importc: "nk_label_colored_wrap".}
-proc nk_image*(a2: ptr nk_context; a3: nuk_image) {.cdecl, importc: "nk_image".}
-proc nk_button_set_behavior*(a2: ptr nk_context; a3: nk_button_behavior) {.cdecl,
-    importc: "nk_button_set_behavior".}
-proc nk_button_push_behavior*(a2: ptr nk_context; a3: nk_button_behavior): cint {.
-    cdecl, importc: "nk_button_push_behavior".}
-proc nk_button_pop_behavior*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_button_pop_behavior".}
-proc nk_button_text*(a2: ptr nk_context; title: cstring; len: cint): cint {.cdecl,
-    importc: "nk_button_text".}
-proc nk_button_label*(a2: ptr nk_context; title: cstring): cint {.cdecl,
-    importc: "nk_button_label".}
-proc nk_button_color*(a2: ptr nk_context; a3: nk_color): cint {.cdecl,
-    importc: "nk_button_color".}
-proc nk_button_symbol*(a2: ptr nk_context; a3: nk_symbol_type): cint {.cdecl,
-    importc: "nk_button_symbol".}
-proc nk_button_image*(a2: ptr nk_context; img: nuk_image): cint {.cdecl,
-    importc: "nk_button_image".}
-proc nk_button_symbol_label*(a2: ptr nk_context; a3: nk_symbol_type; a4: cstring;
-                            text_alignment: uint32): cint {.cdecl,
-    importc: "nk_button_symbol_label".}
-proc nk_button_symbol_text*(a2: ptr nk_context; a3: nk_symbol_type; a4: cstring;
-                           a5: cint; alignment: uint32): cint {.cdecl,
-    importc: "nk_button_symbol_text".}
-proc nk_button_image_label*(a2: ptr nk_context; img: nuk_image; a4: cstring;
-                           text_alignment: uint32): cint {.cdecl,
-    importc: "nk_button_image_label".}
-proc nk_button_image_text*(a2: ptr nk_context; img: nuk_image; a4: cstring; a5: cint;
-                          alignment: uint32): cint {.cdecl,
-    importc: "nk_button_image_text".}
-proc nk_button_text_styled*(a2: ptr nk_context; a3: ptr nk_style_button;
-                           title: cstring; len: cint): cint {.cdecl,
-    importc: "nk_button_text_styled".}
-proc nk_button_label_styled*(a2: ptr nk_context; a3: ptr nk_style_button;
-                            title: cstring): cint {.cdecl,
-    importc: "nk_button_label_styled".}
-proc nk_button_symbol_styled*(a2: ptr nk_context; a3: ptr nk_style_button;
-                             a4: nk_symbol_type): cint {.cdecl,
-    importc: "nk_button_symbol_styled".}
-proc nk_button_image_styled*(a2: ptr nk_context; a3: ptr nk_style_button; img: nuk_image): cint {.
-    cdecl, importc: "nk_button_image_styled".}
-proc nk_button_symbol_label_styled*(a2: ptr nk_context; a3: ptr nk_style_button;
-                                   a4: nk_symbol_type; a5: cstring;
-                                   text_alignment: uint32): cint {.cdecl,
-    importc: "nk_button_symbol_label_styled".}
-proc nk_button_symbol_text_styled*(a2: ptr nk_context; a3: ptr nk_style_button;
-                                  a4: nk_symbol_type; a5: cstring; a6: cint;
-                                  alignment: uint32): cint {.cdecl,
-    importc: "nk_button_symbol_text_styled".}
-proc nk_button_image_label_styled*(a2: ptr nk_context; a3: ptr nk_style_button;
-                                  img: nuk_image; a5: cstring;
-                                  text_alignment: uint32): cint {.cdecl,
-    importc: "nk_button_image_label_styled".}
-proc nk_button_image_text_styled*(a2: ptr nk_context; a3: ptr nk_style_button;
-                                 img: nuk_image; a5: cstring; a6: cint;
-                                 alignment: uint32): cint {.cdecl,
-    importc: "nk_button_image_text_styled".}
-proc nk_check_label*(a2: ptr nk_context; a3: cstring; active: cint): cint {.cdecl,
-    importc: "nk_check_label".}
-proc nk_check_text*(a2: ptr nk_context; a3: cstring; a4: cint; active: cint): cint {.cdecl,
-    importc: "nk_check_text".}
-proc nk_check_flags_label*(a2: ptr nk_context; a3: cstring; flags: cuint; value: cuint): cuint {.
-    cdecl, importc: "nk_check_flags_label".}
-proc nk_check_flags_text*(a2: ptr nk_context; a3: cstring; a4: cint; flags: cuint;
-                         value: cuint): cuint {.cdecl,
-    importc: "nk_check_flags_text".}
-proc nk_checkbox_label*(a2: ptr nk_context; a3: cstring; active: ptr cint): cint {.cdecl,
-    importc: "nk_checkbox_label".}
-proc nk_checkbox_text*(a2: ptr nk_context; a3: cstring; a4: cint; active: ptr cint): cint {.
-    cdecl, importc: "nk_checkbox_text".}
-proc nk_checkbox_flags_label*(a2: ptr nk_context; a3: cstring; flags: ptr cuint;
-                             value: cuint): cint {.cdecl,
-    importc: "nk_checkbox_flags_label".}
-proc nk_checkbox_flags_text*(a2: ptr nk_context; a3: cstring; a4: cint;
-                            flags: ptr cuint; value: cuint): cint {.cdecl,
-    importc: "nk_checkbox_flags_text".}
-proc nk_radio_label*(a2: ptr nk_context; a3: cstring; active: ptr cint): cint {.cdecl,
-    importc: "nk_radio_label".}
-proc nk_radio_text*(a2: ptr nk_context; a3: cstring; a4: cint; active: ptr cint): cint {.
-    cdecl, importc: "nk_radio_text".}
-proc nk_option_label*(a2: ptr nk_context; a3: cstring; active: cint): cint {.cdecl,
-    importc: "nk_option_label".}
-proc nk_option_text*(a2: ptr nk_context; a3: cstring; a4: cint; active: cint): cint {.
-    cdecl, importc: "nk_option_text".}
-proc nk_selectable_label*(a2: ptr nk_context; a3: cstring; align: uint32;
-                         value: ptr cint): cint {.cdecl,
-    importc: "nk_selectable_label".}
-proc nk_selectable_text*(a2: ptr nk_context; a3: cstring; a4: cint; align: uint32;
-                        value: ptr cint): cint {.cdecl,
-    importc: "nk_selectable_text".}
-proc nk_selectable_image_label*(a2: ptr nk_context; a3: nuk_image; a4: cstring;
-                               align: uint32; value: ptr cint): cint {.cdecl,
-    importc: "nk_selectable_image_label".}
-proc nk_selectable_image_text*(a2: ptr nk_context; a3: nuk_image; a4: cstring; a5: cint;
-                              align: uint32; value: ptr cint): cint {.cdecl,
-    importc: "nk_selectable_image_text".}
-proc nk_select_label*(a2: ptr nk_context; a3: cstring; align: uint32; value: cint): cint {.
-    cdecl, importc: "nk_select_label".}
-proc nk_select_text*(a2: ptr nk_context; a3: cstring; a4: cint; align: uint32;
-                    value: cint): cint {.cdecl, importc: "nk_select_text".}
-proc nk_select_image_label*(a2: ptr nk_context; a3: nuk_image; a4: cstring;
-                           align: uint32; value: cint): cint {.cdecl,
-    importc: "nk_select_image_label".}
-proc nk_select_image_text*(a2: ptr nk_context; a3: nuk_image; a4: cstring; a5: cint;
-                          align: uint32; value: cint): cint {.cdecl,
-    importc: "nk_select_image_text".}
-proc nk_slide_float*(a2: ptr nk_context; min: cfloat; val: cfloat; max: cfloat;
-                    step: cfloat): cfloat {.cdecl, importc: "nk_slide_float".}
-proc nk_slide_int*(a2: ptr nk_context; min: cint; val: cint; max: cint; step: cint): cint {.
-    cdecl, importc: "nk_slide_int".}
-proc nk_slider_float*(a2: ptr nk_context; min: cfloat; val: ptr cfloat; max: cfloat;
-                     step: cfloat): cint {.cdecl, importc: "nk_slider_float".}
-proc nk_slider_int*(a2: ptr nk_context; min: cint; val: ptr cint; max: cint; step: cint): cint {.
-    cdecl, importc: "nk_slider_int".}
-proc nk_progress*(a2: ptr nk_context; cur: ptr uint; max: uint; modifyable: cint): cint {.
-    cdecl, importc: "nk_progress".}
-proc nk_prog*(a2: ptr nk_context; cur: uint; max: uint; modifyable: cint): uint {.
-    cdecl, importc: "nk_prog".}
-proc nk_color_picker*(a2: ptr nk_context; a3: nk_color; a4: nk_color_format): nk_color {.
-    cdecl, importc: "nk_color_picker".}
-proc nk_color_pick*(a2: ptr nk_context; a3: ptr nk_color; a4: nk_color_format): cint {.
-    cdecl, importc: "nk_color_pick".}
-proc nk_property_int*(a2: ptr nk_context; name: cstring; min: cint; val: ptr cint;
-                     max: cint; step: cint; inc_per_pixel: cfloat) {.cdecl,
-    importc: "nk_property_int".}
-proc nk_property_float*(a2: ptr nk_context; name: cstring; min: cfloat; val: ptr cfloat;
-                       max: cfloat; step: cfloat; inc_per_pixel: cfloat) {.cdecl,
-    importc: "nk_property_float".}
-proc nk_property_double*(a2: ptr nk_context; name: cstring; min: cdouble;
+proc init_default*(a2: ptr context; a3: ptr user_font): int32 {.importc: "nk_init_default".}
+proc init_fixed*(a2: ptr context; memory: pointer; size: uint;
+                   a5: ptr user_font): int32 {.importc: "nk_init_fixed".}
+proc init*(a2: ptr context; a3: ptr allocator; a4: ptr user_font): int32 {. importc: "nk_init".}
+proc init_custom*(a2: ptr context; cmds: ptr buffer; pool: ptr buffer;
+                    a5: ptr user_font): int32 {.importc: "nk_init_custom".}
+proc clear*(a2: ptr context) {.importc: "nk_clear".}
+proc free*(a2: ptr context) {.importc: "nk_free".}
+proc begin*(a2: ptr context; title: cstring; bounds: rect; flags: uint32): int32 {. importc: "nk_begin".}
+proc begin_titled*(a2: ptr context; name: cstring; title: cstring;
+                     bounds: rect; flags: uint32): int32 {.importc: "nk_begin_titled".}
+proc `end`*(a2: ptr context) {.importc: "nk_end".}
+proc window_find*(ctx: ptr context; name: cstring): ptr window {.importc: "nk_window_find".}
+proc window_get_bounds*(a2: ptr context): rect {.importc: "nk_window_get_bounds".}
+proc window_get_position*(a2: ptr context): vec2 {.importc: "nk_window_get_position".}
+proc window_get_size*(a2: ptr context): vec2 {.importc: "nk_window_get_size".}
+proc window_get_width*(a2: ptr context): float32 {.importc: "nk_window_get_width".}
+proc window_get_height*(a2: ptr context): float32 {.importc: "nk_window_get_height".}
+proc window_get_panel*(a2: ptr context): ptr panel {.importc: "nk_window_get_panel".}
+proc window_get_content_region*(a2: ptr context): rect {.importc: "nk_window_get_content_region".}
+proc window_get_content_region_min*(a2: ptr context): vec2 {.importc: "nk_window_get_content_region_min".}
+proc window_get_content_region_max*(a2: ptr context): vec2 {.importc: "nk_window_get_content_region_max".}
+proc window_get_content_region_size*(a2: ptr context): vec2 {.importc: "nk_window_get_content_region_size".}
+proc window_get_canvas*(a2: ptr context): ptr command_buffer {.importc: "nk_window_get_canvas".}
+proc window_has_focus*(a2: ptr context): int32 {.importc: "nk_window_has_focus".}
+proc window_is_collapsed*(a2: ptr context; a3: cstring): int32 {.importc: "nk_window_is_collapsed".}
+proc window_is_closed*(a2: ptr context; a3: cstring): int32 {.importc: "nk_window_is_closed".}
+proc window_is_hidden*(a2: ptr context; a3: cstring): int32 {.importc: "nk_window_is_hidden".}
+proc window_is_active*(a2: ptr context; a3: cstring): int32 {.importc: "nk_window_is_active".}
+proc window_is_hovered*(a2: ptr context): int32 {.importc: "nk_window_is_hovered".}
+proc window_is_any_hovered*(a2: ptr context): int32 {.importc: "nk_window_is_any_hovered".}
+proc item_is_any_active*(a2: ptr context): int32 {.importc: "nk_item_is_any_active".}
+proc window_set_bounds*(a2: ptr context; a3: rect) {.importc: "nk_window_set_bounds".}
+proc window_set_position*(a2: ptr context; a3: vec2) {.importc: "nk_window_set_position".}
+proc window_set_size*(a2: ptr context; a3: vec2) {.importc: "nk_window_set_size".}
+proc window_set_focus*(a2: ptr context; name: cstring) {.importc: "nk_window_set_focus".}
+proc window_close*(ctx: ptr context; name: cstring) {.importc: "nk_window_close".}
+proc window_collapse*(a2: ptr context; name: cstring; a4: collapse_states) {. importc: "nk_window_collapse".}
+proc window_collapse_if*(a2: ptr context; name: cstring; a4: collapse_states;
+                           cond: int32) {.importc: "nk_window_collapse_if".}
+proc window_show*(a2: ptr context; name: cstring; a4: show_states) {.importc: "nk_window_show".}
+proc window_show_if*(a2: ptr context; name: cstring; a4: show_states;
+                       cond: int32) {.importc: "nk_window_show_if".}
+proc layout_row_dynamic*(a2: ptr context; height: float32; cols: int32) {.importc: "nk_layout_row_dynamic".}
+proc layout_row_static*(a2: ptr context; height: float32; item_width: int32;
+                          cols: int32) {.importc: "nk_layout_row_static".}
+proc layout_row_begin*(a2: ptr context; a3: layout_format;
+                         row_height: float32; cols: int32) {.importc: "nk_layout_row_begin".}
+proc layout_row_push*(a2: ptr context; value: float32) {.importc: "nk_layout_row_push".}
+proc layout_row_end*(a2: ptr context) {.importc: "nk_layout_row_end".}
+proc layout_row*(a2: ptr context; a3: layout_format; height: float32;
+                   cols: int32; ratio: ptr float32) {.importc: "nk_layout_row".}
+proc layout_row_template_begin*(a2: ptr context; height: float32) {.importc: "nk_layout_row_template_begin".}
+proc layout_row_template_push_dynamic*(a2: ptr context) {.importc: "nk_layout_row_template_push_dynamic".}
+proc layout_row_template_push_variable*(a2: ptr context; min_width: float32) {. importc: "nk_layout_row_template_push_variable".}
+proc layout_row_template_push_static*(a2: ptr context; width: float32) {.importc: "nk_layout_row_template_push_static".}
+proc layout_row_template_end*(a2: ptr context) {.importc: "nk_layout_row_template_end".}
+proc layout_space_begin*(a2: ptr context; a3: layout_format; height: float32;
+                           widget_count: int32) {.importc: "nk_layout_space_begin".}
+proc layout_space_push*(a2: ptr context; a3: rect) {.importc: "nk_layout_space_push".}
+proc layout_space_end*(a2: ptr context) {.importc: "nk_layout_space_end".}
+proc layout_space_bounds*(a2: ptr context): rect {.importc: "nk_layout_space_bounds".}
+proc layout_space_to_screen*(a2: ptr context; a3: vec2): vec2 {.importc: "nk_layout_space_to_screen".}
+proc layout_space_to_local*(a2: ptr context; a3: vec2): vec2 {.importc: "nk_layout_space_to_local".}
+proc layout_space_rect_to_screen*(a2: ptr context; a3: rect): rect {.importc: "nk_layout_space_rect_to_screen".}
+proc layout_space_rect_to_local*(a2: ptr context; a3: rect): rect {.importc: "nk_layout_space_rect_to_local".}
+proc layout_ratio_from_pixel*(a2: ptr context; pixel_width: float32): float32 {. importc: "nk_layout_ratio_from_pixel".}
+proc group_begin*(a2: ptr context; title: cstring; a4: uint32): int32 {.importc: "nk_group_begin".}
+proc group_scrolled_offset_begin*(a2: ptr context; x_offset: ptr uint32;
+                                    y_offset: ptr uint32; a5: cstring; a6: uint32): int32 {. importc: "nk_group_scrolled_offset_begin".}
+proc group_scrolled_begin*(a2: ptr context; a3: ptr scroll; title: cstring;
+                             a5: uint32): int32 {.importc: "nk_group_scrolled_begin".}
+proc group_scrolled_end*(a2: ptr context) {.importc: "nk_group_scrolled_end".}
+proc group_end*(a2: ptr context) {.importc: "nk_group_end".}
+proc list_view_begin*(a2: ptr context; o: ptr list_view; id: cstring;
+                        a5: uint32; row_height: int32; row_count: int32): int32 {.importc: "nk_list_view_begin".}
+proc list_view_end*(a2: ptr list_view) {.importc: "nk_list_view_end".}
+proc tree_push_hashed*(a2: ptr context; a3: tree_type; title: cstring;
+                         initial_state: collapse_states; hash: cstring;
+                         len: int32; seed: int32): int32 {.importc: "nk_tree_push_hashed".}
+proc tree_image_push_hashed*(a2: ptr context; a3: tree_type; a4: image;
+                               title: cstring; initial_state: collapse_states;
+                               hash: cstring; len: int32; seed: int32): int32 {.importc: "nk_tree_image_push_hashed".}
+proc tree_pop*(a2: ptr context) {.importc: "nk_tree_pop".}
+proc tree_state_push*(a2: ptr context; a3: tree_type; title: cstring;
+                        state: ptr collapse_states): int32 {.importc: "nk_tree_state_push".}
+proc tree_state_image_push*(a2: ptr context; a3: tree_type; a4: image;
+                              title: cstring; state: ptr collapse_states): int32 {. importc: "nk_tree_state_image_push".}
+proc tree_state_pop*(a2: ptr context) {.importc: "nk_tree_state_pop".}
+proc text*(a2: ptr context; a3: cstring; a4: int32; a5: uint32) {.importc: "nk_text".}
+proc text_colored*(a2: ptr context; a3: cstring; a4: int32; a5: uint32;
+                     a6: color) {.importc: "nk_text_colored".}
+proc text_wrap*(a2: ptr context; a3: cstring; a4: int32) {.importc: "nk_text_wrap".}
+proc text_wrap_colored*(a2: ptr context; a3: cstring; a4: int32; a5: color) {. importc: "nk_text_wrap_colored".}
+proc label*(a2: ptr context; a3: cstring; align: uint32) {.importc: "nk_label".}
+proc label_colored*(a2: ptr context; a3: cstring; align: uint32; a5: color) {. importc: "nk_label_colored".}
+proc label_wrap*(a2: ptr context; a3: cstring) {.importc: "nk_label_wrap".}
+proc label_colored_wrap*(a2: ptr context; a3: cstring; a4: color) {.importc: "nk_label_colored_wrap".}
+proc draw_image*(a2: ptr context; a3: image) {.importc: "nk_image".}
+proc button_set_behavior*(a2: ptr context; a3: button_behavior) {.importc: "nk_button_set_behavior".}
+proc button_push_behavior*(a2: ptr context; a3: button_behavior): int32 {. importc: "nk_button_push_behavior".}
+proc button_pop_behavior*(a2: ptr context): int32 {.importc: "nk_button_pop_behavior".}
+proc button_text*(a2: ptr context; title: cstring; len: int32): int32 {.importc: "nk_button_text".}
+proc button_label*(a2: ptr context; title: cstring): int32 {.importc: "nk_button_label".}
+proc button_color*(a2: ptr context; a3: color): int32 {.importc: "nk_button_color".}
+proc button_symbol*(a2: ptr context; a3: symbol_type): int32 {.importc: "nk_button_symbol".}
+proc button_image*(a2: ptr context; img: image): int32 {.importc: "nk_button_image".}
+proc button_symbol_label*(a2: ptr context; a3: symbol_type; a4: cstring;
+                            text_alignment: uint32): int32 {.importc: "nk_button_symbol_label".}
+proc button_symbol_text*(a2: ptr context; a3: symbol_type; a4: cstring;
+                           a5: int32; alignment: uint32): int32 {.importc: "nk_button_symbol_text".}
+proc button_image_label*(a2: ptr context; img: image; a4: cstring;
+                           text_alignment: uint32): int32 {.importc: "nk_button_image_label".}
+proc button_image_text*(a2: ptr context; img: image; a4: cstring; a5: int32;
+                          alignment: uint32): int32 {.importc: "nk_button_image_text".}
+proc button_text_styled*(a2: ptr context; a3: ptr style_button;
+                           title: cstring; len: int32): int32 {.importc: "nk_button_text_styled".}
+proc button_label_styled*(a2: ptr context; a3: ptr style_button;
+                            title: cstring): int32 {.importc: "nk_button_label_styled".}
+proc button_symbol_styled*(a2: ptr context; a3: ptr style_button;
+                             a4: symbol_type): int32 {.importc: "nk_button_symbol_styled".}
+proc button_image_styled*(a2: ptr context; a3: ptr style_button; img: image): int32 {. importc: "nk_button_image_styled".}
+proc button_symbol_label_styled*(a2: ptr context; a3: ptr style_button;
+                                   a4: symbol_type; a5: cstring;
+                                   text_alignment: uint32): int32 {.importc: "nk_button_symbol_label_styled".}
+proc button_symbol_text_styled*(a2: ptr context; a3: ptr style_button;
+                                  a4: symbol_type; a5: cstring; a6: int32;
+                                  alignment: uint32): int32 {.importc: "nk_button_symbol_text_styled".}
+proc button_image_label_styled*(a2: ptr context; a3: ptr style_button;
+                                  img: image; a5: cstring;
+                                  text_alignment: uint32): int32 {.importc: "nk_button_image_label_styled".}
+proc button_image_text_styled*(a2: ptr context; a3: ptr style_button;
+                                 img: image; a5: cstring; a6: int32;
+                                 alignment: uint32): int32 {.importc: "nk_button_image_text_styled".}
+proc check_label*(a2: ptr context; a3: cstring; active: int32): int32 {.importc: "nk_check_label".}
+proc check_text*(a2: ptr context; a3: cstring; a4: int32; active: int32): int32 {.importc: "nk_check_text".}
+proc check_flags_label*(a2: ptr context; a3: cstring; flags: cuint; value: cuint): cuint {. importc: "nk_check_flags_label".}
+proc check_flags_text*(a2: ptr context; a3: cstring; a4: int32; flags: cuint;
+                         value: cuint): cuint {.importc: "nk_check_flags_text".}
+proc checkbox_label*(a2: ptr context; a3: cstring; active: ptr int32): int32 {.importc: "nk_checkbox_label".}
+proc checkbox_text*(a2: ptr context; a3: cstring; a4: int32; active: ptr int32): int32 {. importc: "nk_checkbox_text".}
+proc checkbox_flags_label*(a2: ptr context; a3: cstring; flags: ptr cuint;
+                             value: cuint): int32 {.importc: "nk_checkbox_flags_label".}
+proc checkbox_flags_text*(a2: ptr context; a3: cstring; a4: int32;
+                            flags: ptr cuint; value: cuint): int32 {.importc: "nk_checkbox_flags_text".}
+proc radio_label*(a2: ptr context; a3: cstring; active: ptr int32): int32 {.importc: "nk_radio_label".}
+proc radio_text*(a2: ptr context; a3: cstring; a4: int32; active: ptr int32): int32 {. importc: "nk_radio_text".}
+proc option_label*(a2: ptr context; a3: cstring; active: int32): int32 {.importc: "nk_option_label".}
+proc option_text*(a2: ptr context; a3: cstring; a4: int32; active: int32): int32 {. importc: "nk_option_text".}
+proc selectable_label*(a2: ptr context; a3: cstring; align: uint32;
+                         value: ptr int32): int32 {.importc: "nk_selectable_label".}
+proc selectable_text*(a2: ptr context; a3: cstring; a4: int32; align: uint32;
+                        value: ptr int32): int32 {.importc: "nk_selectable_text".}
+proc selectable_image_label*(a2: ptr context; a3: image; a4: cstring;
+                               align: uint32; value: ptr int32): int32 {.importc: "nk_selectable_image_label".}
+proc selectable_image_text*(a2: ptr context; a3: image; a4: cstring; a5: int32;
+                              align: uint32; value: ptr int32): int32 {.importc: "nk_selectable_image_text".}
+proc select_label*(a2: ptr context; a3: cstring; align: uint32; value: int32): int32 {. importc: "nk_select_label".}
+proc select_text*(a2: ptr context; a3: cstring; a4: int32; align: uint32;
+                    value: int32): int32 {.importc: "nk_select_text".}
+proc select_image_label*(a2: ptr context; a3: image; a4: cstring;
+                           align: uint32; value: int32): int32 {.importc: "nk_select_image_label".}
+proc select_image_text*(a2: ptr context; a3: image; a4: cstring; a5: int32;
+                          align: uint32; value: int32): int32 {.importc: "nk_select_image_text".}
+proc slide_float*(a2: ptr context; min: float32; val: float32; max: float32;
+                    step: float32): float32 {.importc: "nk_slide_float".}
+proc slide_int*(a2: ptr context; min: int32; val: int32; max: int32; step: int32): int32 {. importc: "nk_slide_int".}
+proc slider_float*(a2: ptr context; min: float32; val: ptr float32; max: float32;
+                     step: float32): int32 {.importc: "nk_slider_float".}
+proc slider_int*(a2: ptr context; min: int32; val: ptr int32; max: int32; step: int32): int32 {. importc: "nk_slider_int".}
+proc progress*(a2: ptr context; cur: ptr uint; max: uint; modifyable: int32): int32 {. importc: "nk_progress".}
+proc prog*(a2: ptr context; cur: uint; max: uint; modifyable: int32): uint {. importc: "nk_prog".}
+proc color_picker*(a2: ptr context; a3: color; a4: color_format): color {. importc: "nk_color_picker".}
+proc color_pick*(a2: ptr context; a3: ptr color; a4: color_format): int32 {. importc: "nk_color_pick".}
+proc property_int*(a2: ptr context; name: cstring; min: int32; val: ptr int32;
+                     max: int32; step: int32; inc_per_pixel: float32) {.importc: "nk_property_int".}
+proc property_float*(a2: ptr context; name: cstring; min: float32; val: ptr float32;
+                       max: float32; step: float32; inc_per_pixel: float32) {.importc: "nk_property_float".}
+proc property_double*(a2: ptr context; name: cstring; min: cdouble;
                         val: ptr cdouble; max: cdouble; step: cdouble;
-                        inc_per_pixel: cfloat) {.cdecl,
-    importc: "nk_property_double".}
-proc nk_propertyi*(a2: ptr nk_context; name: cstring; min: cint; val: cint; max: cint;
-                  step: cint; inc_per_pixel: cfloat): cint {.cdecl,
-    importc: "nk_propertyi".}
-proc nk_propertyf*(a2: ptr nk_context; name: cstring; min: cfloat; val: cfloat;
-                  max: cfloat; step: cfloat; inc_per_pixel: cfloat): cfloat {.cdecl,
-    importc: "nk_propertyf".}
-proc nk_propertyd*(a2: ptr nk_context; name: cstring; min: cdouble; val: cdouble;
-                  max: cdouble; step: cdouble; inc_per_pixel: cfloat): cdouble {.cdecl,
-    importc: "nk_propertyd".}
-proc nk_edit_focus*(a2: ptr nk_context; flags: uint32) {.cdecl,
-    importc: "nk_edit_focus".}
-proc nk_edit_unfocus*(a2: ptr nk_context) {.cdecl, importc: "nk_edit_unfocus".}
-proc nk_edit_string*(a2: ptr nk_context; a3: uint32; buffer: cstring; len: ptr cint;
-                    max: cint; a7: nk_plugin_filter): uint32 {.cdecl,
-    importc: "nk_edit_string".}
-proc nk_edit_buffer*(a2: ptr nk_context; a3: uint32; a4: ptr nk_text_edit;
-                    a5: nk_plugin_filter): uint32 {.cdecl,
-    importc: "nk_edit_buffer".}
-proc nk_edit_string_zero_terminated*(a2: ptr nk_context; a3: uint32;
-                                    buffer: cstring; max: cint; a6: nk_plugin_filter): uint32 {.
-    cdecl, importc: "nk_edit_string_zero_terminated".}
-proc chart_begin*(a2: ptr nk_context; a3: chart_type; num: cint; min: cfloat;
-                    max: cfloat): cint {.cdecl, importc: "chart_begin".}
-proc chart_begin_colored*(a2: ptr nk_context; a3: chart_type; a4: nk_color;
-                            active: nk_color; num: cint; min: cfloat; max: cfloat): cint {.
-    cdecl, importc: "chart_begin_colored".}
-proc chart_add_slot*(ctx: ptr nk_context; a3: chart_type; count: cint;
-                       min_value: cfloat; max_value: cfloat) {.cdecl,
-    importc: "chart_add_slot".}
-proc chart_add_slot_colored*(ctx: ptr nk_context; a3: chart_type; a4: nk_color;
-                               active: nk_color; count: cint; min_value: cfloat;
-                               max_value: cfloat) {.cdecl,
-    importc: "chart_add_slot_colored".}
-proc chart_push*(a2: ptr nk_context; a3: cfloat): uint32 {.cdecl,
-    importc: "chart_push".}
-proc chart_push_slot*(a2: ptr nk_context; a3: cfloat; a4: cint): uint32 {.cdecl,
-    importc: "chart_push_slot".}
-proc chart_end*(a2: ptr nk_context) {.cdecl, importc: "chart_end".}
-proc nk_plot*(a2: ptr nk_context; a3: chart_type; values: ptr cfloat; count: cint;
-             offset: cint) {.cdecl, importc: "nk_plot".}
-proc nk_plot_function*(a2: ptr nk_context; a3: chart_type; userdata: pointer;
-    value_getter: proc (user: pointer; index: cint): cfloat {.cdecl.}; count: cint;
-                      offset: cint) {.cdecl, importc: "nk_plot_function".}
-proc nk_popup_begin*(a2: ptr nk_context; a3: nk_popup_type; a4: cstring; a5: uint32;
-                    bounds: nuk_rect): cint {.cdecl, importc: "nk_popup_begin".}
-proc nk_popup_close*(a2: ptr nk_context) {.cdecl, importc: "nk_popup_close".}
-proc nk_popup_end*(a2: ptr nk_context) {.cdecl, importc: "nk_popup_end".}
-proc nk_combo*(a2: ptr nk_context; items: cstringArray; count: cint; selected: cint;
-              item_height: cint; size: nuk_vec2): cint {.cdecl, importc: "nk_combo".}
-proc nk_combo_separator*(a2: ptr nk_context; items_separated_by_separator: cstring;
-                        separator: cint; selected: cint; count: cint;
-                        item_height: cint; size: nuk_vec2): cint {.cdecl,
-    importc: "nk_combo_separator".}
-proc nk_combo_string*(a2: ptr nk_context; items_separated_by_zeros: cstring;
-                     selected: cint; count: cint; item_height: cint; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_combo_string".}
-proc nk_combo_callback*(a2: ptr nk_context; item_getter: proc (a2: pointer; a3: cint;
-    a4: cstringArray) {.cdecl.}; userdata: pointer; selected: cint; count: cint;
-                       item_height: cint; size: nuk_vec2): cint {.cdecl,
-    importc: "nk_combo_callback".}
-proc nk_combobox*(a2: ptr nk_context; items: cstringArray; count: cint;
-                 selected: ptr cint; item_height: cint; size: nuk_vec2) {.cdecl,
-    importc: "nk_combobox".}
-proc nk_combobox_string*(a2: ptr nk_context; items_separated_by_zeros: cstring;
-                        selected: ptr cint; count: cint; item_height: cint;
-                        size: nuk_vec2) {.cdecl, importc: "nk_combobox_string".}
-proc nk_combobox_separator*(a2: ptr nk_context;
-                           items_separated_by_separator: cstring; separator: cint;
-                           selected: ptr cint; count: cint; item_height: cint;
-                           size: nuk_vec2) {.cdecl,
-    importc: "nk_combobox_separator".}
-proc nk_combobox_callback*(a2: ptr nk_context; item_getter: proc (a2: pointer; a3: cint;
-    a4: cstringArray) {.cdecl.}; a4: pointer; selected: ptr cint; count: cint;
-                          item_height: cint; size: nuk_vec2) {.cdecl,
-    importc: "nk_combobox_callback".}
-proc nk_combo_begin_text*(a2: ptr nk_context; selected: cstring; a4: cint; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_combo_begin_text".}
-proc nk_combo_begin_label*(a2: ptr nk_context; selected: cstring; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_combo_begin_label".}
-proc nk_combo_begin_color*(a2: ptr nk_context; color: nk_color; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_combo_begin_color".}
-proc nk_combo_begin_symbol*(a2: ptr nk_context; a3: nk_symbol_type; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_combo_begin_symbol".}
-proc nk_combo_begin_symbol_label*(a2: ptr nk_context; selected: cstring;
-                                 a4: nk_symbol_type; size: nuk_vec2): cint {.cdecl,
-    importc: "nk_combo_begin_symbol_label".}
-proc nk_combo_begin_symbol_text*(a2: ptr nk_context; selected: cstring; a4: cint;
-                                a5: nk_symbol_type; size: nuk_vec2): cint {.cdecl,
-    importc: "nk_combo_begin_symbol_text".}
-proc nk_combo_begin_image*(a2: ptr nk_context; img: nuk_image; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_combo_begin_image".}
-proc nk_combo_begin_image_label*(a2: ptr nk_context; selected: cstring; a4: nuk_image;
-                                size: nuk_vec2): cint {.cdecl,
-    importc: "nk_combo_begin_image_label".}
-proc nk_combo_begin_image_text*(a2: ptr nk_context; selected: cstring; a4: cint;
-                               a5: nuk_image; size: nuk_vec2): cint {.cdecl,
-    importc: "nk_combo_begin_image_text".}
-proc nk_combo_item_label*(a2: ptr nk_context; a3: cstring; alignment: uint32): cint {.
-    cdecl, importc: "nk_combo_item_label".}
-proc nk_combo_item_text*(a2: ptr nk_context; a3: cstring; a4: cint; alignment: uint32): cint {.
-    cdecl, importc: "nk_combo_item_text".}
-proc nk_combo_item_image_label*(a2: ptr nk_context; a3: nuk_image; a4: cstring;
-                               alignment: uint32): cint {.cdecl,
-    importc: "nk_combo_item_image_label".}
-proc nk_combo_item_image_text*(a2: ptr nk_context; a3: nuk_image; a4: cstring; a5: cint;
-                              alignment: uint32): cint {.cdecl,
-    importc: "nk_combo_item_image_text".}
-proc nk_combo_item_symbol_label*(a2: ptr nk_context; a3: nk_symbol_type; a4: cstring;
-                                alignment: uint32): cint {.cdecl,
-    importc: "nk_combo_item_symbol_label".}
-proc nk_combo_item_symbol_text*(a2: ptr nk_context; a3: nk_symbol_type; a4: cstring;
-                               a5: cint; alignment: uint32): cint {.cdecl,
-    importc: "nk_combo_item_symbol_text".}
-proc nk_combo_close*(a2: ptr nk_context) {.cdecl, importc: "nk_combo_close".}
-proc nk_combo_end*(a2: ptr nk_context) {.cdecl, importc: "nk_combo_end".}
-proc nk_contextual_begin*(a2: ptr nk_context; a3: uint32; a4: nuk_vec2;
-                         trigger_bounds: nuk_rect): cint {.cdecl,
-    importc: "nk_contextual_begin".}
-proc nk_contextual_item_text*(a2: ptr nk_context; a3: cstring; a4: cint; align: uint32): cint {.
-    cdecl, importc: "nk_contextual_item_text".}
-proc nk_contextual_item_label*(a2: ptr nk_context; a3: cstring; align: uint32): cint {.
-    cdecl, importc: "nk_contextual_item_label".}
-proc nk_contextual_item_image_label*(a2: ptr nk_context; a3: nuk_image; a4: cstring;
-                                    alignment: uint32): cint {.cdecl,
-    importc: "nk_contextual_item_image_label".}
-proc nk_contextual_item_image_text*(a2: ptr nk_context; a3: nuk_image; a4: cstring;
-                                   len: cint; alignment: uint32): cint {.cdecl,
-    importc: "nk_contextual_item_image_text".}
-proc nk_contextual_item_symbol_label*(a2: ptr nk_context; a3: nk_symbol_type;
-                                     a4: cstring; alignment: uint32): cint {.cdecl,
-    importc: "nk_contextual_item_symbol_label".}
-proc nk_contextual_item_symbol_text*(a2: ptr nk_context; a3: nk_symbol_type;
-                                    a4: cstring; a5: cint; alignment: uint32): cint {.
-    cdecl, importc: "nk_contextual_item_symbol_text".}
-proc nk_contextual_close*(a2: ptr nk_context) {.cdecl,
-    importc: "nk_contextual_close".}
-proc nk_contextual_end*(a2: ptr nk_context) {.cdecl, importc: "nk_contextual_end".}
-proc nk_tooltip*(a2: ptr nk_context; a3: cstring) {.cdecl, importc: "nk_tooltip".}
-proc nk_tooltip_begin*(a2: ptr nk_context; width: cfloat): cint {.cdecl,
-    importc: "nk_tooltip_begin".}
-proc nk_tooltip_end*(a2: ptr nk_context) {.cdecl, importc: "nk_tooltip_end".}
-proc nk_menubar_begin*(a2: ptr nk_context) {.cdecl, importc: "nk_menubar_begin".}
-proc nk_menubar_end*(a2: ptr nk_context) {.cdecl, importc: "nk_menubar_end".}
-proc nk_menu_begin_text*(a2: ptr nk_context; title: cstring; title_len: cint;
-                        align: uint32; size: nuk_vec2): cint {.cdecl,
-    importc: "nk_menu_begin_text".}
-proc nk_menu_begin_label*(a2: ptr nk_context; a3: cstring; align: uint32;
-                         size: nuk_vec2): cint {.cdecl,
-    importc: "nk_menu_begin_label".}
-proc nk_menu_begin_image*(a2: ptr nk_context; a3: cstring; a4: nuk_image; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_menu_begin_image".}
-proc nk_menu_begin_image_text*(a2: ptr nk_context; a3: cstring; a4: cint;
-                              align: uint32; a6: nuk_image; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_menu_begin_image_text".}
-proc nk_menu_begin_image_label*(a2: ptr nk_context; a3: cstring; align: uint32;
-                               a5: nuk_image; size: nuk_vec2): cint {.cdecl,
-    importc: "nk_menu_begin_image_label".}
-proc nk_menu_begin_symbol*(a2: ptr nk_context; a3: cstring; a4: nk_symbol_type;
-                          size: nuk_vec2): cint {.cdecl,
-    importc: "nk_menu_begin_symbol".}
-proc nk_menu_begin_symbol_text*(a2: ptr nk_context; a3: cstring; a4: cint;
-                               align: uint32; a6: nk_symbol_type; size: nuk_vec2): cint {.
-    cdecl, importc: "nk_menu_begin_symbol_text".}
-proc nk_menu_begin_symbol_label*(a2: ptr nk_context; a3: cstring; align: uint32;
-                                a5: nk_symbol_type; size: nuk_vec2): cint {.cdecl,
-    importc: "nk_menu_begin_symbol_label".}
-proc nk_menu_item_text*(a2: ptr nk_context; a3: cstring; a4: cint; align: uint32): cint {.
-    cdecl, importc: "nk_menu_item_text".}
-proc nk_menu_item_label*(a2: ptr nk_context; a3: cstring; alignment: uint32): cint {.
-    cdecl, importc: "nk_menu_item_label".}
-proc nk_menu_item_image_label*(a2: ptr nk_context; a3: nuk_image; a4: cstring;
-                              alignment: uint32): cint {.cdecl,
-    importc: "nk_menu_item_image_label".}
-proc nk_menu_item_image_text*(a2: ptr nk_context; a3: nuk_image; a4: cstring; len: cint;
-                             alignment: uint32): cint {.cdecl,
-    importc: "nk_menu_item_image_text".}
-proc nk_menu_item_symbol_text*(a2: ptr nk_context; a3: nk_symbol_type; a4: cstring;
-                              a5: cint; alignment: uint32): cint {.cdecl,
-    importc: "nk_menu_item_symbol_text".}
-proc nk_menu_item_symbol_label*(a2: ptr nk_context; a3: nk_symbol_type; a4: cstring;
-                               alignment: uint32): cint {.cdecl,
-    importc: "nk_menu_item_symbol_label".}
-proc nk_menu_close*(a2: ptr nk_context) {.cdecl, importc: "nk_menu_close".}
-proc nk_menu_end*(a2: ptr nk_context) {.cdecl, importc: "nk_menu_end".}
-proc nk_convert*(a2: ptr nk_context; cmds: ptr nk_buffer; vertices: ptr nk_buffer;
-                elements: ptr nk_buffer; a6: ptr nk_convert_config) {.cdecl,
-    importc: "nk_convert".}
-proc nk_draw_begin*(a2: ptr nk_context; a3: ptr nk_buffer): ptr nk_draw_command {.cdecl,
-    importc: "nk__draw_begin".}
-proc nk_draw_end*(a2: ptr nk_context; a3: ptr nk_buffer): ptr nk_draw_command {.cdecl,
-    importc: "nk__draw_end".}
-proc nk_draw_next*(a2: ptr nk_draw_command; a3: ptr nk_buffer; a4: ptr nk_context): ptr nk_draw_command {.
-    cdecl, importc: "nk__draw_next".}
-proc nk_input_begin*(a2: ptr nk_context) {.cdecl, importc: "nk_input_begin".}
-proc nk_input_motion*(a2: ptr nk_context; x: cint; y: cint) {.cdecl,
-    importc: "nk_input_motion".}
-proc nk_input_key*(a2: ptr nk_context; a3: nk_keys; down: cint) {.cdecl,
-    importc: "nk_input_key".}
-proc nk_input_button*(a2: ptr nk_context; a3: nk_buttons; x: cint; y: cint; down: cint) {.
-    cdecl, importc: "nk_input_button".}
-proc nk_input_scroll*(a2: ptr nk_context; y: cfloat) {.cdecl,
-    importc: "nk_input_scroll".}
-proc nk_input_char*(a2: ptr nk_context; a3: char) {.cdecl, importc: "nk_input_char".}
-proc nk_input_glyph*(a2: ptr nk_context; a3: nk_glyph) {.cdecl,
-    importc: "nk_input_glyph".}
-proc nk_input_unicode*(a2: ptr nk_context; a3: uint32) {.cdecl,
-    importc: "nk_input_unicode".}
-proc nk_input_end*(a2: ptr nk_context) {.cdecl, importc: "nk_input_end".}
-proc nk_style_default*(a2: ptr nk_context) {.cdecl, importc: "nk_style_default".}
-proc nk_style_from_table*(a2: ptr nk_context; a3: ptr nk_color) {.cdecl,
-    importc: "nk_style_from_table".}
-proc nk_style_load_cursor*(a2: ptr nk_context; a3: nk_style_cursor; a4: ptr nk_cursor) {.
-    cdecl, importc: "nk_style_load_cursor".}
-proc nk_style_load_all_cursors*(a2: ptr nk_context; a3: ptr nk_cursor) {.cdecl,
-    importc: "nk_style_load_all_cursors".}
-proc nk_style_get_color_by_name*(a2: nk_style_colors): cstring {.cdecl,
-    importc: "nk_style_get_color_by_name".}
-proc nk_style_set_font*(a2: ptr nk_context; a3: ptr nk_user_font) {.cdecl,
-    importc: "nk_style_set_font".}
-proc nk_style_set_cursor*(a2: ptr nk_context; a3: nk_style_cursor): cint {.cdecl,
-    importc: "nk_style_set_cursor".}
-proc nk_style_show_cursor*(a2: ptr nk_context) {.cdecl,
-    importc: "nk_style_show_cursor".}
-proc nk_style_hide_cursor*(a2: ptr nk_context) {.cdecl,
-    importc: "nk_style_hide_cursor".}
-proc nk_style_push_font*(a2: ptr nk_context; a3: ptr nk_user_font): cint {.cdecl,
-    importc: "nk_style_push_font".}
-proc nk_style_push_float*(a2: ptr nk_context; a3: ptr cfloat; a4: cfloat): cint {.cdecl,
-    importc: "nk_style_push_float".}
-proc nk_style_push_vec2*(a2: ptr nk_context; a3: ptr nuk_vec2; a4: nuk_vec2): cint {.cdecl,
-    importc: "nk_style_push_vec2".}
-proc nk_style_push_style_item*(a2: ptr nk_context; a3: ptr nk_style_item;
-                              a4: nk_style_item): cint {.cdecl,
-    importc: "nk_style_push_style_item".}
-proc nk_style_push_flags*(a2: ptr nk_context; a3: ptr uint32; a4: uint32): cint {.
-    cdecl, importc: "nk_style_push_flags".}
-proc nk_style_push_color*(a2: ptr nk_context; a3: ptr nk_color; a4: nk_color): cint {.
-    cdecl, importc: "nk_style_push_color".}
-proc nk_style_pop_font*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_style_pop_font".}
-proc nk_style_pop_float*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_style_pop_float".}
-proc nk_style_pop_vec2*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_style_pop_vec2".}
-proc nk_style_pop_style_item*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_style_pop_style_item".}
-proc nk_style_pop_flags*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_style_pop_flags".}
-proc nk_style_pop_color*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_style_pop_color".}
-proc nk_widget_bounds*(a2: ptr nk_context): nuk_rect {.cdecl,
-    importc: "nk_widget_bounds".}
-proc nk_widget_position*(a2: ptr nk_context): nuk_vec2 {.cdecl,
-    importc: "nk_widget_position".}
-proc nk_widget_size*(a2: ptr nk_context): nuk_vec2 {.cdecl, importc: "nk_widget_size".}
-proc nk_widget_width*(a2: ptr nk_context): cfloat {.cdecl, importc: "nk_widget_width".}
-proc nk_widget_height*(a2: ptr nk_context): cfloat {.cdecl,
-    importc: "nk_widget_height".}
-proc nk_widget_is_hovered*(a2: ptr nk_context): cint {.cdecl,
-    importc: "nk_widget_is_hovered".}
-proc nk_widget_is_mouse_clicked*(a2: ptr nk_context; a3: nk_buttons): cint {.cdecl,
-    importc: "nk_widget_is_mouse_clicked".}
-proc nk_widget_has_mouse_click_down*(a2: ptr nk_context; a3: nk_buttons; down: cint): cint {.
-    cdecl, importc: "nk_widget_has_mouse_click_down".}
-proc nk_spacing*(a2: ptr nk_context; cols: cint) {.cdecl, importc: "nk_spacing".}
-proc nk_widget*(a2: ptr nuk_rect; a3: ptr nk_context): nk_widget_layout_states {.cdecl,
-    importc: "nk_widget".}
-proc nk_widget_fitting*(a2: ptr nuk_rect; a3: ptr nk_context; a4: nuk_vec2): nk_widget_layout_states {.
-    cdecl, importc: "nk_widget_fitting".}
-proc nk_rgb*(r: cint; g: cint; b: cint): nk_color {.cdecl, importc: "nk_rgb".}
-proc nk_rgb_iv*(rgb: ptr cint): nk_color {.cdecl, importc: "nk_rgb_iv".}
-proc nk_rgb_bv*(rgb: ptr char): nk_color {.cdecl, importc: "nk_rgb_bv".}
-proc nk_rgb_f*(r: cfloat; g: cfloat; b: cfloat): nk_color {.cdecl, importc: "nk_rgb_f".}
-proc nk_rgb_fv*(rgb: ptr cfloat): nk_color {.cdecl, importc: "nk_rgb_fv".}
-proc nk_rgb_hex*(rgb: cstring): nk_color {.cdecl, importc: "nk_rgb_hex".}
-proc nk_rgba*(r: cint; g: cint; b: cint; a: cint): nk_color {.cdecl, importc: "nk_rgba".}
-proc nk_rgba_u32*(a2: uint32): nk_color {.cdecl, importc: "nk_rgba_u32".}
-proc nk_rgba_iv*(rgba: ptr cint): nk_color {.cdecl, importc: "nk_rgba_iv".}
-proc nk_rgba_bv*(rgba: ptr char): nk_color {.cdecl, importc: "nk_rgba_bv".}
-proc nk_rgba_f*(r: cfloat; g: cfloat; b: cfloat; a: cfloat): nk_color {.cdecl,
-    importc: "nk_rgba_f".}
-proc nk_rgba_fv*(rgba: ptr cfloat): nk_color {.cdecl, importc: "nk_rgba_fv".}
-proc nk_rgba_hex*(rgb: cstring): nk_color {.cdecl, importc: "nk_rgba_hex".}
-proc nk_hsv*(h: cint; s: cint; v: cint): nk_color {.cdecl, importc: "nk_hsv".}
-proc nk_hsv_iv*(hsv: ptr cint): nk_color {.cdecl, importc: "nk_hsv_iv".}
-proc nk_hsv_bv*(hsv: ptr char): nk_color {.cdecl, importc: "nk_hsv_bv".}
-proc nk_hsv_f*(h: cfloat; s: cfloat; v: cfloat): nk_color {.cdecl, importc: "nk_hsv_f".}
-proc nk_hsv_fv*(hsv: ptr cfloat): nk_color {.cdecl, importc: "nk_hsv_fv".}
-proc nk_hsva*(h: cint; s: cint; v: cint; a: cint): nk_color {.cdecl, importc: "nk_hsva".}
-proc nk_hsva_iv*(hsva: ptr cint): nk_color {.cdecl, importc: "nk_hsva_iv".}
-proc nk_hsva_bv*(hsva: ptr char): nk_color {.cdecl, importc: "nk_hsva_bv".}
-proc nk_hsva_f*(h: cfloat; s: cfloat; v: cfloat; a: cfloat): nk_color {.cdecl,
-    importc: "nk_hsva_f".}
-proc nk_hsva_fv*(hsva: ptr cfloat): nk_color {.cdecl, importc: "nk_hsva_fv".}
-proc nk_color_f*(r: ptr cfloat; g: ptr cfloat; b: ptr cfloat; a: ptr cfloat; a6: nk_color) {.
-    cdecl, importc: "nk_color_f".}
-proc nk_color_fv*(rgba_out: ptr cfloat; a3: nk_color) {.cdecl, importc: "nk_color_fv".}
-proc nk_color_d*(r: ptr cdouble; g: ptr cdouble; b: ptr cdouble; a: ptr cdouble; a6: nk_color) {.
-    cdecl, importc: "nk_color_d".}
-proc nk_color_dv*(rgba_out: ptr cdouble; a3: nk_color) {.cdecl, importc: "nk_color_dv".}
-proc nk_color_u32*(a2: nk_color): uint32 {.cdecl, importc: "nk_color_u32".}
-proc nk_color_hex_rgba*(output: cstring; a3: nk_color) {.cdecl,
-    importc: "nk_color_hex_rgba".}
-proc nk_color_hex_rgb*(output: cstring; a3: nk_color) {.cdecl,
-    importc: "nk_color_hex_rgb".}
-proc nk_color_hsv_i*(out_h: ptr cint; out_s: ptr cint; out_v: ptr cint; a5: nk_color) {.
-    cdecl, importc: "nk_color_hsv_i".}
-proc nk_color_hsv_b*(out_h: ptr char; out_s: ptr char; out_v: ptr char;
-                    a5: nk_color) {.cdecl, importc: "nk_color_hsv_b".}
-proc nk_color_hsv_iv*(hsv_out: ptr cint; a3: nk_color) {.cdecl,
-    importc: "nk_color_hsv_iv".}
-proc nk_color_hsv_bv*(hsv_out: ptr char; a3: nk_color) {.cdecl,
-    importc: "nk_color_hsv_bv".}
-proc nk_color_hsv_f*(out_h: ptr cfloat; out_s: ptr cfloat; out_v: ptr cfloat; a5: nk_color) {.
-    cdecl, importc: "nk_color_hsv_f".}
-proc nk_color_hsv_fv*(hsv_out: ptr cfloat; a3: nk_color) {.cdecl,
-    importc: "nk_color_hsv_fv".}
-proc nk_color_hsva_i*(h: ptr cint; s: ptr cint; v: ptr cint; a: ptr cint; a6: nk_color) {.
-    cdecl, importc: "nk_color_hsva_i".}
-proc nk_color_hsva_b*(h: ptr char; s: ptr char; v: ptr char; a: ptr char;
-                     a6: nk_color) {.cdecl, importc: "nk_color_hsva_b".}
-proc nk_color_hsva_iv*(hsva_out: ptr cint; a3: nk_color) {.cdecl,
-    importc: "nk_color_hsva_iv".}
-proc nk_color_hsva_bv*(hsva_out: ptr char; a3: nk_color) {.cdecl,
-    importc: "nk_color_hsva_bv".}
-proc nk_color_hsva_f*(out_h: ptr cfloat; out_s: ptr cfloat; out_v: ptr cfloat;
-                     out_a: ptr cfloat; a6: nk_color) {.cdecl,
-    importc: "nk_color_hsva_f".}
-proc nk_color_hsva_fv*(hsva_out: ptr cfloat; a3: nk_color) {.cdecl,
-    importc: "nk_color_hsva_fv".}
-proc nk_handle_ptr*(a2: pointer): nk_handle {.cdecl, importc: "nk_handle_ptr".}
-proc nk_handle_id*(a2: cint): nk_handle {.cdecl, importc: "nk_handle_id".}
-proc nk_image_handle*(a2: nk_handle): nuk_image {.cdecl, importc: "nk_image_handle".}
-proc nk_image_ptr*(a2: pointer): nuk_image {.cdecl, importc: "nk_image_ptr".}
-proc nk_image_id*(a2: cint): nuk_image {.cdecl, importc: "nk_image_id".}
-proc nk_image_is_subimage*(img: ptr nuk_image): cint {.cdecl,
-    importc: "nk_image_is_subimage".}
-proc nk_subimage_ptr*(a2: pointer; w: cushort; h: cushort; sub_region: nuk_rect): nuk_image {.
-    cdecl, importc: "nk_subimage_ptr".}
-proc nk_subimage_id*(a2: cint; w: cushort; h: cushort; sub_region: nuk_rect): nuk_image {.
-    cdecl, importc: "nk_subimage_id".}
-proc nk_subimage_handle*(a2: nk_handle; w: cushort; h: cushort; sub_region: nuk_rect): nuk_image {.
-    cdecl, importc: "nk_subimage_handle".}
-proc nk_murmur_hash*(key: pointer; len: cint; seed: uint32): uint32 {.cdecl,
-    importc: "nk_murmur_hash".}
-proc nk_triangle_from_direction*(result: ptr nuk_vec2; r: nuk_rect; pad_x: cfloat;
-                                pad_y: cfloat; a6: nk_heading) {.cdecl,
-    importc: "nk_triangle_from_direction".}
-proc nk_vec2*(x: cfloat; y: cfloat): nuk_vec2 {.cdecl, importc: "nk_vec2".}
-proc nk_vec2i*(x: cint; y: cint): nuk_vec2 {.cdecl, importc: "nk_vec2i".}
-proc nk_vec2v*(xy: ptr cfloat): nuk_vec2 {.cdecl, importc: "nk_vec2v".}
-proc nk_vec2iv*(xy: ptr cint): nuk_vec2 {.cdecl, importc: "nk_vec2iv".}
-proc nk_get_null_rect*(): nuk_rect {.cdecl, importc: "nk_get_null_rect".}
-proc nk_rect*(x: cfloat; y: cfloat; w: cfloat; h: cfloat): nuk_rect {.cdecl,
-    importc: "nk_rect".}
-proc nk_recti*(x: cint; y: cint; w: cint; h: cint): nuk_rect {.cdecl, importc: "nk_recti".}
-proc nk_recta*(pos: nuk_vec2; size: nuk_vec2): nuk_rect {.cdecl, importc: "nk_recta".}
-proc nk_rectv*(xywh: ptr cfloat): nuk_rect {.cdecl, importc: "nk_rectv".}
-proc nk_rectiv*(xywh: ptr cint): nuk_rect {.cdecl, importc: "nk_rectiv".}
-proc nk_rect_pos*(a2: nuk_rect): nuk_vec2 {.cdecl, importc: "nk_rect_pos".}
-proc nk_rect_size*(a2: nuk_rect): nuk_vec2 {.cdecl, importc: "nk_rect_size".}
-proc nk_strlen*(str: cstring): cint {.cdecl, importc: "nk_strlen".}
-proc nk_stricmp*(s1: cstring; s2: cstring): cint {.cdecl, importc: "nk_stricmp".}
-proc nk_stricmpn*(s1: cstring; s2: cstring; n: cint): cint {.cdecl,
-    importc: "nk_stricmpn".}
-proc nk_strtoi*(str: cstring; endptr: cstringArray): cint {.cdecl,
-    importc: "nk_strtoi".}
-proc nk_strtof*(str: cstring; endptr: cstringArray): cfloat {.cdecl,
-    importc: "nk_strtof".}
-proc nk_strtod*(str: cstring; endptr: cstringArray): cdouble {.cdecl,
-    importc: "nk_strtod".}
-proc nk_strfilter*(text: cstring; regexp: cstring): cint {.cdecl,
-    importc: "nk_strfilter".}
-proc nk_strmatch_fuzzy_string*(str: cstring; pattern: cstring; out_score: ptr cint): cint {.
-    cdecl, importc: "nk_strmatch_fuzzy_string".}
-proc nk_strmatch_fuzzy_text*(txt: cstring; txt_len: cint; pattern: cstring;
-                            out_score: ptr cint): cint {.cdecl,
-    importc: "nk_strmatch_fuzzy_text".}
-proc nk_utf_decode*(a2: cstring; a3: ptr uint32; a4: cint): cint {.cdecl,
-    importc: "nk_utf_decode".}
-proc nk_utf_encode*(a2: uint32; a3: cstring; a4: cint): cint {.cdecl,
-    importc: "nk_utf_encode".}
-proc nk_utf_len*(a2: cstring; byte_len: cint): cint {.cdecl, importc: "nk_utf_len".}
-proc nk_utf_at*(buffer: cstring; length: cint; index: cint; unicode: ptr uint32;
-               len: ptr cint): cstring {.cdecl, importc: "nk_utf_at".}
+                        inc_per_pixel: float32) {.importc: "nk_property_double".}
+proc propertyi*(a2: ptr context; name: cstring; min: int32; val: int32; max: int32;
+                  step: int32; inc_per_pixel: float32): int32 {.importc: "nk_propertyi".}
+proc propertyf*(a2: ptr context; name: cstring; min: float32; val: float32;
+                  max: float32; step: float32; inc_per_pixel: float32): float32 {.importc: "nk_propertyf".}
+proc propertyd*(a2: ptr context; name: cstring; min: cdouble; val: cdouble;
+                  max: cdouble; step: cdouble; inc_per_pixel: float32): cdouble {.importc: "nk_propertyd".}
+proc edit_focus*(a2: ptr context; flags: uint32) {.importc: "nk_edit_focus".}
+proc edit_unfocus*(a2: ptr context) {.importc: "nk_edit_unfocus".}
+proc edit_string*(a2: ptr context; a3: uint32; buffer: cstring; len: ptr int32;
+                    max: int32; a7: plugin_filter): uint32 {.importc: "nk_edit_string".}
+proc edit_buffer*(a2: ptr context; a3: uint32; a4: ptr text_edit;
+                    a5: plugin_filter): uint32 {.importc: "nk_edit_buffer".}
+proc edit_string_zero_terminated*(a2: ptr context; a3: uint32;
+                                    buffer: cstring; max: int32; a6: plugin_filter): uint32 {. importc: "nk_edit_string_zero_terminated".}
+proc chart_begin*(a2: ptr context; a3: chart_type; num: int32; min: float32;
+                    max: float32): int32 {.importc: "nk_chart_begin".}
+proc chart_begin_colored*(a2: ptr context; a3: chart_type; a4: color;
+                            active: color; num: int32; min: float32; max: float32): int32 {. importc: "nk_chart_begin_colored".}
+proc chart_add_slot*(ctx: ptr context; a3: chart_type; count: int32;
+                       min_value: float32; max_value: float32) {.importc: "nk_chart_add_slot".}
+proc chart_add_slot_colored*(ctx: ptr context; a3: chart_type; a4: color;
+                               active: color; count: int32; min_value: float32;
+                               max_value: float32) {.importc: "nk_chart_add_slot_colored".}
+proc chart_push*(a2: ptr context; a3: float32): uint32 {.importc: "nk_chart_push".}
+proc chart_push_slot*(a2: ptr context; a3: float32; a4: int32): uint32 {.importc: "nk_chart_push_slot".}
+proc chart_end*(a2: ptr context) {.importc: "nk_chart_end".}
+proc plot*(a2: ptr context; a3: chart_type; values: ptr float32; count: int32;
+             offset: int32) {.importc: "nk_plot".}
+proc plot_function*(a2: ptr context; a3: chart_type; userdata: pointer;
+    value_getter: proc (user: pointer; index: int32): float32 {.cdecl.}; count: int32;
+                      offset: int32) {.importc: "nk_plot_function".}
+proc popup_begin*(a2: ptr context; a3: popup_type; a4: cstring; a5: uint32;
+                    bounds: rect): int32 {.importc: "nk_popup_begin".}
+proc popup_close*(a2: ptr context) {.importc: "nk_popup_close".}
+proc popup_end*(a2: ptr context) {.importc: "nk_popup_end".}
+proc combo*(a2: ptr context; items: cstringArray; count: int32; selected: int32;
+              item_height: int32; size: vec2): int32 {.importc: "nk_combo".}
+proc combo_separator*(a2: ptr context; items_separated_by_separator: cstring;
+                        separator: int32; selected: int32; count: int32;
+                        item_height: int32; size: vec2): int32 {.importc: "nk_combo_separator".}
+proc combo_string*(a2: ptr context; items_separated_by_zeros: cstring;
+                     selected: int32; count: int32; item_height: int32; size: vec2): int32 {. importc: "nk_combo_string".}
+proc combo_callback*(a2: ptr context; item_getter: proc (a2: pointer; a3: int32;
+    a4: cstringArray) {.cdecl.}; userdata: pointer; selected: int32; count: int32;
+                       item_height: int32; size: vec2): int32 {.importc: "nk_combo_callback".}
+proc combobox*(a2: ptr context; items: cstringArray; count: int32;
+                 selected: ptr int32; item_height: int32; size: vec2) {.importc: "nk_combobox".}
+proc combobox_string*(a2: ptr context; items_separated_by_zeros: cstring;
+                        selected: ptr int32; count: int32; item_height: int32;
+                        size: vec2) {.importc: "nk_combobox_string".}
+proc combobox_separator*(a2: ptr context;
+                           items_separated_by_separator: cstring; separator: int32;
+                           selected: ptr int32; count: int32; item_height: int32;
+                           size: vec2) {.importc: "nk_combobox_separator".}
+proc combobox_callback*(a2: ptr context; item_getter: proc (a2: pointer; a3: int32;
+    a4: cstringArray) {.cdecl.}; a4: pointer; selected: ptr int32; count: int32;
+                          item_height: int32; size: vec2) {.importc: "nk_combobox_callback".}
+proc combo_begin_text*(a2: ptr context; selected: cstring; a4: int32; size: vec2): int32 {. importc: "nk_combo_begin_text".}
+proc combo_begin_label*(a2: ptr context; selected: cstring; size: vec2): int32 {. importc: "nk_combo_begin_label".}
+proc combo_begin_color*(a2: ptr context; color: color; size: vec2): int32 {. importc: "nk_combo_begin_color".}
+proc combo_begin_symbol*(a2: ptr context; a3: symbol_type; size: vec2): int32 {. importc: "nk_combo_begin_symbol".}
+proc combo_begin_symbol_label*(a2: ptr context; selected: cstring;
+                                 a4: symbol_type; size: vec2): int32 {.importc: "nk_combo_begin_symbol_label".}
+proc combo_begin_symbol_text*(a2: ptr context; selected: cstring; a4: int32;
+                                a5: symbol_type; size: vec2): int32 {.importc: "nk_combo_begin_symbol_text".}
+proc combo_begin_image*(a2: ptr context; img: image; size: vec2): int32 {. importc: "nk_combo_begin_image".}
+proc combo_begin_image_label*(a2: ptr context; selected: cstring; a4: image;
+                                size: vec2): int32 {.importc: "nk_combo_begin_image_label".}
+proc combo_begin_image_text*(a2: ptr context; selected: cstring; a4: int32;
+                               a5: image; size: vec2): int32 {.importc: "nk_combo_begin_image_text".}
+proc combo_item_label*(a2: ptr context; a3: cstring; alignment: uint32): int32 {. importc: "nk_combo_item_label".}
+proc combo_item_text*(a2: ptr context; a3: cstring; a4: int32; alignment: uint32): int32 {. importc: "nk_combo_item_text".}
+proc combo_item_image_label*(a2: ptr context; a3: image; a4: cstring;
+                               alignment: uint32): int32 {.importc: "nk_combo_item_image_label".}
+proc combo_item_image_text*(a2: ptr context; a3: image; a4: cstring; a5: int32;
+                              alignment: uint32): int32 {.importc: "nk_combo_item_image_text".}
+proc combo_item_symbol_label*(a2: ptr context; a3: symbol_type; a4: cstring;
+                                alignment: uint32): int32 {.importc: "nk_combo_item_symbol_label".}
+proc combo_item_symbol_text*(a2: ptr context; a3: symbol_type; a4: cstring;
+                               a5: int32; alignment: uint32): int32 {.importc: "nk_combo_item_symbol_text".}
+proc combo_close*(a2: ptr context) {.importc: "nk_combo_close".}
+proc combo_end*(a2: ptr context) {.importc: "nk_combo_end".}
+proc contextual_begin*(a2: ptr context; a3: uint32; a4: vec2;
+                         trigger_bounds: rect): int32 {.importc: "nk_contextual_begin".}
+proc contextual_item_text*(a2: ptr context; a3: cstring; a4: int32; align: uint32): int32 {. importc: "nk_contextual_item_text".}
+proc contextual_item_label*(a2: ptr context; a3: cstring; align: uint32): int32 {. importc: "nk_contextual_item_label".}
+proc contextual_item_image_label*(a2: ptr context; a3: image; a4: cstring;
+                                    alignment: uint32): int32 {.importc: "nk_contextual_item_image_label".}
+proc contextual_item_image_text*(a2: ptr context; a3: image; a4: cstring;
+                                   len: int32; alignment: uint32): int32 {.importc: "nk_contextual_item_image_text".}
+proc contextual_item_symbol_label*(a2: ptr context; a3: symbol_type;
+                                     a4: cstring; alignment: uint32): int32 {.importc: "nk_contextual_item_symbol_label".}
+proc contextual_item_symbol_text*(a2: ptr context; a3: symbol_type;
+                                    a4: cstring; a5: int32; alignment: uint32): int32 {. importc: "nk_contextual_item_symbol_text".}
+proc contextual_close*(a2: ptr context) {.importc: "nk_contextual_close".}
+proc contextual_end*(a2: ptr context) {.importc: "nk_contextual_end".}
+proc tooltip*(a2: ptr context; a3: cstring) {.importc: "nk_tooltip".}
+proc tooltip_begin*(a2: ptr context; width: float32): int32 {.importc: "nk_tooltip_begin".}
+proc tooltip_end*(a2: ptr context) {.importc: "nk_tooltip_end".}
+proc menubar_begin*(a2: ptr context) {.importc: "nk_menubar_begin".}
+proc menubar_end*(a2: ptr context) {.importc: "nk_menubar_end".}
+proc menu_begin_text*(a2: ptr context; title: cstring; title_len: int32;
+                        align: uint32; size: vec2): int32 {.importc: "nk_menu_begin_text".}
+proc menu_begin_label*(a2: ptr context; a3: cstring; align: uint32;
+                         size: vec2): int32 {.importc: "nk_menu_begin_label".}
+proc menu_begin_image*(a2: ptr context; a3: cstring; a4: image; size: vec2): int32 {. importc: "nk_menu_begin_image".}
+proc menu_begin_image_text*(a2: ptr context; a3: cstring; a4: int32;
+                              align: uint32; a6: image; size: vec2): int32 {. importc: "nk_menu_begin_image_text".}
+proc menu_begin_image_label*(a2: ptr context; a3: cstring; align: uint32;
+                               a5: image; size: vec2): int32 {.importc: "nk_menu_begin_image_label".}
+proc menu_begin_symbol*(a2: ptr context; a3: cstring; a4: symbol_type;
+                          size: vec2): int32 {.importc: "nk_menu_begin_symbol".}
+proc menu_begin_symbol_text*(a2: ptr context; a3: cstring; a4: int32;
+                               align: uint32; a6: symbol_type; size: vec2): int32 {. importc: "nk_menu_begin_symbol_text".}
+proc menu_begin_symbol_label*(a2: ptr context; a3: cstring; align: uint32;
+                                a5: symbol_type; size: vec2): int32 {.importc: "nk_menu_begin_symbol_label".}
+proc menu_item_text*(a2: ptr context; a3: cstring; a4: int32; align: uint32): int32 {. importc: "nk_menu_item_text".}
+proc menu_item_label*(a2: ptr context; a3: cstring; alignment: uint32): int32 {. importc: "nk_menu_item_label".}
+proc menu_item_image_label*(a2: ptr context; a3: image; a4: cstring;
+                              alignment: uint32): int32 {.importc: "nk_menu_item_image_label".}
+proc menu_item_image_text*(a2: ptr context; a3: image; a4: cstring; len: int32;
+                             alignment: uint32): int32 {.importc: "nk_menu_item_image_text".}
+proc menu_item_symbol_text*(a2: ptr context; a3: symbol_type; a4: cstring;
+                              a5: int32; alignment: uint32): int32 {.importc: "nk_menu_item_symbol_text".}
+proc menu_item_symbol_label*(a2: ptr context; a3: symbol_type; a4: cstring;
+                               alignment: uint32): int32 {.importc: "nk_menu_item_symbol_label".}
+proc menu_close*(a2: ptr context) {.importc: "nk_menu_close".}
+proc menu_end*(a2: ptr context) {.importc: "nk_menu_end".}
+proc convert*(a2: ptr context; cmds: ptr buffer; vertices: ptr buffer;
+                elements: ptr buffer; a6: ptr convert_config) {.importc: "nk_convert".}
+proc draw_begin*(a2: ptr context; a3: ptr buffer): ptr draw_command {.importc: "nk__draw_begin".}
+proc draw_end*(a2: ptr context; a3: ptr buffer): ptr draw_command {.importc: "nk__draw_end".}
+proc draw_next*(a2: ptr draw_command; a3: ptr buffer; a4: ptr context): ptr draw_command {. importc: "nk__draw_next".}
+proc input_begin*(a2: ptr context) {.importc: "nk_input_begin".}
+proc input_motion*(a2: ptr context; x: int32; y: int32) {.importc: "nk_input_motion".}
+proc input_key*(a2: ptr context; a3: keys; down: int32) {.importc: "nk_input_key".}
+proc input_button*(a2: ptr context; a3: buttons; x: int32; y: int32; down: int32) {. importc: "nk_input_button".}
+proc input_scroll*(a2: ptr context; y: float32) {.importc: "nk_input_scroll".}
+proc input_char*(a2: ptr context; a3: char) {.importc: "nk_input_char".}
+proc input_glyph*(a2: ptr context; a3: glyph) {.importc: "nk_input_glyph".}
+proc input_unicode*(a2: ptr context; a3: uint32) {.importc: "nk_input_unicode".}
+proc input_end*(a2: ptr context) {.importc: "nk_input_end".}
+proc style_default*(a2: ptr context) {.importc: "nk_style_default".}
+proc style_from_table*(a2: ptr context; a3: ptr color) {.importc: "nk_style_from_table".}
+proc style_load_cursor*(a2: ptr context; a3: style_cursor; a4: ptr cursor) {. importc: "nk_style_load_cursor".}
+proc style_load_all_cursors*(a2: ptr context; a3: ptr cursor) {.importc: "nk_style_load_all_cursors".}
+proc style_get_color_by_name*(a2: style_colors): cstring {.importc: "nk_style_get_color_by_name".}
+proc style_set_font*(a2: ptr context; a3: ptr user_font) {.importc: "nk_style_set_font".}
+proc style_set_cursor*(a2: ptr context; a3: style_cursor): int32 {.importc: "nk_style_set_cursor".}
+proc style_show_cursor*(a2: ptr context) {.importc: "nk_style_show_cursor".}
+proc style_hide_cursor*(a2: ptr context) {.importc: "nk_style_hide_cursor".}
+proc style_push_font*(a2: ptr context; a3: ptr user_font): int32 {.importc: "nk_style_push_font".}
+proc style_push_float*(a2: ptr context; a3: ptr float32; a4: float32): int32 {.importc: "nk_style_push_float".}
+proc style_push_vec2*(a2: ptr context; a3: ptr vec2; a4: vec2): int32 {.importc: "nk_style_push_vec2".}
+proc style_push_style_item*(a2: ptr context; a3: ptr style_item;
+                              a4: style_item): int32 {.importc: "nk_style_push_style_item".}
+proc style_push_flags*(a2: ptr context; a3: ptr uint32; a4: uint32): int32 {. importc: "nk_style_push_flags".}
+proc style_push_color*(a2: ptr context; a3: ptr color; a4: color): int32 {. importc: "nk_style_push_color".}
+proc style_pop_font*(a2: ptr context): int32 {.importc: "nk_style_pop_font".}
+proc style_pop_float*(a2: ptr context): int32 {.importc: "nk_style_pop_float".}
+proc style_pop_vec2*(a2: ptr context): int32 {.importc: "nk_style_pop_vec2".}
+proc style_pop_style_item*(a2: ptr context): int32 {.importc: "nk_style_pop_style_item".}
+proc style_pop_flags*(a2: ptr context): int32 {.importc: "nk_style_pop_flags".}
+proc style_pop_color*(a2: ptr context): int32 {.importc: "nk_style_pop_color".}
+proc widget_bounds*(a2: ptr context): rect {.importc: "nk_widget_bounds".}
+proc widget_position*(a2: ptr context): vec2 {.importc: "nk_widget_position".}
+proc widget_size*(a2: ptr context): vec2 {.importc: "nk_widget_size".}
+proc widget_width*(a2: ptr context): float32 {.importc: "nk_widget_width".}
+proc widget_height*(a2: ptr context): float32 {.importc: "nk_widget_height".}
+proc widget_is_hovered*(a2: ptr context): int32 {.importc: "nk_widget_is_hovered".}
+proc widget_is_mouse_clicked*(a2: ptr context; a3: buttons): int32 {.importc: "nk_widget_is_mouse_clicked".}
+proc widget_has_mouse_click_down*(a2: ptr context; a3: buttons; down: int32): int32 {. importc: "nk_widget_has_mouse_click_down".}
+proc spacing*(a2: ptr context; cols: int32) {.importc: "nk_spacing".}
+proc widget*(a2: ptr rect; a3: ptr context): widget_layout_states {.importc: "nk_widget".}
+proc widget_fitting*(a2: ptr rect; a3: ptr context; a4: vec2): widget_layout_states {. importc: "nk_widget_fitting".}
+proc rgb*(r: int32; g: int32; b: int32): color {.importc: "nk_rgb".}
+proc rgb_iv*(rgb: ptr int32): color {.importc: "nk_rgb_iv".}
+proc rgb_bv*(rgb: ptr char): color {.importc: "nk_rgb_bv".}
+proc rgb_f*(r: float32; g: float32; b: float32): color {.importc: "nk_rgb_f".}
+proc rgb_fv*(rgb: ptr float32): color {.importc: "nk_rgb_fv".}
+proc rgb_hex*(rgb: cstring): color {.importc: "nk_rgb_hex".}
+proc rgba*(r: int32; g: int32; b: int32; a: int32): color {.importc: "nk_rgba".}
+proc rgba_u32*(a2: uint32): color {.importc: "nk_rgba_u32".}
+proc rgba_iv*(rgba: ptr int32): color {.importc: "nk_rgba_iv".}
+proc rgba_bv*(rgba: ptr char): color {.importc: "nk_rgba_bv".}
+proc rgba_f*(r: float32; g: float32; b: float32; a: float32): color {.importc: "nk_rgba_f".}
+proc rgba_fv*(rgba: ptr float32): color {.importc: "nk_rgba_fv".}
+proc rgba_hex*(rgb: cstring): color {.importc: "nk_rgba_hex".}
+proc hsv*(h: int32; s: int32; v: int32): color {.importc: "nk_hsv".}
+proc hsv_iv*(hsv: ptr int32): color {.importc: "nk_hsv_iv".}
+proc hsv_bv*(hsv: ptr char): color {.importc: "nk_hsv_bv".}
+proc hsv_f*(h: float32; s: float32; v: float32): color {.importc: "nk_hsv_f".}
+proc hsv_fv*(hsv: ptr float32): color {.importc: "nk_hsv_fv".}
+proc hsva*(h: int32; s: int32; v: int32; a: int32): color {.importc: "nk_hsva".}
+proc hsva_iv*(hsva: ptr int32): color {.importc: "nk_hsva_iv".}
+proc hsva_bv*(hsva: ptr char): color {.importc: "nk_hsva_bv".}
+proc hsva_f*(h: float32; s: float32; v: float32; a: float32): color {.importc: "nk_hsva_f".}
+proc hsva_fv*(hsva: ptr float32): color {.importc: "nk_hsva_fv".}
+proc newColorf*(r: ptr float32; g: ptr float32; b: ptr float32; a: ptr float32; a6: color) {. importc: "nk_color_f".}
+proc colorfv*(rgba_out: ptr float32; a3: color) {.importc: "nk_color_fv".}
+proc color_d*(r: ptr cdouble; g: ptr cdouble; b: ptr cdouble; a: ptr cdouble; a6: color) {. importc: "nk_color_d".}
+proc color_dv*(rgba_out: ptr cdouble; a3: color) {.importc: "nk_color_dv".}
+proc color_u32*(a2: color): uint32 {.importc: "nk_color_u32".}
+proc color_hex_rgba*(output: cstring; a3: color) {.importc: "nk_color_hex_rgba".}
+proc color_hex_rgb*(output: cstring; a3: color) {.importc: "nk_color_hex_rgb".}
+proc color_hsv_i*(out_h: ptr int32; out_s: ptr int32; out_v: ptr int32; a5: color) {. importc: "nk_color_hsv_i".}
+proc color_hsv_b*(out_h: ptr char; out_s: ptr char; out_v: ptr char;
+                    a5: color) {.importc: "nk_color_hsv_b".}
+proc color_hsv_iv*(hsv_out: ptr int32; a3: color) {.importc: "nk_color_hsv_iv".}
+proc color_hsv_bv*(hsv_out: ptr char; a3: color) {.importc: "nk_color_hsv_bv".}
+proc color_hsv_f*(out_h: ptr float32; out_s: ptr float32; out_v: ptr float32; a5: color) {. importc: "nk_color_hsv_f".}
+proc color_hsv_fv*(hsv_out: ptr float32; a3: color) {.importc: "nk_color_hsv_fv".}
+proc color_hsva_i*(h: ptr int32; s: ptr int32; v: ptr int32; a: ptr int32; a6: color) {. importc: "nk_color_hsva_i".}
+proc color_hsva_b*(h: ptr char; s: ptr char; v: ptr char; a: ptr char;
+                     a6: color) {.importc: "nk_color_hsva_b".}
+proc color_hsva_iv*(hsva_out: ptr int32; a3: color) {.importc: "nk_color_hsva_iv".}
+proc color_hsva_bv*(hsva_out: ptr char; a3: color) {.importc: "nk_color_hsva_bv".}
+proc color_hsva_f*(out_h: ptr float32; out_s: ptr float32; out_v: ptr float32;
+                     out_a: ptr float32; a6: color) {.importc: "nk_color_hsva_f".}
+proc color_hsva_fv*(hsva_out: ptr float32; a3: color) {.importc: "nk_color_hsva_fv".}
+proc handle_ptr*(a2: pointer): handle {.importc: "nk_handle_ptr".}
+proc handle_id*(a2: int32): handle {.importc: "nk_handle_id".}
+proc image_handle*(a2: handle): image {.importc: "nk_image_handle".}
+proc image_ptr*(a2: pointer): image {.importc: "nk_image_ptr".}
+proc image_id*(a2: int32): image {.importc: "nk_image_id".}
+proc image_is_subimage*(img: ptr image): int32 {.importc: "nk_image_is_subimage".}
+proc subimage_ptr*(a2: pointer; w: uint16; h: uint16; sub_region: rect): image {. importc: "nk_subimage_ptr".}
+proc subimage_id*(a2: int32; w: uint16; h: uint16; sub_region: rect): image {. importc: "nk_subimage_id".}
+proc subimage_handle*(a2: handle; w: uint16; h: uint16; sub_region: rect): image {. importc: "nk_subimage_handle".}
+proc murmur_hash*(key: pointer; len: int32; seed: uint32): uint32 {.importc: "nk_murmur_hash".}
+proc triangle_from_direction*(result: ptr vec2; r: rect; pad_x: float32;
+                                pad_y: float32; a6: heading) {.importc: "nk_triangle_from_direction".}
+proc newVec2*(x: float32; y: float32): vec2 {.importc: "nk_vec2".}
+proc newVec2i*(x: int32; y: int32): vec2 {.importc: "nk_vec2i".}
+proc vec2v*(xy: ptr float32): vec2 {.importc: "nk_vec2v".}
+proc vec2iv*(xy: ptr int32): vec2 {.importc: "nk_vec2iv".}
+proc get_null_rect*(): rect {.importc: "nk_get_null_rect".}
+proc newRect*(x: float32; y: float32; w: float32; h: float32): rect {.importc: "nk_rect".}
+proc newRecti*(x: int32; y: int32; w: int32; h: int32): rect {.importc: "nk_recti".}
+proc recta*(pos: vec2; size: vec2): rect {.importc: "nk_recta".}
+proc rectv*(xywh: ptr float32): rect {.importc: "nk_rectv".}
+proc rectiv*(xywh: ptr int32): rect {.importc: "nk_rectiv".}
+proc rect_pos*(a2: rect): vec2 {.importc: "nk_rect_pos".}
+proc rect_size*(a2: rect): vec2 {.importc: "nk_rect_size".}
+proc strlen*(str: cstring): int32 {.importc: "nk_strlen".}
+proc stricmp*(s1: cstring; s2: cstring): int32 {.importc: "nk_stricmp".}
+proc stricmpn*(s1: cstring; s2: cstring; n: int32): int32 {.importc: "nk_stricmpn".}
+proc strtoi*(str: cstring; endptr: cstringArray): int32 {.importc: "nk_strtoi".}
+proc strtof*(str: cstring; endptr: cstringArray): float32 {.importc: "nk_strtof".}
+proc strtod*(str: cstring; endptr: cstringArray): cdouble {.importc: "nk_strtod".}
+proc strfilter*(text: cstring; regexp: cstring): int32 {.importc: "nk_strfilter".}
+proc strmatch_fuzzy_string*(str: cstring; pattern: cstring; out_score: ptr int32): int32 {. importc: "nk_strmatch_fuzzy_string".}
+proc strmatch_fuzzy_text*(txt: cstring; txt_len: int32; pattern: cstring;
+                            out_score: ptr int32): int32 {.importc: "nk_strmatch_fuzzy_text".}
+proc utf_decode*(a2: cstring; a3: ptr uint32; a4: int32): int32 {.importc: "nk_utf_decode".}
+proc utf_encode*(a2: uint32; a3: cstring; a4: int32): int32 {.importc: "nk_utf_encode".}
+proc utf_len*(a2: cstring; byte_len: int32): int32 {.importc: "nk_utf_len".}
+proc utf_at*(buffer: cstring; length: int32; index: int32; unicode: ptr uint32;
+               len: ptr int32): cstring {.importc: "nk_utf_at".}
 
 
 type
-  nk_baked_font* = object
-    height*: cfloat
-    ascent*: cfloat
-    descent*: cfloat
+  baked_font* = object
+    height*: float32
+    ascent*: float32
+    descent*: float32
     glyph_offset*: uint32
     glyph_count*: uint32
     ranges*: ptr uint32
 
-  nk_font_config* = object
-    next*: ptr nk_font_config
+  font_config* = object
+    next*: ptr font_config
     ttf_blob*: pointer
     ttf_size*: uint
     ttf_data_owned_by_atlas*: cuchar
@@ -2200,102 +1870,85 @@ type
     oversample_v*: cuchar
     oversample_h*: cuchar
     padding*: array[3, cuchar]
-    size*: cfloat
-    coord_type*: nk_font_coord_type
-    spacing*: nuk_vec2
+    size*: float32
+    coord_type*: font_coord_type
+    spacing*: vec2
     range*: ptr uint32
-    font*: ptr nk_baked_font
+    font*: ptr baked_font
     fallback_glyph*: uint32
 
-  nk_font_glyph* = object
+  font_glyph* = object
     codepoint*: uint32
-    xadvance*: cfloat
-    x0*: cfloat
-    y0*: cfloat
-    x1*: cfloat
-    y1*: cfloat
-    w*: cfloat
-    h*: cfloat
-    u0*: cfloat
-    v0*: cfloat
-    u1*: cfloat
-    v1*: cfloat
+    xadvance*: float32
+    x0*: float32
+    y0*: float32
+    x1*: float32
+    y1*: float32
+    w*: float32
+    h*: float32
+    u0*: float32
+    v0*: float32
+    u1*: float32
+    v1*: float32
 
-  nk_font* = object
-    next*: ptr nk_font
-    handle*: nk_user_font
-    info*: nk_baked_font
-    scale*: cfloat
-    glyphs*: ptr nk_font_glyph
-    fallback*: ptr nk_font_glyph
+  font* = object
+    next*: ptr font
+    handle*: user_font
+    info*: baked_font
+    scale*: float32
+    glyphs*: ptr font_glyph
+    fallback*: ptr font_glyph
     fallback_codepoint*: uint32
-    texture*: nk_handle
-    config*: ptr nk_font_config
+    texture*: handle
+    config*: ptr font_config
 
-  nk_font_atlas_format* {.size: sizeof(cint).} = enum
-    NK_FONT_ATLAS_ALPHA8, NK_FONT_ATLAS_RGBA32
+  font_atlas_format* {.size: sizeof(int32).} = enum
+    FONT_ATLAS_ALPHA8, FONT_ATLAS_RGBA32
 
 
 type
-  nk_font_atlas* = object
+  font_atlas* = object
     pixel*: pointer
-    tex_width*: cint
-    tex_height*: cint
-    permanent*: nk_allocator
-    temporary*: nk_allocator
-    custom*: nuk_recti
-    cursors*: array[NK_CURSOR_COUNT, nk_cursor]
-    glyph_count*: cint
-    glyphs*: ptr nk_font_glyph
-    default_font*: ptr nk_font
-    fonts*: ptr nk_font
-    config*: ptr nk_font_config
-    font_num*: cint
+    tex_width*: int32
+    tex_height*: int32
+    permanent*: allocator
+    temporary*: allocator
+    custom*: recti
+    cursors*: array[CURSOR_COUNT, cursor]
+    glyph_count*: int32
+    glyphs*: ptr font_glyph
+    default_font*: ptr font
+    fonts*: ptr font
+    config*: ptr font_config
+    font_num*: int32
 
 
-proc nk_font_default_glyph_ranges*(): ptr uint32 {.cdecl,
-    importc: "nk_font_default_glyph_ranges".}
-proc nk_font_chinese_glyph_ranges*(): ptr uint32 {.cdecl,
-    importc: "nk_font_chinese_glyph_ranges".}
-proc nk_font_cyrillic_glyph_ranges*(): ptr uint32 {.cdecl,
-    importc: "nk_font_cyrillic_glyph_ranges".}
-proc nk_font_korean_glyph_ranges*(): ptr uint32 {.cdecl,
-    importc: "nk_font_korean_glyph_ranges".}
-proc nk_font_atlas_init_default*(a2: ptr nk_font_atlas) {.cdecl,
-    importc: "nk_font_atlas_init_default".}
-proc nk_font_atlas_init*(a2: ptr nk_font_atlas; a3: ptr nk_allocator) {.cdecl,
-    importc: "nk_font_atlas_init".}
-proc nk_font_atlas_init_custom*(a2: ptr nk_font_atlas; persistent: ptr nk_allocator;
-                               transient: ptr nk_allocator) {.cdecl,
-    importc: "nk_font_atlas_init_custom".}
-proc nk_font_atlas_begin*(a2: ptr nk_font_atlas) {.cdecl,
-    importc: "nk_font_atlas_begin".}
-proc nk_font_atlas_add*(a2: ptr nk_font_atlas; a3: ptr nk_font_config): ptr nk_font {.
-    cdecl, importc: "nk_font_atlas_add".}
-proc nk_font_atlas_add_from_memory*(atlas: ptr nk_font_atlas; memory: pointer;
-                                   size: uint; height: cfloat;
-                                   config: ptr nk_font_config): ptr nk_font {.cdecl,
-    importc: "nk_font_atlas_add_from_memory".}
-proc nk_font_atlas_add_compressed*(a2: ptr nk_font_atlas; memory: pointer;
-                                  size: uint; height: cfloat;
-                                  a6: ptr nk_font_config): ptr nk_font {.cdecl,
-    importc: "nk_font_atlas_add_compressed".}
-proc nk_font_atlas_add_compressed_base85*(a2: ptr nk_font_atlas; data: cstring;
-    height: cfloat; config: ptr nk_font_config): ptr nk_font {.cdecl,
-    importc: "nk_font_atlas_add_compressed_base85".}
-proc nk_font_atlas_bake*(a2: ptr nk_font_atlas; width: ptr cint; height: ptr cint;
-                        a5: nk_font_atlas_format): pointer {.cdecl,
-    importc: "nk_font_atlas_bake".}
-proc nk_font_atlas_end*(a2: ptr nk_font_atlas; tex: nk_handle;
-                       a4: ptr nk_draw_null_texture) {.cdecl,
-    importc: "nk_font_atlas_end".}
-proc nk_font_find_glyph*(a2: ptr nk_font; unicode: uint32): ptr nk_font_glyph {.cdecl,
-    importc: "nk_font_find_glyph".}
-proc nk_font_atlas_cleanup*(atlas: ptr nk_font_atlas) {.cdecl,
-    importc: "nk_font_atlas_cleanup".}
-proc nk_font_atlas_clear*(a2: ptr nk_font_atlas) {.cdecl,
-    importc: "nk_font_atlas_clear".}
-proc nk_font_atlas_add_default*(a2: ptr nk_font_atlas; height: cfloat;
-                               a4: ptr nk_font_config): ptr nk_font {.cdecl, importc: "nk_font_atlas_add_default".}
-proc nk_font_atlas_add_from_file*(atlas: ptr nk_font_atlas; file_path: cstring;
-                                 height: cfloat; a5: ptr nk_font_config): ptr nk_font {.cdecl, importc: "nk_font_atlas_add_from_file".}
+proc font_default_glyph_ranges*(): ptr uint32 {.importc: "nk_font_default_glyph_ranges".}
+proc font_chinese_glyph_ranges*(): ptr uint32 {.importc: "nk_font_chinese_glyph_ranges".}
+proc font_cyrillic_glyph_ranges*(): ptr uint32 {.importc: "nk_font_cyrillic_glyph_ranges".}
+proc font_korean_glyph_ranges*(): ptr uint32 {.importc: "nk_font_korean_glyph_ranges".}
+proc font_atlas_init_default*(a2: ptr font_atlas) {.importc: "nk_font_atlas_init_default".}
+proc font_atlas_init*(a2: ptr font_atlas; a3: ptr allocator) {.importc: "nk_font_atlas_init".}
+proc font_atlas_init_custom*(a2: ptr font_atlas; persistent: ptr allocator;
+                               transient: ptr allocator) {.importc: "nk_font_atlas_init_custom".}
+proc font_atlas_begin*(a2: ptr font_atlas) {.importc: "nk_font_atlas_begin".}
+proc font_atlas_add*(a2: ptr font_atlas; a3: ptr font_config): ptr font {. importc: "nk_font_atlas_add".}
+proc font_atlas_add_from_memory*(atlas: ptr font_atlas; memory: pointer;
+                                   size: uint; height: float32;
+                                   config: ptr font_config): ptr font {.importc: "nk_font_atlas_add_from_memory".}
+proc font_atlas_add_compressed*(a2: ptr font_atlas; memory: pointer;
+                                  size: uint; height: float32;
+                                  a6: ptr font_config): ptr font {.importc: "nk_font_atlas_add_compressed".}
+proc font_atlas_add_compressed_base85*(a2: ptr font_atlas; data: cstring;
+    height: float32; config: ptr font_config): ptr font {.importc: "nk_font_atlas_add_compressed_base85".}
+proc font_atlas_bake*(a2: ptr font_atlas; width: ptr int32; height: ptr int32;
+                        a5: font_atlas_format): pointer {.importc: "nk_font_atlas_bake".}
+proc font_atlas_end*(a2: ptr font_atlas; tex: handle;
+                       a4: ptr draw_null_texture) {.importc: "nk_font_atlas_end".}
+proc font_find_glyph*(a2: ptr font; unicode: uint32): ptr font_glyph {.importc: "nk_font_find_glyph".}
+proc font_atlas_cleanup*(atlas: ptr font_atlas) {.importc: "nk_font_atlas_cleanup".}
+proc font_atlas_clear*(a2: ptr font_atlas) {.importc: "nk_font_atlas_clear".}
+proc font_atlas_add_default*(a2: ptr font_atlas; height: float32;
+                               a4: ptr font_config): ptr font {.importc: "nk_font_atlas_add_default".}
+proc font_atlas_add_from_file*(atlas: ptr font_atlas; file_path: cstring;
+                                 height: float32; a5: ptr font_config): ptr font {.importc: "nk_font_atlas_add_from_file".}
