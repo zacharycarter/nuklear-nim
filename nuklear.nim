@@ -1482,7 +1482,7 @@ type
 
 
 proc filter_default(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_default", cdecl.}
-var defaultFilter* : InputFilter = proc(te: var text_edit, unicode: uint32): int32 {.closure, cdecl.} =
+var filter* : InputFilter = proc(te: var text_edit, unicode: uint32): int32 {.closure, cdecl.} =
   filter_default(addr te, unicode)
 
 proc filter_ascii(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_ascii".}
@@ -1795,8 +1795,10 @@ proc draw_image(a2: ptr command_buffer; a3: rect; a4: ptr img;
 proc drawImage*(cmdBuf: var command_buffer, r: rect, img: var img, col: color) =
   draw_image(addr cmdBuf, r, addr img, col)
 
-proc draw_text*(a2: ptr command_buffer; a3: rect; text: cstring; len: int32;
+proc draw_text(a2: ptr command_buffer; a3: rect; text: cstring; len: int32;
                   a6: ptr user_font; a7: color; a8: color) {.importc: "nk_draw_text".}
+proc drawText*(cmdBuf: var command_buffer, r: rect, text: string, len: int32, userFont: var user_font, bg, fg: color) =
+  draw_text(addr cmdBuf, r, text, len, addr userFont, fg, bg)
 
 proc next*(a2: ptr context; a3: ptr command): ptr command {.importc: "nk__next".}
 
@@ -1915,20 +1917,32 @@ proc init_fixed*(a2: ptr context; memory: pointer; size: uint;
 proc init*(a2: ptr context; a3: ptr allocator; a4: ptr user_font): int32 {. importc: "nk_init".}
 proc init_custom*(a2: ptr context; cmds: ptr buffer; pool: ptr buffer;
                     a5: ptr user_font): int32 {.importc: "nk_init_custom".}
-proc clear*(a2: ptr context) {.importc: "nk_clear".}
-proc free*(a2: ptr context) {.importc: "nk_free".}
+
+proc clear(a2: ptr context) {.importc: "nk_clear".}
+proc clear*(ctx: var context) =
+  clear(addr ctx)
+
+proc free(a2: ptr context) {.importc: "nk_free".}
+proc free*(ctx: var context) =
+  free(addr ctx)
 
 proc begin(a2: ptr context; title: cstring; bounds: rect; flags: uint32): int32 {. importc: "nk_begin".}
 proc open*(ctx: var context, title: string, bounds: rect, flags: uint32): int32 =
   begin(addr ctx, title, bounds, flags)
 
-proc begin_titled*(a2: ptr context; name: cstring; title: cstring;
+proc begin_titled(a2: ptr context; name: cstring; title: cstring;
                      bounds: rect; flags: uint32): int32 {.importc: "nk_begin_titled".}
+proc openTitled*(ctx: var context, name, title: string, bounds: rect, flags: uint32): int32 =
+  begin_titled(addr ctx, name, title, bounds, flags)
+
 proc close(a2: ptr context) {.importc: "nk_end".}
 proc close*(ctx: var context) =
   close(addr ctx)
 
-proc window_find*(ctx: ptr context; name: cstring): ptr window {.importc: "nk_window_find".}
+proc window_find(ctx: ptr context; name: cstring): ptr window {.importc: "nk_window_find".}
+proc find*(ctx: var context, name: string): ptr window =
+  window_find(addr ctx, name)
+
 proc window_get_bounds*(a2: ptr context): rect {.importc: "nk_window_get_bounds".}
 proc window_get_position*(a2: ptr context): vec2 {.importc: "nk_window_get_position".}
 proc window_get_size*(a2: ptr context): vec2 {.importc: "nk_window_get_size".}
@@ -2465,7 +2479,7 @@ proc initCustom*(atlas: var font_atlas, persistent, transient: var allocator) =
   font_atlas_init_custom(addr atlas, addr persistent, addr transient)                               
 
 proc font_atlas_begin(a2: ptr font_atlas) {.importc: "nk_font_atlas_begin".}
-proc begin*(atlas: var font_atlas) =
+proc open*(atlas: var font_atlas) =
   font_atlas_begin(addr atlas)
 
 proc font_atlas_add(a2: ptr font_atlas; a3: ptr font_config): ptr font {. importc: "nk_font_atlas_add".}

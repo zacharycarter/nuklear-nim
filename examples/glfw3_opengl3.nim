@@ -234,7 +234,7 @@ glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
 
 fontAtlas.init()
 
-fontAtlas.begin()
+fontAtlas.open()
 
 let roboto_ttf = addr s_robotoRegularTtf
 
@@ -388,7 +388,7 @@ while glfw.WindowShouldClose(win) == 0:
     cmd = draw_next(cmd, addr dev.cmds, addr ctx)
 
       
-  clear(addr ctx)
+  ctx.clear()
 
 
   glUseProgram(0);
@@ -401,7 +401,7 @@ while glfw.WindowShouldClose(win) == 0:
   glfw.SwapBuffers(win);
 
 fontAtlas.clear()
-free(addr(ctx))
+ctx.free()
 glDetachShader(dev.prog, dev.vert_shader);
 glDetachShader(dev.prog, dev.frag_shader);
 glDeleteShader(dev.vert_shader);
