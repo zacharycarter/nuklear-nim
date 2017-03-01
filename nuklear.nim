@@ -577,7 +577,7 @@ type
     preferred_x*: float32
     undo*: text_undo_state
 
-  plugin_filter* = proc (a2: ptr text_edit; unicode: uint32): int32 {.cdecl.}
+  plugin_filter* = proc (a2: ptr text_edit; unicode: uint32): int32
 
   text_undo_record* = object
     where*: int32
@@ -1083,24 +1083,24 @@ type
     TEXT_EDIT_MODE_VIEW, TEXT_EDIT_MODE_INSERT, TEXT_EDIT_MODE_REPLACE
 
 
-proc nk_filter_default*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_default".}
-proc nk_filter_ascii*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_ascii".}
-proc nk_filter_float*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_float".}
-proc nk_filter_decimal*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_decimal".}
-proc nk_filter_hex*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_hex".}
-proc nk_filter_oct*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_oct".}
-proc nk_filter_binary*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_binary".}
-proc nk_textedit_init*(a2: ptr text_edit; a3: ptr allocator; size: uint) {. importc: "nk_textedit_init".}
-proc nk_textedit_init_fixed*(a2: ptr text_edit; memory: pointer; size: uint) {. importc: "nk_textedit_init_fixed".}
-proc nk_textedit_free*(a2: ptr text_edit) {.importc: "nk_textedit_free".}
-proc nk_textedit_text*(a2: ptr text_edit; a3: cstring; total_len: int32) {.importc: "nk_textedit_text".}
-proc nk_textedit_delete*(a2: ptr text_edit; where: int32; len: int32) {.importc: "nk_textedit_delete".}
-proc nk_textedit_delete_selection*(a2: ptr text_edit) {.importc: "nk_textedit_delete_selection".}
-proc nk_textedit_select_all*(a2: ptr text_edit) {.importc: "nk_textedit_select_all".}
-proc nk_textedit_cut*(a2: ptr text_edit): int32 {.importc: "nk_textedit_cut".}
-proc nk_textedit_paste*(a2: ptr text_edit; a3: cstring; len: int32): int32 {.importc: "nk_textedit_paste".}
-proc nk_textedit_undo*(a2: ptr text_edit) {.importc: "nk_textedit_undo".}
-proc nk_textedit_redo*(a2: ptr text_edit) {.importc: "nk_textedit_redo".}
+proc filter_default*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_default", procvar.}
+proc filter_ascii*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_ascii".}
+proc filter_float*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_float".}
+proc filter_decimal*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_decimal".}
+proc filter_hex*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_hex".}
+proc filter_oct*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_oct".}
+proc filter_binary*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_binary".}
+proc textedit_init*(a2: ptr text_edit; a3: ptr allocator; size: uint) {. importc: "nk_textedit_init".}
+proc textedit_init_fixed*(a2: ptr text_edit; memory: pointer; size: uint) {. importc: "nk_textedit_init_fixed".}
+proc textedit_free*(a2: ptr text_edit) {.importc: "nk_textedit_free".}
+proc textedit_text*(a2: ptr text_edit; a3: cstring; total_len: int32) {.importc: "nk_textedit_text".}
+proc textedit_delete*(a2: ptr text_edit; where: int32; len: int32) {.importc: "nk_textedit_delete".}
+proc textedit_delete_selection*(a2: ptr text_edit) {.importc: "nk_textedit_delete_selection".}
+proc textedit_select_all*(a2: ptr text_edit) {.importc: "nk_textedit_select_all".}
+proc textedit_cut*(a2: ptr text_edit): int32 {.importc: "nk_textedit_cut".}
+proc textedit_paste*(a2: ptr text_edit; a3: cstring; len: int32): int32 {.importc: "nk_textedit_paste".}
+proc textedit_undo*(a2: ptr text_edit) {.importc: "nk_textedit_undo".}
+proc textedit_redo*(a2: ptr text_edit) {.importc: "nk_textedit_redo".}
 
 type
   command_type* {.size: sizeof(int32).} = enum
