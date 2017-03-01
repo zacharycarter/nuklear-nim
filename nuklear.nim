@@ -295,14 +295,14 @@ type
 
   glyph* = array[4, char]
 
-  image* = object {.byCopy.}
+  img* = object {.byCopy.}
     handle*: handle
     w*: uint16
     h*: uint16
     region*: array[4, uint16]
 
   cursor* = object
-    img*: image
+    img*: img
     size*: vec2
     offset*: vec2
 
@@ -851,7 +851,7 @@ type
     state*: int32
 
   style_item_data* = object {.union.}
-    image*: image
+    image*: img
     color*: color
 
   style_item* = object
@@ -1032,7 +1032,9 @@ type
     preferred_x*: float32
     undo*: text_undo_state
 
-  plugin_filter* = proc (a2: ptr text_edit; unicode: uint32): int32 {.cdecl.}
+  plugin_filter = proc (a2: ptr text_edit; unicode: uint32): int32 {.cdecl.}
+  InputFilter* = proc(te: var text_edit, unicode: uint32): int32 {.closure, cdecl.}
+
 
   text_undo_record* = object
     where*: int32
@@ -1474,31 +1476,82 @@ type
     WINDOW_BACKGROUND = (1 shl (8)), WINDOW_SCALE_LEFT = (1 shl (9))
 
 
-
-
 type
   text_edit_mode* {.size: sizeof(int32).} = enum
     TEXT_EDIT_MODE_VIEW, TEXT_EDIT_MODE_INSERT, TEXT_EDIT_MODE_REPLACE
 
 
-proc filter_default*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_default", cdecl.}
-proc filter_ascii*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_ascii".}
-proc filter_float*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_float".}
-proc filter_decimal*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_decimal".}
-proc filter_hex*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_hex".}
-proc filter_oct*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_oct".}
-proc filter_binary*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_binary".}
-proc textedit_init*(a2: ptr text_edit; a3: ptr allocator; size: uint) {. importc: "nk_textedit_init".}
-proc textedit_init_fixed*(a2: ptr text_edit; memory: pointer; size: uint) {. importc: "nk_textedit_init_fixed".}
-proc textedit_free*(a2: ptr text_edit) {.importc: "nk_textedit_free".}
-proc textedit_text*(a2: ptr text_edit; a3: cstring; total_len: int32) {.importc: "nk_textedit_text".}
-proc textedit_delete*(a2: ptr text_edit; where: int32; len: int32) {.importc: "nk_textedit_delete".}
+proc filter_default(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_default", cdecl.}
+var defaultFilter* : InputFilter = proc(te: var text_edit, unicode: uint32): int32 {.closure, cdecl.} =
+  filter_default(addr te, unicode)
+
+proc filter_ascii(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_ascii".}
+var asciiFilter* : InputFilter = proc(te: var text_edit, unicode: uint32): int32 {.closure, cdecl.} =
+  filter_ascii(addr te, unicode)
+
+proc filter_float(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_float".}
+var floatFilter*: InputFilter = proc(te: var text_edit, unicode: uint32): int32 {.closure, cdecl.} =
+  filter_float(addr te, unicode)
+
+proc filter_decimal(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_decimal".}
+var decimalFilter*: InputFilter = proc(te: var text_edit, unicode: uint32): int32 {.closure, cdecl.} =
+  filter_decimal(addr te, unicode)
+
+proc filter_hex(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_hex".}
+var hexFilter*: InputFilter = proc(te: var text_edit, unicode: uint32): int32 {.closure, cdecl.} =
+  filter_hex(addr te, unicode)
+
+proc filter_oct(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_oct".}
+var octFilter*: InputFilter = proc(te: var text_edit, unicode: uint32): int32 {.closure, cdecl.} =
+  filter_oct(addr te, unicode)
+
+proc filter_binary(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_binary".}
+var binaryFilter*: InputFilter = proc(te: var text_edit, unicode: uint32): int32 {.closure, cdecl.} =
+  filter_binary(addr te, unicode)
+
+proc textedit_init(a2: ptr text_edit; a3: ptr allocator; size: uint) {. importc: "nk_textedit_init".}
+proc init*(te: var text_edit, a: var allocator, size: uint) =
+  textedit_init(addr te, addr a, size)
+
+proc textedit_init_fixed(a2: ptr text_edit; memory: pointer; size: uint) {. importc: "nk_textedit_init_fixed".}
+proc initFixed*(te: var text_edit, memory: pointer, size: uint) =
+  textedit_init_fixed(addr te, memory, size)
+
+proc textedit_free(a2: ptr text_edit) {.importc: "nk_textedit_free".}
+proc free*(te: var text_edit) =
+  textedit_free(addr te)
+
+proc textedit_text(a2: ptr text_edit; a3: cstring; total_len: int32) {.importc: "nk_textedit_text".}
+proc text*(te: var text_edit, t: string, totalLen: int32) =
+  textedit_text(addr te, t, totalLen)
+
+proc textedit_delete(a2: ptr text_edit; where: int32; len: int32) {.importc: "nk_textedit_delete".}
+proc delete*(te: var text_edit, where: int32, len: int32) =
+  textedit_delete(addr te, where, len)
+
 proc textedit_delete_selection*(a2: ptr text_edit) {.importc: "nk_textedit_delete_selection".}
-proc textedit_select_all*(a2: ptr text_edit) {.importc: "nk_textedit_select_all".}
-proc textedit_cut*(a2: ptr text_edit): int32 {.importc: "nk_textedit_cut".}
-proc textedit_paste*(a2: ptr text_edit; a3: cstring; len: int32): int32 {.importc: "nk_textedit_paste".}
+proc deleteSelection*(te: var text_edit) =
+  textedit_delete_selection(addr te)
+
+proc textedit_select_all(a2: ptr text_edit) {.importc: "nk_textedit_select_all".}
+proc selectAll*(te: var text_edit) =
+  textedit_select_all(addr te)
+
+proc textedit_cut(a2: ptr text_edit): int32 {.importc: "nk_textedit_cut".}
+proc cut*(te: var text_edit): int32 =
+  textedit_cut(addr te)
+
+proc textedit_paste(a2: ptr text_edit; a3: cstring; len: int32): int32 {.importc: "nk_textedit_paste".}
+proc paste*(te: var text_edit, text: string, len: int32): int32 =
+  textedit_paste(addr te, text, len)
+
 proc textedit_undo*(a2: ptr text_edit) {.importc: "nk_textedit_undo".}
-proc textedit_redo*(a2: ptr text_edit) {.importc: "nk_textedit_redo".}
+proc undo*(te: var text_edit) =
+  textedit_undo(addr te)
+
+proc textedit_redo(a2: ptr text_edit) {.importc: "nk_textedit_redo".}
+proc redo*(te: var text_edit) =
+  textedit_redo(addr te)
 
 type
   command_type* {.size: sizeof(int32).} = enum
@@ -1642,7 +1695,7 @@ type
     y*: int16
     w*: uint16
     h*: uint16
-    img*: image
+    img*: img
     col*: color
 
   command_text* = object
@@ -1662,38 +1715,86 @@ type
     CLIPPING_OFF = nk_false, CLIPPING_ON = nk_true
 
 
-proc stroke_line*(b: ptr command_buffer; x0: float32; y0: float32; x1: float32;
+proc stroke_line(b: ptr command_buffer; x0: float32; y0: float32; x1: float32;
                     y1: float32; line_thickness: float32; a8: color) {.importc: "nk_stroke_line".}
-proc stroke_curve*(a2: ptr command_buffer; a3: float32; a4: float32; a5: float32;
+proc strokeLine*(cmdBuf: var command_buffer, x0, y0, x1, y1, lineThickness: float32, col: color) =
+  stroke_line(addr cmdBuf, x0, y0, x1, y1, lineThickness, col)
+
+proc stroke_curve(a2: ptr command_buffer; a3: float32; a4: float32; a5: float32;
                      a6: float32; a7: float32; a8: float32; a9: float32; a10: float32;
                      line_thickness: float32; a12: color) {.importc: "nk_stroke_curve".}
-proc stroke_rect*(a2: ptr command_buffer; a3: rect; rounding: float32;
+proc strokeCurve*(cmdBuf: var command_buffer, ax, ay, ctrl0x, ctrl0y, ctrl1x, ctrl1y, bx, by, lineThickness: float32, col: color) =
+  stroke_curve(addr cmdBuf, ax, ay, ctrl0x, ctrl0y, ctrl1x, ctrl1y, bx, by, lineThickness, col)
+
+proc stroke_rect(a2: ptr command_buffer; a3: rect; rounding: float32;
                     line_thickness: float32; a6: color) {.importc: "nk_stroke_rect".}
-proc stroke_circle*(a2: ptr command_buffer; a3: rect; line_thickness: float32;
+proc strokeRect*(cmdBuf: var command_buffer, r: rect, rounding, lineThickness: float32, col: color) =
+  stroke_rect(addr cmdBuf, r, rounding, lineThickness, col)
+
+proc stroke_circle(a2: ptr command_buffer; a3: rect; line_thickness: float32;
                       a5: color) {.importc: "nk_stroke_circle".}
-proc stroke_arc*(a2: ptr command_buffer; cx: float32; cy: float32; radius: float32;
+proc strokeCircle*(cmdBuf: var command_buffer, r: rect, lineThickness: float32, col: color) =
+  stroke_circle(addr cmdBuf, r, lineThickness, col)
+
+proc stroke_arc(a2: ptr command_buffer; cx: float32; cy: float32; radius: float32;
                    a_min: float32; a_max: float32; line_thickness: float32; a9: color) {. importc: "nk_stroke_arc".}
-proc stroke_triangle*(a2: ptr command_buffer; a3: float32; a4: float32; a5: float32;
+proc strokeArc*(cmdBuf: var command_buffer, cx, cy, radius, aMin, aMax, lineThickness: float32, col: color) =
+  stroke_arc(addr cmdBuf, cx, cy, radius, aMin, aMax, lineThickness, col)
+
+proc stroke_triangle(a2: ptr command_buffer; a3: float32; a4: float32; a5: float32;
                         a6: float32; a7: float32; a8: float32; line_thichness: float32;
                         a10: color) {.importc: "nk_stroke_triangle".}
-proc stroke_polyline*(a2: ptr command_buffer; points: ptr float32;
+proc strokeTriangle*(cmdBuf: var command_buffer, x0, y0, x1, y1, x2, y2, lineThickness: float32, col: color) =
+  stroke_triangle(addr cmdBuf, x0, y0, x1, y1, x2, y2, lineThickness, col)
+
+proc stroke_polyline(a2: ptr command_buffer; points: ptr float32;
                         point_count: int32; line_thickness: float32; col: color) {. importc: "nk_stroke_polyline".}
-proc stroke_polygon*(a2: ptr command_buffer; a3: ptr float32; point_count: int32;
+proc strokePolyLine*(cmdBuf: var command_buffer, points: var float32, pointCount: int32, lineThickness: float32, col: color) =
+  stroke_polyline(addr cmdBuf, addr points, pointCount, lineThickness, col)
+
+proc stroke_polygon(a2: ptr command_buffer; a3: ptr float32; point_count: int32;
                        line_thickness: float32; a6: color) {.importc: "nk_stroke_polygon".}
-proc fill_rect*(a2: ptr command_buffer; a3: rect; rounding: float32;
+proc strokePolygon*(cmdBuf: var command_buffer, points: var float32, pointCount: int32, lineThickness: float32, col: color) =
+  stroke_polygon(addr cmdBuf, addr points, pointCount, lineThickness, col)
+
+proc fill_rect(a2: ptr command_buffer; a3: rect; rounding: float32;
                   a5: color) {.importc: "nk_fill_rect".}
-proc fill_rect_multi_color*(a2: ptr command_buffer; a3: rect; left: color;
+proc fillRect*(cmdBuf: var command_buffer, r: rect, rounding: float32, col: color) =
+  fill_rect(addr cmdBuf, r, rounding, col)
+
+proc fill_rect_multi_color(a2: ptr command_buffer; a3: rect; left: color;
                               top: color; right: color; bottom: color) {. importc: "nk_fill_rect_multi_color".}
-proc fill_circle*(a2: ptr command_buffer; a3: rect; a4: color) {.importc: "nk_fill_circle".}
-proc fill_arc*(a2: ptr command_buffer; cx: float32; cy: float32; radius: float32;
+proc fillRectMultiColor*(cmdBuf: var command_buffer, r: rect, left, top, right, bottom: color) =
+  fill_rect_multi_color(addr cmdBuf, r, left, top, right, bottom)
+
+proc fill_circle(a2: ptr command_buffer; a3: rect; a4: color) {.importc: "nk_fill_circle".}
+proc fillCircle*(cmdBuf: var command_buffer, r: rect, col: color) =
+  fill_circle(addr cmdBuf, r, col)
+
+proc fill_arc(a2: ptr command_buffer; cx: float32; cy: float32; radius: float32;
                  a_min: float32; a_max: float32; a8: color) {.importc: "nk_fill_arc".}
-proc fill_triangle*(a2: ptr command_buffer; x0: float32; y0: float32; x1: float32;
+proc fillArc*(cmdBuf: var command_buffer, cx, cy, radius, aMin, aMax: float32, col: color) =
+  fill_arc(addr cmdBuf, cx, cy, radius, aMin, aMax, col)
+
+proc fill_triangle(a2: ptr command_buffer; x0: float32; y0: float32; x1: float32;
                       y1: float32; x2: float32; y2: float32; a9: color) {.importc: "nk_fill_triangle".}
-proc fill_polygon*(a2: ptr command_buffer; a3: ptr float32; point_count: int32;
+proc fillTriangle*(cmdBuf: var command_buffer, x0, y0, x1, y1, x2, y2: float32, col: color) =
+  fill_triangle(addr cmdBuf, x0, y0, x1, y1, x2, y2, col)
+
+proc fill_polygon(a2: ptr command_buffer; a3: ptr float32; point_count: int32;
                      a5: color) {.importc: "nk_fill_polygon".}
-proc push_scissor*(a2: ptr command_buffer; a3: rect) {.importc: "nk_push_scissor".}
-proc draw_image*(a2: ptr command_buffer; a3: rect; a4: ptr image;
+proc fillPolygon*(cmdBuf: var command_buffer, points: var float32, pointCount: int32, col: color) =
+  fill_polygon(addr cmdBuf, addr points, pointCount, col)
+
+proc push_scissor(a2: ptr command_buffer; a3: rect) {.importc: "nk_push_scissor".}
+proc pushScissor*(cmdBuf: var command_buffer, r: rect) =
+  push_scissor(addr cmdBuf, r)
+
+proc draw_image(a2: ptr command_buffer; a3: rect; a4: ptr img;
                    a5: color) {.importc: "nk_draw_image".}
+proc drawImage*(cmdBuf: var command_buffer, r: rect, img: var img, col: color) =
+  draw_image(addr cmdBuf, r, addr img, col)
+
 proc draw_text*(a2: ptr command_buffer; a3: rect; text: cstring; len: int32;
                   a6: ptr user_font; a7: color; a8: color) {.importc: "nk_draw_text".}
 proc next*(a2: ptr context; a3: ptr command): ptr command {.importc: "nk__next".}
@@ -1778,12 +1879,12 @@ proc draw_list_fill_circle*(a2: ptr draw_list; center: vec2; radius: float32;
                               col: color; segs: cuint) {.importc: "nk_draw_list_fill_circle".}
 proc draw_list_fill_poly_convex*(a2: ptr draw_list; points: ptr vec2;
                                    count: cuint; a5: color; a6: anti_aliasing) {. importc: "nk_draw_list_fill_poly_convex".}
-proc draw_list_add_image*(a2: ptr draw_list; texture: image; rect: rect;
+proc draw_list_add_image*(a2: ptr draw_list; texture: img; rect: rect;
                             a5: color) {.importc: "nk_draw_list_add_image".}
 proc draw_list_add_text*(a2: ptr draw_list; a3: ptr user_font; a4: rect;
                            text: cstring; len: int32; font_height: float32; a8: color) {. importc: "nk_draw_list_add_text".}
 
-proc style_item_image*(img: image): style_item {.importc: "nk_style_item_image".}
+proc style_item_image*(img: img): style_item {.importc: "nk_style_item_image".}
 proc style_item_color*(a2: color): style_item {.importc: "nk_style_item_color".}
 proc style_item_hide*(): style_item {.importc: "nk_style_item_hide".}
 
@@ -1885,13 +1986,13 @@ proc list_view_end*(a2: ptr list_view) {.importc: "nk_list_view_end".}
 proc tree_push_hashed*(a2: ptr context; a3: tree_type; title: cstring;
                          initial_state: collapse_states; hash: cstring;
                          len: int32; seed: int32): int32 {.importc: "nk_tree_push_hashed".}
-proc tree_image_push_hashed*(a2: ptr context; a3: tree_type; a4: image;
+proc tree_image_push_hashed*(a2: ptr context; a3: tree_type; a4: img;
                                title: cstring; initial_state: collapse_states;
                                hash: cstring; len: int32; seed: int32): int32 {.importc: "nk_tree_image_push_hashed".}
 proc tree_pop*(a2: ptr context) {.importc: "nk_tree_pop".}
 proc tree_state_push*(a2: ptr context; a3: tree_type; title: cstring;
                         state: ptr collapse_states): int32 {.importc: "nk_tree_state_push".}
-proc tree_state_image_push*(a2: ptr context; a3: tree_type; a4: image;
+proc tree_state_image_push*(a2: ptr context; a3: tree_type; a4: img;
                               title: cstring; state: ptr collapse_states): int32 {. importc: "nk_tree_state_image_push".}
 proc tree_state_pop*(a2: ptr context) {.importc: "nk_tree_state_pop".}
 proc text*(a2: ptr context; a3: cstring; a4: int32; a5: uint32) {.importc: "nk_text".}
@@ -1903,7 +2004,7 @@ proc label*(a2: ptr context; a3: cstring; align: uint32) {.importc: "nk_label".}
 proc label_colored*(a2: ptr context; a3: cstring; align: uint32; a5: color) {. importc: "nk_label_colored".}
 proc label_wrap*(a2: ptr context; a3: cstring) {.importc: "nk_label_wrap".}
 proc label_colored_wrap*(a2: ptr context; a3: cstring; a4: color) {.importc: "nk_label_colored_wrap".}
-proc draw_image*(a2: ptr context; a3: image) {.importc: "nk_image".}
+proc image*(a2: ptr context; a3: img) {.importc: "nk_image".}
 proc button_set_behavior*(a2: ptr context; a3: button_behavior) {.importc: "nk_button_set_behavior".}
 proc button_push_behavior*(a2: ptr context; a3: button_behavior): int32 {. importc: "nk_button_push_behavior".}
 proc button_pop_behavior*(a2: ptr context): int32 {.importc: "nk_button_pop_behavior".}
@@ -1911,14 +2012,14 @@ proc button_text*(a2: ptr context; title: cstring; len: int32): int32 {.importc:
 proc button_label*(a2: ptr context; title: cstring): int32 {.importc: "nk_button_label".}
 proc button_color*(a2: ptr context; a3: color): int32 {.importc: "nk_button_color".}
 proc button_symbol*(a2: ptr context; a3: symbol_type): int32 {.importc: "nk_button_symbol".}
-proc button_image*(a2: ptr context; img: image): int32 {.importc: "nk_button_image".}
+proc button_image*(a2: ptr context; i: img): int32 {.importc: "nk_button_image".}
 proc button_symbol_label*(a2: ptr context; a3: symbol_type; a4: cstring;
                             text_alignment: uint32): int32 {.importc: "nk_button_symbol_label".}
 proc button_symbol_text*(a2: ptr context; a3: symbol_type; a4: cstring;
                            a5: int32; alignment: uint32): int32 {.importc: "nk_button_symbol_text".}
-proc button_image_label*(a2: ptr context; img: image; a4: cstring;
+proc button_image_label*(a2: ptr context; i: img; a4: cstring;
                            text_alignment: uint32): int32 {.importc: "nk_button_image_label".}
-proc button_image_text*(a2: ptr context; img: image; a4: cstring; a5: int32;
+proc button_image_text*(a2: ptr context; i: img; a4: cstring; a5: int32;
                           alignment: uint32): int32 {.importc: "nk_button_image_text".}
 proc button_text_styled*(a2: ptr context; a3: ptr style_button;
                            title: cstring; len: int32): int32 {.importc: "nk_button_text_styled".}
@@ -1926,7 +2027,7 @@ proc button_label_styled*(a2: ptr context; a3: ptr style_button;
                             title: cstring): int32 {.importc: "nk_button_label_styled".}
 proc button_symbol_styled*(a2: ptr context; a3: ptr style_button;
                              a4: symbol_type): int32 {.importc: "nk_button_symbol_styled".}
-proc button_image_styled*(a2: ptr context; a3: ptr style_button; img: image): int32 {. importc: "nk_button_image_styled".}
+proc button_image_styled*(a2: ptr context; a3: ptr style_button; i: img): int32 {. importc: "nk_button_image_styled".}
 proc button_symbol_label_styled*(a2: ptr context; a3: ptr style_button;
                                    a4: symbol_type; a5: cstring;
                                    text_alignment: uint32): int32 {.importc: "nk_button_symbol_label_styled".}
@@ -1934,10 +2035,10 @@ proc button_symbol_text_styled*(a2: ptr context; a3: ptr style_button;
                                   a4: symbol_type; a5: cstring; a6: int32;
                                   alignment: uint32): int32 {.importc: "nk_button_symbol_text_styled".}
 proc button_image_label_styled*(a2: ptr context; a3: ptr style_button;
-                                  img: image; a5: cstring;
+                                  i: img; a5: cstring;
                                   text_alignment: uint32): int32 {.importc: "nk_button_image_label_styled".}
 proc button_image_text_styled*(a2: ptr context; a3: ptr style_button;
-                                 img: image; a5: cstring; a6: int32;
+                                 i: img; a5: cstring; a6: int32;
                                  alignment: uint32): int32 {.importc: "nk_button_image_text_styled".}
 proc check_label*(a2: ptr context; a3: cstring; active: int32): int32 {.importc: "nk_check_label".}
 proc check_text*(a2: ptr context; a3: cstring; a4: int32; active: int32): int32 {.importc: "nk_check_text".}
@@ -1958,16 +2059,16 @@ proc selectable_label*(a2: ptr context; a3: cstring; align: uint32;
                          value: ptr int32): int32 {.importc: "nk_selectable_label".}
 proc selectable_text*(a2: ptr context; a3: cstring; a4: int32; align: uint32;
                         value: ptr int32): int32 {.importc: "nk_selectable_text".}
-proc selectable_image_label*(a2: ptr context; a3: image; a4: cstring;
+proc selectable_image_label*(a2: ptr context; a3: img; a4: cstring;
                                align: uint32; value: ptr int32): int32 {.importc: "nk_selectable_image_label".}
-proc selectable_image_text*(a2: ptr context; a3: image; a4: cstring; a5: int32;
+proc selectable_image_text*(a2: ptr context; a3: img; a4: cstring; a5: int32;
                               align: uint32; value: ptr int32): int32 {.importc: "nk_selectable_image_text".}
 proc select_label*(a2: ptr context; a3: cstring; align: uint32; value: int32): int32 {. importc: "nk_select_label".}
 proc select_text*(a2: ptr context; a3: cstring; a4: int32; align: uint32;
                     value: int32): int32 {.importc: "nk_select_text".}
-proc select_image_label*(a2: ptr context; a3: image; a4: cstring;
+proc select_image_label*(a2: ptr context; a3: img; a4: cstring;
                            align: uint32; value: int32): int32 {.importc: "nk_select_image_label".}
-proc select_image_text*(a2: ptr context; a3: image; a4: cstring; a5: int32;
+proc select_image_text*(a2: ptr context; a3: img; a4: cstring; a5: int32;
                           align: uint32; value: int32): int32 {.importc: "nk_select_image_text".}
 proc slide_float*(a2: ptr context; min: float32; val: float32; max: float32;
                     step: float32): float32 {.importc: "nk_slide_float".}
@@ -1994,10 +2095,15 @@ proc propertyd*(a2: ptr context; name: cstring; min: cdouble; val: cdouble;
                   max: cdouble; step: cdouble; inc_per_pixel: float32): cdouble {.importc: "nk_propertyd".}
 proc edit_focus*(a2: ptr context; flags: uint32) {.importc: "nk_edit_focus".}
 proc edit_unfocus*(a2: ptr context) {.importc: "nk_edit_unfocus".}
-proc edit_string*(a2: ptr context; a3: uint32; buffer: cstring; len: ptr int32;
+proc edit_string(a2: ptr context; a3: uint32; buffer: cstring; len: ptr int32;
                     max: int32; a7: plugin_filter): uint32 {.importc: "nk_edit_string".}
+proc editString*(ctx: var context, u: uint32, buffer: string, len: var int32, max: int32, f: InputFilter): uint32 =
+  edit_string(addr ctx, u, buffer, addr len, max, cast[plugin_filter](f))
+  
+
 proc edit_buffer*(a2: ptr context; a3: uint32; a4: ptr text_edit;
                     a5: plugin_filter): uint32 {.importc: "nk_edit_buffer".}
+                    
 proc edit_string_zero_terminated*(a2: ptr context; a3: uint32;
                                     buffer: cstring; max: int32; a6: plugin_filter): uint32 {. importc: "nk_edit_string_zero_terminated".}
 proc chart_begin*(a2: ptr context; a3: chart_type; num: int32; min: float32;
@@ -2051,16 +2157,16 @@ proc combo_begin_symbol_label*(a2: ptr context; selected: cstring;
                                  a4: symbol_type; size: vec2): int32 {.importc: "nk_combo_begin_symbol_label".}
 proc combo_begin_symbol_text*(a2: ptr context; selected: cstring; a4: int32;
                                 a5: symbol_type; size: vec2): int32 {.importc: "nk_combo_begin_symbol_text".}
-proc combo_begin_image*(a2: ptr context; img: image; size: vec2): int32 {. importc: "nk_combo_begin_image".}
-proc combo_begin_image_label*(a2: ptr context; selected: cstring; a4: image;
+proc combo_begin_image*(a2: ptr context; i: img; size: vec2): int32 {. importc: "nk_combo_begin_image".}
+proc combo_begin_image_label*(a2: ptr context; selected: cstring; a4: img;
                                 size: vec2): int32 {.importc: "nk_combo_begin_image_label".}
 proc combo_begin_image_text*(a2: ptr context; selected: cstring; a4: int32;
-                               a5: image; size: vec2): int32 {.importc: "nk_combo_begin_image_text".}
+                               a5: img; size: vec2): int32 {.importc: "nk_combo_begin_image_text".}
 proc combo_item_label*(a2: ptr context; a3: cstring; alignment: uint32): int32 {. importc: "nk_combo_item_label".}
 proc combo_item_text*(a2: ptr context; a3: cstring; a4: int32; alignment: uint32): int32 {. importc: "nk_combo_item_text".}
-proc combo_item_image_label*(a2: ptr context; a3: image; a4: cstring;
+proc combo_item_image_label*(a2: ptr context; a3: img; a4: cstring;
                                alignment: uint32): int32 {.importc: "nk_combo_item_image_label".}
-proc combo_item_image_text*(a2: ptr context; a3: image; a4: cstring; a5: int32;
+proc combo_item_image_text*(a2: ptr context; a3: img; a4: cstring; a5: int32;
                               alignment: uint32): int32 {.importc: "nk_combo_item_image_text".}
 proc combo_item_symbol_label*(a2: ptr context; a3: symbol_type; a4: cstring;
                                 alignment: uint32): int32 {.importc: "nk_combo_item_symbol_label".}
@@ -2072,9 +2178,9 @@ proc contextual_begin*(a2: ptr context; a3: uint32; a4: vec2;
                          trigger_bounds: rect): int32 {.importc: "nk_contextual_begin".}
 proc contextual_item_text*(a2: ptr context; a3: cstring; a4: int32; align: uint32): int32 {. importc: "nk_contextual_item_text".}
 proc contextual_item_label*(a2: ptr context; a3: cstring; align: uint32): int32 {. importc: "nk_contextual_item_label".}
-proc contextual_item_image_label*(a2: ptr context; a3: image; a4: cstring;
+proc contextual_item_image_label*(a2: ptr context; a3: img; a4: cstring;
                                     alignment: uint32): int32 {.importc: "nk_contextual_item_image_label".}
-proc contextual_item_image_text*(a2: ptr context; a3: image; a4: cstring;
+proc contextual_item_image_text*(a2: ptr context; a3: img; a4: cstring;
                                    len: int32; alignment: uint32): int32 {.importc: "nk_contextual_item_image_text".}
 proc contextual_item_symbol_label*(a2: ptr context; a3: symbol_type;
                                      a4: cstring; alignment: uint32): int32 {.importc: "nk_contextual_item_symbol_label".}
@@ -2091,11 +2197,11 @@ proc menu_begin_text*(a2: ptr context; title: cstring; title_len: int32;
                         align: uint32; size: vec2): int32 {.importc: "nk_menu_begin_text".}
 proc menu_begin_label*(a2: ptr context; a3: cstring; align: uint32;
                          size: vec2): int32 {.importc: "nk_menu_begin_label".}
-proc menu_begin_image*(a2: ptr context; a3: cstring; a4: image; size: vec2): int32 {. importc: "nk_menu_begin_image".}
+proc menu_begin_image*(a2: ptr context; a3: cstring; a4: img; size: vec2): int32 {. importc: "nk_menu_begin_image".}
 proc menu_begin_image_text*(a2: ptr context; a3: cstring; a4: int32;
-                              align: uint32; a6: image; size: vec2): int32 {. importc: "nk_menu_begin_image_text".}
+                              align: uint32; a6: img; size: vec2): int32 {. importc: "nk_menu_begin_image_text".}
 proc menu_begin_image_label*(a2: ptr context; a3: cstring; align: uint32;
-                               a5: image; size: vec2): int32 {.importc: "nk_menu_begin_image_label".}
+                               a5: img; size: vec2): int32 {.importc: "nk_menu_begin_image_label".}
 proc menu_begin_symbol*(a2: ptr context; a3: cstring; a4: symbol_type;
                           size: vec2): int32 {.importc: "nk_menu_begin_symbol".}
 proc menu_begin_symbol_text*(a2: ptr context; a3: cstring; a4: int32;
@@ -2104,9 +2210,9 @@ proc menu_begin_symbol_label*(a2: ptr context; a3: cstring; align: uint32;
                                 a5: symbol_type; size: vec2): int32 {.importc: "nk_menu_begin_symbol_label".}
 proc menu_item_text*(a2: ptr context; a3: cstring; a4: int32; align: uint32): int32 {. importc: "nk_menu_item_text".}
 proc menu_item_label*(a2: ptr context; a3: cstring; alignment: uint32): int32 {. importc: "nk_menu_item_label".}
-proc menu_item_image_label*(a2: ptr context; a3: image; a4: cstring;
+proc menu_item_image_label*(a2: ptr context; a3: img; a4: cstring;
                               alignment: uint32): int32 {.importc: "nk_menu_item_image_label".}
-proc menu_item_image_text*(a2: ptr context; a3: image; a4: cstring; len: int32;
+proc menu_item_image_text*(a2: ptr context; a3: img; a4: cstring; len: int32;
                              alignment: uint32): int32 {.importc: "nk_menu_item_image_text".}
 proc menu_item_symbol_text*(a2: ptr context; a3: symbol_type; a4: cstring;
                               a5: int32; alignment: uint32): int32 {.importc: "nk_menu_item_symbol_text".}
@@ -2208,13 +2314,13 @@ proc color_hsva_f*(out_h: ptr float32; out_s: ptr float32; out_v: ptr float32;
 proc color_hsva_fv*(hsva_out: ptr float32; a3: color) {.importc: "nk_color_hsva_fv".}
 proc handle_ptr*(a2: pointer): handle {.importc: "nk_handle_ptr".}
 proc handle_id*(a2: int32): handle {.importc: "nk_handle_id".}
-proc image_handle*(a2: handle): image {.importc: "nk_image_handle".}
-proc image_ptr*(a2: pointer): image {.importc: "nk_image_ptr".}
-proc image_id*(a2: int32): image {.importc: "nk_image_id".}
-proc image_is_subimage*(img: ptr image): int32 {.importc: "nk_image_is_subimage".}
-proc subimage_ptr*(a2: pointer; w: uint16; h: uint16; sub_region: rect): image {. importc: "nk_subimage_ptr".}
-proc subimage_id*(a2: int32; w: uint16; h: uint16; sub_region: rect): image {. importc: "nk_subimage_id".}
-proc subimage_handle*(a2: handle; w: uint16; h: uint16; sub_region: rect): image {. importc: "nk_subimage_handle".}
+proc image_handle*(a2: handle): img {.importc: "nk_image_handle".}
+proc image_ptr*(a2: pointer): img {.importc: "nk_image_ptr".}
+proc image_id*(a2: int32): img {.importc: "nk_image_id".}
+proc image_is_subimage*(i: ptr img): int32 {.importc: "nk_image_is_subimage".}
+proc subimage_ptr*(a2: pointer; w: uint16; h: uint16; sub_region: rect): img {. importc: "nk_subimage_ptr".}
+proc subimage_id*(a2: int32; w: uint16; h: uint16; sub_region: rect): img {. importc: "nk_subimage_id".}
+proc subimage_handle*(a2: handle; w: uint16; h: uint16; sub_region: rect): img {. importc: "nk_subimage_handle".}
 proc murmur_hash*(key: pointer; len: int32; seed: uint32): uint32 {.importc: "nk_murmur_hash".}
 proc triangle_from_direction*(result: ptr vec2; r: rect; pad_x: float32;
                                 pad_y: float32; a6: heading) {.importc: "nk_triangle_from_direction".}
@@ -2335,16 +2441,42 @@ proc font_atlas_add_from_memory*(atlas: ptr font_atlas; memory: pointer;
 proc font_atlas_add_compressed*(a2: ptr font_atlas; memory: pointer;
                                   size: uint; height: float32;
                                   a6: ptr font_config): ptr font {.importc: "nk_font_atlas_add_compressed".}
-proc font_atlas_add_compressed_base85*(a2: ptr font_atlas; data: cstring;
+proc addCompressed*(atlas: var font_atlas, memory: pointer, size: uint, height: float32, config: var font_config) : font =
+  font_atlas_add_compressed(addr atlas, memory, size, height, addr config)[]
+
+proc font_atlas_add_compressed_base85(a2: ptr font_atlas; data: cstring;
     height: float32; config: ptr font_config): ptr font {.importc: "nk_font_atlas_add_compressed_base85".}
-proc font_atlas_bake*(a2: ptr font_atlas; width: ptr int32; height: ptr int32;
+proc addCompressedBase85*(atlas: var font_atlas, data: string, height: float32, config: var font_config): font =
+  font_atlas_add_compressed_base85(addr atlas, data, height, addr config)[]
+
+proc font_atlas_bake(a2: ptr font_atlas; width: ptr int32; height: ptr int32;
                         a5: font_atlas_format): pointer {.importc: "nk_font_atlas_bake".}
-proc font_atlas_end*(a2: ptr font_atlas; tex: handle;
+proc bake*(atlas: var font_atlas, width, height: var int32, format: font_atlas_format): pointer =
+  font_atlas_bake(addr atlas, addr width, addr height, format)
+
+proc font_atlas_end(a2: ptr font_atlas; tex: handle;
                        a4: ptr draw_null_texture) {.importc: "nk_font_atlas_end".}
-proc font_find_glyph*(a2: ptr font; unicode: uint32): ptr font_glyph {.importc: "nk_font_find_glyph".}
-proc font_atlas_cleanup*(atlas: ptr font_atlas) {.importc: "nk_font_atlas_cleanup".}
-proc font_atlas_clear*(a2: ptr font_atlas) {.importc: "nk_font_atlas_clear".}
-proc font_atlas_add_default*(a2: ptr font_atlas; height: float32;
+proc `end`*(atlas: var font_atlas, tex: handle, null: var draw_null_texture) =
+  font_atlas_end(addr atlas, tex, addr null)
+
+proc font_find_glyph(a2: ptr font; unicode: uint32): ptr font_glyph {.importc: "nk_font_find_glyph".}
+proc findGlyph*(f: var font, unicode: uint32): font_glyph =
+  font_find_glyph(addr f, unicode)[]
+
+proc font_atlas_cleanup(atlas: ptr font_atlas) {.importc: "nk_font_atlas_cleanup".}
+proc cleanup*(atlas: var font_atlas) =
+  font_atlas_cleanup(addr atlas)
+
+proc font_atlas_clear(a2: ptr font_atlas) {.importc: "nk_font_atlas_clear".}
+proc clear*(atlas: var font_atlas) =
+  font_atlas_clear(addr atlas)
+
+proc font_atlas_add_default(a2: ptr font_atlas; height: float32;
                                a4: ptr font_config): ptr font {.importc: "nk_font_atlas_add_default".}
+proc add*(atlas: var font_atlas, height: float32, fontConfig: var font_config): font =
+  font_atlas_add_default(addr atlas, height, addr fontConfig)[]
+
 proc font_atlas_add_from_file*(atlas: ptr font_atlas; file_path: cstring;
                                  height: float32; a5: ptr font_config): ptr font {.importc: "nk_font_atlas_add_from_file".}
+proc addFromFile*(atlas: var font_atlas, filePath: string, height: float32, fontConfig: var font_config): font =
+  font_atlas_add_from_file(addr atlas, filePath, height, addr fontConfig)[]
