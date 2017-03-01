@@ -119,6 +119,37 @@ type
   anti_aliasing* {.size: sizeof(int32).} = enum
     ANTI_ALIASING_OFF, ANTI_ALIASING_ON
 
+##################################################################
+ #
+ #                          MEMORY BUFFER
+ #
+##################################################################
+#[  A basic (double)-buffer with linear allocation and resetting as only
+    freeing policy. The buffer's main purpose is to control all memory management
+    inside the GUI toolkit and still leave memory control as much as possible in
+    the hand of the user while also making sure the library is easy to use if
+    not as much control is needed.
+    In general all memory inside this library can be provided from the user in
+    three different ways.
+    The first way and the one providing most control is by just passing a fixed
+    size memory block. In this case all control lies in the hand of the user
+    since he can exactly control where the memory comes from and how much memory
+    the library should consume. Of course using the fixed size API removes the
+    ability to automatically resize a buffer if not enough memory is provided so
+    you have to take over the resizing. While being a fixed sized buffer sounds
+    quite limiting, it is very effective in this library since the actual memory
+    consumption is quite stable and has a fixed upper bound for a lot of cases.
+    If you don't want to think about how much memory the library should allocate
+    at all time or have a very dynamic UI with unpredictable memory consumption
+    habits but still want control over memory allocation you can use the dynamic
+    allocator based API. The allocator consists of two callbacks for allocating
+    and freeing memory and optional userdata so you can plugin your own allocator.
+    The final and easiest way can be used by defining
+    NK_INCLUDE_DEFAULT_ALLOCATOR which uses the standard library memory
+    allocation functions malloc and free and takes over complete control over
+    memory in this library.
+]#
+
 type
   plugin_alloc* = proc (a2: handle; old: pointer; a4: uint): pointer {.cdecl.}
   plugin_free* = proc (a2: handle; old: pointer) {.cdecl.}
@@ -145,6 +176,57 @@ type
     needed*: uint
     calls*: uint
     size*: uint
+
+proc buffer_init_default(a2: ptr buffer) {.importc: "nk_buffer_init_default".}
+proc init*(b: var buffer) =
+    buffer_init_default(addr b)
+
+proc buffer_init(a2: ptr buffer; a3: ptr allocator; size: uint) {.importc: "nk_buffer_init".}
+proc init*(b: var buffer, a: var allocator, size: uint) =
+    buffer_init(addr b, addr a, size)
+
+proc buffer_init_fixed(a2: ptr buffer; memory: pointer; size: uint) {.importc: "nk_buffer_init_fixed".}
+proc init*(b: var buffer, memory: pointer, size:uint) =
+  buffer_init_fixed(addr b, memory, size)
+
+proc buffer_info(a2: ptr memory_status; a3: ptr buffer) {.importc: "nk_buffer_info".}
+proc info*(b: var buffer, ms: var memory_status) =
+  buffer_info(addr ms, addr b)
+
+proc buffer_push(a2: ptr buffer; typ: buffer_allocation_type;
+                    memory: pointer; size: uint; align: uint) {.importc: "nk_buffer_push".}
+proc push*(b: var buffer, `type`: buffer_allocation_type, memory: pointer, size, align: uint) =
+  buffer_push(addr b, `type`, memory, size, align)
+
+proc buffer_mark*(a2: ptr buffer; typ: buffer_allocation_type) {.importc: "nk_buffer_mark".}
+proc mark*(b: var buffer, `type`: buffer_allocation_type) =
+  buffer_mark(addr b, `type`)
+
+proc buffer_reset(a2: ptr buffer; typ: buffer_allocation_type) {.importc: "nk_buffer_reset".}
+proc reset*(b: var buffer, `type`: buffer_allocation_type) =
+  buffer_reset(addr b, `type`)
+
+proc buffer_clear(a2: ptr buffer) {.importc: "nk_buffer_clear".}
+proc clear*(b: var buffer) =
+  buffer_clear(addr b)
+
+proc buffer_free(a2: ptr buffer) {.importc: "nk_buffer_free".}
+proc free*(b: var buffer) =
+  buffer_free(addr b)
+
+proc buffer_memory(a2: ptr buffer): pointer {.importc: "nk_buffer_memory".}
+proc bufferMemory*(b: var buffer): pointer =
+  buffer_memory(addr b)
+
+proc buffer_memory_const(a2: ptr buffer): pointer {.importc: "nk_buffer_memory_const".}
+proc bufferMemoryConst*(b: var buffer): pointer =
+  buffer_memory_const(addr b)
+
+proc buffer_total*(a2: ptr buffer): uint {.importc: "nk_buffer_total".}
+proc total*(b: var buffer): uint =
+  buffer_total(addr b)
+
+
 
 type
   command_buffer* = object
@@ -1022,55 +1104,6 @@ type
     WINDOW_TITLE = (1 shl (6)), WINDOW_SCROLL_AUTO_HIDE = (1 shl (7)),
     WINDOW_BACKGROUND = (1 shl (8)), WINDOW_SCALE_LEFT = (1 shl (9))
 
-proc buffer_init_default(a2: ptr buffer) {.importc: "nk_buffer_init_default".}
-proc init*(b: var buffer) =
-    buffer_init_default(addr b)
-
-proc buffer_init(a2: ptr buffer; a3: ptr allocator; size: uint) {.importc: "nk_buffer_init".}
-proc init*(b: var buffer, a: var allocator, size: uint) =
-    buffer_init(addr b, addr a, size)
-
-proc buffer_init_fixed(a2: ptr buffer; memory: pointer; size: uint) {.importc: "nk_buffer_init_fixed".}
-proc init*(b: var buffer, memory: pointer, size:uint) =
-  buffer_init_fixed(addr b, memory, size)
-
-proc buffer_info(a2: ptr memory_status; a3: ptr buffer) {.importc: "nk_buffer_info".}
-proc info*(b: var buffer, ms: var memory_status) =
-  buffer_info(addr ms, addr b)
-
-proc buffer_push(a2: ptr buffer; typ: buffer_allocation_type;
-                    memory: pointer; size: uint; align: uint) {.importc: "nk_buffer_push".}
-proc push*(b: var buffer, `type`: buffer_allocation_type, memory: pointer, size, align: uint) =
-  buffer_push(addr b, `type`, memory, size, align)
-
-proc buffer_mark*(a2: ptr buffer; typ: buffer_allocation_type) {.importc: "nk_buffer_mark".}
-proc mark*(b: var buffer, `type`: buffer_allocation_type) =
-  buffer_mark(addr b, `type`)
-
-proc buffer_reset(a2: ptr buffer; typ: buffer_allocation_type) {.importc: "nk_buffer_reset".}
-proc reset*(b: var buffer, `type`: buffer_allocation_type) =
-  buffer_reset(addr b, `type`)
-
-proc buffer_clear(a2: ptr buffer) {.importc: "nk_buffer_clear".}
-proc clear*(b: var buffer) =
-  buffer_clear(addr b)
-
-proc buffer_free(a2: ptr buffer) {.importc: "nk_buffer_free".}
-proc free*(b: var buffer) =
-  buffer_free(addr b)
-
-proc buffer_memory(a2: ptr buffer): pointer {.importc: "nk_buffer_memory".}
-proc bufferMemory*(b: var buffer): pointer =
-  buffer_memory(addr b)
-
-proc buffer_memory_const(a2: ptr buffer): pointer {.importc: "nk_buffer_memory_const".}
-proc bufferMemoryConst*(b: var buffer): pointer =
-  buffer_memory_const(addr b)
-
-proc buffer_total*(a2: ptr buffer): uint {.importc: "nk_buffer_total".}
-proc total*(b: var buffer): uint =
-  buffer_total(addr b)
-
 
 proc str_init(a2: ptr str; a3: ptr allocator; size: uint) {.importc: "nk_str_init".}
 proc init*(s: var str, a: var allocator, size: uint) =
@@ -1148,18 +1181,53 @@ proc str_remove_chars(a2: ptr str; len: int32) {.importc: "nk_str_remove_chars".
 proc removeChars*(s: var str, len: int32) =
   str_remove_chars(addr s, len)
 
-proc str_remove_runes*(str: ptr str; len: int32) {.importc: "nk_str_remove_runes".}
-proc str_delete_chars*(a2: ptr str; pos: int32; len: int32) {.importc: "nk_str_delete_chars".}
-proc str_delete_runes*(a2: ptr str; pos: int32; len: int32) {.importc: "nk_str_delete_runes".}
-proc str_at_char*(a2: ptr str; pos: int32): cstring {.importc: "nk_str_at_char".}
-proc str_at_rune*(a2: ptr str; pos: int32; unicode: ptr uint32; len: ptr int32): cstring {. importc: "nk_str_at_rune".}
-proc str_rune_at*(a2: ptr str; pos: int32): uint32 {.importc: "nk_str_rune_at".}
-proc str_at_char_const*(a2: ptr str; pos: int32): cstring {.importc: "nk_str_at_char_const".}
-proc str_at_const*(a2: ptr str; pos: int32; unicode: ptr uint32; len: ptr int32): cstring {. importc: "nk_str_at_const".}
-proc str_get*(a2: ptr str): cstring {.importc: "nk_str_get".}
-proc str_get_const*(a2: ptr str): cstring {.importc: "nk_str_get_const".}
-proc str_len*(a2: ptr str): int32 {.importc: "nk_str_len".}
-proc str_len_char*(a2: ptr str): int32 {.importc: "nk_str_len_char".}
+proc str_remove_runes(str: ptr str; len: int32) {.importc: "nk_str_remove_runes".}
+proc removeRunes*(s: var str, len: int32) =
+  str_remove_runes(addr s, len)
+
+proc str_delete_chars(a2: ptr str; pos: int32; len: int32) {.importc: "nk_str_delete_chars".}
+proc deleteChars*(s: var str, pos: int32, len: int32) =
+  str_delete_chars(addr s, pos, len)
+
+proc str_delete_runes(a2: ptr str; pos: int32; len: int32) {.importc: "nk_str_delete_runes".}
+proc deleteRunes*(s: var str, pos: int32, len: int32) =
+  str_delete_runes(addr s, pos, len)
+
+proc str_at_char(a2: ptr str; pos: int32): cstring {.importc: "nk_str_at_char".}
+proc atChar*(s: var str, pos: int32) : string =
+  $str_at_char(addr s, pos)
+
+proc str_at_rune(a2: ptr str; pos: int32; unicode: ptr uint32; len: ptr int32): cstring {. importc: "nk_str_at_rune".}
+proc atRune*(s: var str, pos: int32, unicode: var uint32, len: var int32) : string =
+  $str_at_rune(addr s, pos, addr unicode, addr len)
+
+proc str_rune_at(a2: ptr str; pos: int32): uint32 {.importc: "nk_str_rune_at".}
+proc runeAt*(s: var str, pos: int32): uint32 =
+  str_rune_at(addr s, pos)
+
+proc str_at_char_const(a2: ptr str; pos: int32): cstring {.importc: "nk_str_at_char_const".}
+proc atCharConst*(s: var str, pos: int32): string =
+  $str_at_char_const(addr s, pos)
+
+proc str_at_const(a2: ptr str; pos: int32; unicode: ptr uint32; len: ptr int32): cstring {. importc: "nk_str_at_const".}
+proc atConst*(s: var str, pos: int32, unicode: var uint32, len: var int32): string =
+  $str_at_const(addr s, pos, addr unicode, addr len)
+
+proc str_get(a2: ptr str): cstring {.importc: "nk_str_get".}
+proc get*(s: var str): string =
+  $str_get(addr s)
+
+proc str_get_const(a2: ptr str): cstring {.importc: "nk_str_get_const".}
+proc getConst*(s: var str): string =
+  $str_get_const(addr s)
+
+proc str_len(a2: ptr str): int32 {.importc: "nk_str_len".}
+proc len*(s: var str): int32 =
+  str_len(addr s)
+
+proc str_len_char(a2: ptr str): int32 {.importc: "nk_str_len_char".}
+proc lenChar*(s: var str): int32 =
+  str_len_char(addr s)
 
 type
   text_edit_mode* {.size: sizeof(int32).} = enum
