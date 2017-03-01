@@ -1,3 +1,242 @@
+#[
+ Nuklear - 1.33.0 - public domain
+ no warrenty implied; use at your own risk.
+ authored from 2015-2016 by Micha Mettke
+
+ABOUT:
+    This is a minimal state graphical user interface single header toolkit
+    written in ANSI C and licensed under public domain.
+    It was designed as a simple embeddable user interface for application and does
+    not have any dependencies, a default renderbackend or OS window and input handling
+    but instead provides a very modular library approach by using simple input state
+    for input and draw commands describing primitive shapes as output.
+    So instead of providing a layered library that tries to abstract over a number
+    of platform and render backends it only focuses on the actual UI.
+
+VALUES:
+    - Graphical user interface toolkit
+    - Single header library
+    - Written in C89 (a.k.a. ANSI C or ISO C90)
+    - Small codebase (~17kLOC)
+    - Focus on portability, efficiency and simplicity
+    - No dependencies (not even the standard library if not wanted)
+    - Fully skinnable and customizable
+    - Low memory footprint with total memory control if needed or wanted
+    - UTF-8 support
+    - No global or hidden state
+    - Customizable library modules (you can compile and use only what you need)
+    - Optional font baker and vertex buffer output
+
+USAGE:
+    This library is self contained in one single header file and can be used either
+    in header only mode or in implementation mode. The header only mode is used
+    by default when included and allows including this header in other headers
+    and does not contain the actual implementation.
+
+    The implementation mode requires to define  the preprocessor macro
+    NK_IMPLEMENTATION in *one* .c/.cpp file before #includeing this file, e.g.:
+
+        #define NK_IMPLEMENTATION
+        #include "nuklear.h"
+
+    Also optionally define the symbols listed in the section "OPTIONAL DEFINES"
+    below in header and implementation mode if you want to use additional functionality
+    or need more control over the library.
+    IMPORTANT:  Every time you include "nuklear.h" you have to define the same flags.
+                This is very important not doing it either leads to compiler errors
+                or even worse stack corruptions.
+
+FEATURES:
+    - Absolutely no platform dependend code
+    - Memory management control ranging from/to
+        - Ease of use by allocating everything from standard library
+        - Control every byte of memory inside the library
+    - Font handling control ranging from/to
+        - Use your own font implementation for everything
+        - Use this libraries internal font baking and handling API
+    - Drawing output control ranging from/to
+        - Simple shapes for more high level APIs which already have drawing capabilities
+        - Hardware accessible anti-aliased vertex buffer output
+    - Customizable colors and properties ranging from/to
+        - Simple changes to color by filling a simple color table
+        - Complete control with ability to use skinning to decorate widgets
+    - Bendable UI library with widget ranging from/to
+        - Basic widgets like buttons, checkboxes, slider, ...
+        - Advanced widget like abstract comboboxes, contextual menus,...
+    - Compile time configuration to only compile what you need
+        - Subset which can be used if you do not want to link or use the standard library
+    - Can be easily modified to only update on user input instead of frame updates
+
+OPTIONAL DEFINES:
+    NK_PRIVATE
+        If defined declares all functions as static, so they can only be accessed
+        inside the file that contains the implementation
+
+    NK_INCLUDE_FIXED_TYPES
+        If defined it will include header <stdint.h> for fixed sized types
+        otherwise nuklear tries to select the correct type. If that fails it will
+        throw a compiler error and you have to select the correct types yourself.
+        <!> If used needs to be defined for implementation and header <!>
+
+    NK_INCLUDE_DEFAULT_ALLOCATOR
+        if defined it will include header <stdlib.h> and provide additional functions
+        to use this library without caring for memory allocation control and therefore
+        ease memory management.
+        <!> Adds the standard library with malloc and free so don't define if you
+            don't want to link to the standard library <!>
+        <!> If used needs to be defined for implementation and header <!>
+
+    NK_INCLUDE_STANDARD_IO
+        if defined it will include header <stdio.h> and provide
+        additional functions depending on file loading.
+        <!> Adds the standard library with fopen, fclose,... so don't define this
+            if you don't want to link to the standard library <!>
+        <!> If used needs to be defined for implementation and header <!>
+
+    NK_INCLUDE_STANDARD_VARARGS
+        if defined it will include header <stdarg.h> and provide
+        additional functions depending on variable arguments
+        <!> Adds the standard library with va_list and  so don't define this if
+            you don't want to link to the standard library<!>
+        <!> If used needs to be defined for implementation and header <!>
+
+    NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+        Defining this adds a vertex draw command list backend to this
+        library, which allows you to convert queue commands into vertex draw commands.
+        This is mainly if you need a hardware accessible format for OpenGL, DirectX,
+        Vulkan, Metal,...
+        <!> If used needs to be defined for implementation and header <!>
+
+    NK_INCLUDE_FONT_BAKING
+        Defining this adds the `stb_truetype` and `stb_rect_pack` implementation
+        to this library and provides font baking and rendering.
+        If you already have font handling or do not want to use this font handler
+        you don't have to define it.
+        <!> If used needs to be defined for implementation and header <!>
+
+    NK_INCLUDE_DEFAULT_FONT
+        Defining this adds the default font: ProggyClean.ttf into this library
+        which can be loaded into a font atlas and allows using this library without
+        having a truetype font
+        <!> Enabling this adds ~12kb to global stack memory <!>
+        <!> If used needs to be defined for implementation and header <!>
+
+    NK_INCLUDE_COMMAND_USERDATA
+        Defining this adds a userdata pointer into each command. Can be useful for
+        example if you want to provide custom shaders depending on the used widget.
+        Can be combined with the style structures.
+        <!> If used needs to be defined for implementation and header <!>
+
+    NK_BUTTON_TRIGGER_ON_RELEASE
+        Different platforms require button clicks occuring either on buttons being
+        pressed (up to down) or released (down to up).
+        By default this library will react on buttons being pressed, but if you
+        define this it will only trigger if a button is released.
+        <!> If used it is only required to be defined for the implementation part <!>
+
+    NK_ZERO_COMMAND_MEMORY
+        Defining this will zero out memory for each drawing command added to a
+        drawing queue (inside nk_command_buffer_push). Zeroing command memory
+        is very useful for fast checking (using memcmp) if command buffers are
+        equal and avoid drawing frames when nothing on screen has changed since
+        previous frame.
+
+    NK_ASSERT
+        If you don't define this, nuklear will use <assert.h> with assert().
+        <!> Adds the standard library so define to nothing of not wanted <!>
+        <!> If used needs to be defined for implementation and header <!>
+
+    NK_BUFFER_DEFAULT_INITIAL_SIZE
+        Initial buffer size allocated by all buffers while using the default allocator
+        functions included by defining NK_INCLUDE_DEFAULT_ALLOCATOR. If you don't
+        want to allocate the default 4k memory then redefine it.
+        <!> If used needs to be defined for implementation and header <!>
+
+    NK_MAX_NUMBER_BUFFER
+        Maximum buffer size for the conversion buffer between float and string
+        Under normal circumstances this should be more than sufficient.
+        <!> If used needs to be defined for implementation and header <!>
+
+    NK_INPUT_MAX
+        Defines the max number of bytes which can be added as text input in one frame.
+        Under normal circumstances this should be more than sufficient.
+        <!> If used it is only required to be defined for the implementation part <!>
+
+    NK_MEMSET
+        You can define this to 'memset' or your own memset implementation
+        replacement. If not nuklear will use its own version.
+        <!> If used it is only required to be defined for the implementation part <!>
+
+    NK_MEMCPY
+        You can define this to 'memcpy' or your own memcpy implementation
+        replacement. If not nuklear will use its own version.
+        <!> If used it is only required to be defined for the implementation part <!>
+
+    NK_SQRT
+        You can define this to 'sqrt' or your own sqrt implementation
+        replacement. If not nuklear will use its own slow and not highly
+        accurate version.
+        <!> If used it is only required to be defined for the implementation part <!>
+
+    NK_SIN
+        You can define this to 'sinf' or your own sine implementation
+        replacement. If not nuklear will use its own approximation implementation.
+        <!> If used it is only required to be defined for the implementation part <!>
+
+    NK_COS
+        You can define this to 'cosf' or your own cosine implementation
+        replacement. If not nuklear will use its own approximation implementation.
+        <!> If used it is only required to be defined for the implementation part <!>
+
+    NK_STRTOD
+        You can define this to `strtod` or your own string to double conversion
+        implementation replacement. If not defined nuklear will use its own
+        imprecise and possibly unsafe version (does not handle nan or infinity!).
+        <!> If used it is only required to be defined for the implementation part <!>
+
+    NK_DTOA
+        You can define this to `dtoa` or your own double to string conversion
+        implementation replacement. If not defined nuklear will use its own
+        imprecise and possibly unsafe version (does not handle nan or infinity!).
+        <!> If used it is only required to be defined for the implementation part <!>
+
+    NK_VSNPRINTF
+        If you define `NK_INCLUDE_STANDARD_VARARGS` as well as `NK_INCLUDE_STANDARD_IO`
+        and want to be safe define this to `vsnprintf` on compilers supporting
+        later versions of C or C++. By default nuklear will check for your stdlib version
+        in C as well as compiler version in C++. if `vsnprintf` is available
+        it will define it to `vsnprintf` directly. If not defined and if you have
+        older versions of C or C++ it will be defined to `vsprintf` which is unsafe.
+        <!> If used it is only required to be defined for the implementation part <!>
+
+    NK_BYTE
+    NK_INT16
+    NK_UINT16
+    NK_INT32
+    NK_UINT32
+    NK_SIZE_TYPE
+    NK_POINTER_TYPE
+        If you compile without NK_USE_FIXED_TYPE then a number of standard types
+        will be selected and compile time validated. If they are incorrect you can
+        define the correct types by overloading these type defines.
+
+CREDITS:
+    Developed by Micha Mettke and every direct or indirect contributor.
+
+    Embeds stb_texedit, stb_truetype and stb_rectpack by Sean Barret (public domain)
+    Embeds ProggyClean.ttf font by Tristan Grimmer (MIT license).
+
+    Big thank you to Omar Cornut (ocornut@github) for his imgui library and
+    giving me the inspiration for this library, Casey Muratori for handmade hero
+    and his original immediate mode graphical user interface idea and Sean
+    Barret for his amazing single header libraries which restored my faith
+    in libraries and brought me to create some of my own.
+
+LICENSE:
+    This software is dual-licensed to the public domain and under the following
+    license: you are granted a perpetual, irrevocable license to copy, modify,
+    publish and distribute this file as you see fit.
+]#
 {.deadCodeElim: on.}
 
 {.compile: "src/bind.c".}
@@ -55,9 +294,6 @@ type
     h*: int16
 
   glyph* = array[4, char]
-  #nk_handle* = object {.union.}
-  #  pointr*: pointer
-  #  id*: int32
 
   image* = object {.byCopy.}
     handle*: handle
@@ -226,7 +462,144 @@ proc buffer_total*(a2: ptr buffer): uint {.importc: "nk_buffer_total".}
 proc total*(b: var buffer): uint =
   buffer_total(addr b)
 
+##################################################################
+ #*
+ #                          STRING
+ #
+###################################################################
+##  Basic string buffer which is only used in context with the text editor
+ #  to manage and manipulate dynamic or fixed size string content. This is _NOT_
+ #  the default string handling method. The only instance you should have any contact
+ #  with this API is if you interact with an `nk_text_edit` object inside one of the
+ #  copy and paste functions and even there only for more advanced cases. */
+type
+  str* = object
+    buffer*: buffer
+    len*: int32
 
+proc str_init(a2: ptr str; a3: ptr allocator; size: uint) {.importc: "nk_str_init".}
+proc init*(s: var str, a: var allocator, size: uint) =
+  str_init(addr s, addr a, size)
+
+proc str_init_fixed(a2: ptr str; memory: pointer; size: uint) {.importc: "nk_str_init_fixed".}
+proc initFixed*(s: var str, memory: pointer, size: uint) =
+  str_init_fixed(addr s, memory, size)
+
+proc str_clear(a2: ptr str) {.importc: "nk_str_clear".}
+proc clear*(s: var str) =
+  str_clear(addr s)
+
+proc str_free(a2: ptr str) {.importc: "nk_str_free".}
+proc free*(s: var str) =
+  str_free(addr s)
+
+proc str_append_text_char(a2: ptr str; a3: cstring; a4: int32): int32 {.importc: "nk_str_append_text_char".}
+proc appendTextChar*(s: var str, t: string, c: int32): int32 =
+  str_append_text_char(addr s, t, c)
+
+proc str_append_str_char(a2: ptr str; a3: cstring): int32 {.importc: "nk_str_append_str_char".}
+proc appendStrChar*(s: var str, t: string): int32 =
+  str_append_str_char(addr s, t)
+
+proc str_append_text_utf8(a2: ptr str; a3: cstring; a4: int32): int32 {.importc: "nk_str_append_text_utf8".}
+proc appendTextUTF8*(s: var str, t: string, u: int32): int32 =
+  str_append_text_utf8(addr s, t, u)
+
+proc str_append_str_utf8(a2: ptr str; a3: cstring): int32 {.importc: "nk_str_append_str_utf8".}
+proc appendStrUTF8*(s: var str, t: string): int32 =
+  str_append_str_utf8(addr s, t)
+
+proc str_append_text_runes(a2: ptr str; a3: ptr uint32; a4: int32): int32 {.importc: "nk_str_append_text_runes".}
+proc appendTextRunes*(s: var str, u: var uint32, i: int32): int32 =
+  str_append_text_runes(addr s, addr u, i)
+
+proc str_append_str_runes(a2: ptr str; a3: ptr uint32): int32 {.importc: "nk_str_append_str_runes".}
+proc appendStrRunes*(s: var str, u: var uint32): int32 =
+  str_append_str_runes(addr s, addr u)
+
+proc str_insert_at_char(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_at_char".}
+proc insertAtChar*(s: var str, pos: int32, t: string, i: int32): int32 =
+  str_insert_at_char(addr s, pos, t, i)
+
+proc str_insert_at_rune(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_at_rune".}
+proc insertAtRune*(s: var str, pos: int32, t: string, i: int32): int32 =
+  str_insert_at_rune(addr s, pos, t, i)
+
+proc str_insert_text_char(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_text_char".}
+proc insertTextChar*(s: var str, pos: int32, t: string, i: int32): int32 =
+  str_insert_text_char(addr s, pos, t, i)
+
+proc str_insert_str_char(a2: ptr str; pos: int32; a4: cstring): int32 {.importc: "nk_str_insert_str_char".}
+proc insertStrChar*(s: var str, pos: int32, t: string): int32 =
+  str_insert_str_char(addr s, pos, t)
+
+proc str_insert_text_utf8(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_text_utf8".}
+proc insertTextUTF8*(s: var str, pos: int32, t: string, i: int32): int32 =
+  str_insert_text_utf8(addr s, pos, t, i)
+
+proc str_insert_str_utf8(a2: ptr str; pos: int32; a4: cstring): int32 {.importc: "nk_str_insert_str_utf8".}
+proc insertStrUTF8*(s: var str, pos: int32, t: string): int32 =
+  str_insert_str_utf8(addr s, pos, t)
+
+proc str_insert_text_runes(a2: ptr str; pos: int32; a4: ptr uint32; a5: int32): int32 {. importc: "nk_str_insert_text_runes".}
+proc insertTextRunes*(s: var str, pos: int32, u: var uint32, i: int32): int32 =
+  str_insert_text_runes(addr s, pos, addr u, i)
+
+proc str_insert_str_runes(a2: ptr str; pos: int32; a4: ptr uint32): int32 {.importc: "nk_str_insert_str_runes".}
+proc insertStrRunes*(s: var str, pos: int32, u: var uint32): int32 =
+  str_insert_str_runes(addr s, pos, addr u)
+
+proc str_remove_chars(a2: ptr str; len: int32) {.importc: "nk_str_remove_chars".}
+proc removeChars*(s: var str, len: int32) =
+  str_remove_chars(addr s, len)
+
+proc str_remove_runes(str: ptr str; len: int32) {.importc: "nk_str_remove_runes".}
+proc removeRunes*(s: var str, len: int32) =
+  str_remove_runes(addr s, len)
+
+proc str_delete_chars(a2: ptr str; pos: int32; len: int32) {.importc: "nk_str_delete_chars".}
+proc deleteChars*(s: var str, pos: int32, len: int32) =
+  str_delete_chars(addr s, pos, len)
+
+proc str_delete_runes(a2: ptr str; pos: int32; len: int32) {.importc: "nk_str_delete_runes".}
+proc deleteRunes*(s: var str, pos: int32, len: int32) =
+  str_delete_runes(addr s, pos, len)
+
+proc str_at_char(a2: ptr str; pos: int32): cstring {.importc: "nk_str_at_char".}
+proc atChar*(s: var str, pos: int32) : string =
+  $str_at_char(addr s, pos)
+
+proc str_at_rune(a2: ptr str; pos: int32; unicode: ptr uint32; len: ptr int32): cstring {. importc: "nk_str_at_rune".}
+proc atRune*(s: var str, pos: int32, unicode: var uint32, len: var int32) : string =
+  $str_at_rune(addr s, pos, addr unicode, addr len)
+
+proc str_rune_at(a2: ptr str; pos: int32): uint32 {.importc: "nk_str_rune_at".}
+proc runeAt*(s: var str, pos: int32): uint32 =
+  str_rune_at(addr s, pos)
+
+proc str_at_char_const(a2: ptr str; pos: int32): cstring {.importc: "nk_str_at_char_const".}
+proc atCharConst*(s: var str, pos: int32): string =
+  $str_at_char_const(addr s, pos)
+
+proc str_at_const(a2: ptr str; pos: int32; unicode: ptr uint32; len: ptr int32): cstring {. importc: "nk_str_at_const".}
+proc atConst*(s: var str, pos: int32, unicode: var uint32, len: var int32): string =
+  $str_at_const(addr s, pos, addr unicode, addr len)
+
+proc str_get(a2: ptr str): cstring {.importc: "nk_str_get".}
+proc get*(s: var str): string =
+  $str_get(addr s)
+
+proc str_get_const(a2: ptr str): cstring {.importc: "nk_str_get_const".}
+proc getConst*(s: var str): string =
+  $str_get_const(addr s)
+
+proc str_len(a2: ptr str): int32 {.importc: "nk_str_len".}
+proc len*(s: var str): int32 =
+  str_len(addr s)
+
+proc str_len_char(a2: ptr str): int32 {.importc: "nk_str_len_char".}
+proc lenChar*(s: var str): int32 =
+  str_len_char(addr s)
 
 type
   command_buffer* = object
@@ -977,10 +1350,6 @@ type
     combo*: style_combo
     window*: style_window
 
-  str* = object
-    buffer*: buffer
-    len*: int32
-
 type
   modify* {.size: sizeof(int32).} = enum
     FIXED = false, MODIFIABLE = true
@@ -1105,129 +1474,7 @@ type
     WINDOW_BACKGROUND = (1 shl (8)), WINDOW_SCALE_LEFT = (1 shl (9))
 
 
-proc str_init(a2: ptr str; a3: ptr allocator; size: uint) {.importc: "nk_str_init".}
-proc init*(s: var str, a: var allocator, size: uint) =
-  str_init(addr s, addr a, size)
 
-proc str_init_fixed(a2: ptr str; memory: pointer; size: uint) {.importc: "nk_str_init_fixed".}
-proc initFixed*(s: var str, memory: pointer, size: uint) =
-  str_init_fixed(addr s, memory, size)
-
-proc str_clear(a2: ptr str) {.importc: "nk_str_clear".}
-proc clear*(s: var str) =
-  str_clear(addr s)
-
-proc str_free(a2: ptr str) {.importc: "nk_str_free".}
-proc free*(s: var str) =
-  str_free(addr s)
-
-proc str_append_text_char(a2: ptr str; a3: cstring; a4: int32): int32 {.importc: "nk_str_append_text_char".}
-proc appendTextChar*(s: var str, t: string, c: int32): int32 =
-  str_append_text_char(addr s, t, c)
-
-proc str_append_str_char(a2: ptr str; a3: cstring): int32 {.importc: "nk_str_append_str_char".}
-proc appendStrChar*(s: var str, t: string): int32 =
-  str_append_str_char(addr s, t)
-
-proc str_append_text_utf8(a2: ptr str; a3: cstring; a4: int32): int32 {.importc: "nk_str_append_text_utf8".}
-proc appendTextUTF8*(s: var str, t: string, u: int32): int32 =
-  str_append_text_utf8(addr s, t, u)
-
-proc str_append_str_utf8(a2: ptr str; a3: cstring): int32 {.importc: "nk_str_append_str_utf8".}
-proc appendStrUTF8*(s: var str, t: string): int32 =
-  str_append_str_utf8(addr s, t)
-
-proc str_append_text_runes(a2: ptr str; a3: ptr uint32; a4: int32): int32 {.importc: "nk_str_append_text_runes".}
-proc appendTextRunes*(s: var str, u: var uint32, i: int32): int32 =
-  str_append_text_runes(addr s, addr u, i)
-
-proc str_append_str_runes(a2: ptr str; a3: ptr uint32): int32 {.importc: "nk_str_append_str_runes".}
-proc appendStrRunes*(s: var str, u: var uint32): int32 =
-  str_append_str_runes(addr s, addr u)
-
-proc str_insert_at_char(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_at_char".}
-proc insertAtChar*(s: var str, pos: int32, t: string, i: int32): int32 =
-  str_insert_at_char(addr s, pos, t, i)
-
-proc str_insert_at_rune(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_at_rune".}
-proc insertAtRune*(s: var str, pos: int32, t: string, i: int32): int32 =
-  str_insert_at_rune(addr s, pos, t, i)
-
-proc str_insert_text_char(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_text_char".}
-proc insertTextChar*(s: var str, pos: int32, t: string, i: int32): int32 =
-  str_insert_text_char(addr s, pos, t, i)
-
-proc str_insert_str_char(a2: ptr str; pos: int32; a4: cstring): int32 {.importc: "nk_str_insert_str_char".}
-proc insertStrChar*(s: var str, pos: int32, t: string): int32 =
-  str_insert_str_char(addr s, pos, t)
-
-proc str_insert_text_utf8(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_text_utf8".}
-proc insertTextUTF8*(s: var str, pos: int32, t: string, i: int32): int32 =
-  str_insert_text_utf8(addr s, pos, t, i)
-
-proc str_insert_str_utf8(a2: ptr str; pos: int32; a4: cstring): int32 {.importc: "nk_str_insert_str_utf8".}
-proc insertStrUTF8*(s: var str, pos: int32, t: string): int32 =
-  str_insert_str_utf8(addr s, pos, t)
-
-proc str_insert_text_runes(a2: ptr str; pos: int32; a4: ptr uint32; a5: int32): int32 {. importc: "nk_str_insert_text_runes".}
-proc insertTextRunes*(s: var str, pos: int32, u: var uint32, i: int32): int32 =
-  str_insert_text_runes(addr s, pos, addr u, i)
-
-proc str_insert_str_runes(a2: ptr str; pos: int32; a4: ptr uint32): int32 {.importc: "nk_str_insert_str_runes".}
-proc insertStrRunes*(s: var str, pos: int32, u: var uint32): int32 =
-  str_insert_str_runes(addr s, pos, addr u)
-
-proc str_remove_chars(a2: ptr str; len: int32) {.importc: "nk_str_remove_chars".}
-proc removeChars*(s: var str, len: int32) =
-  str_remove_chars(addr s, len)
-
-proc str_remove_runes(str: ptr str; len: int32) {.importc: "nk_str_remove_runes".}
-proc removeRunes*(s: var str, len: int32) =
-  str_remove_runes(addr s, len)
-
-proc str_delete_chars(a2: ptr str; pos: int32; len: int32) {.importc: "nk_str_delete_chars".}
-proc deleteChars*(s: var str, pos: int32, len: int32) =
-  str_delete_chars(addr s, pos, len)
-
-proc str_delete_runes(a2: ptr str; pos: int32; len: int32) {.importc: "nk_str_delete_runes".}
-proc deleteRunes*(s: var str, pos: int32, len: int32) =
-  str_delete_runes(addr s, pos, len)
-
-proc str_at_char(a2: ptr str; pos: int32): cstring {.importc: "nk_str_at_char".}
-proc atChar*(s: var str, pos: int32) : string =
-  $str_at_char(addr s, pos)
-
-proc str_at_rune(a2: ptr str; pos: int32; unicode: ptr uint32; len: ptr int32): cstring {. importc: "nk_str_at_rune".}
-proc atRune*(s: var str, pos: int32, unicode: var uint32, len: var int32) : string =
-  $str_at_rune(addr s, pos, addr unicode, addr len)
-
-proc str_rune_at(a2: ptr str; pos: int32): uint32 {.importc: "nk_str_rune_at".}
-proc runeAt*(s: var str, pos: int32): uint32 =
-  str_rune_at(addr s, pos)
-
-proc str_at_char_const(a2: ptr str; pos: int32): cstring {.importc: "nk_str_at_char_const".}
-proc atCharConst*(s: var str, pos: int32): string =
-  $str_at_char_const(addr s, pos)
-
-proc str_at_const(a2: ptr str; pos: int32; unicode: ptr uint32; len: ptr int32): cstring {. importc: "nk_str_at_const".}
-proc atConst*(s: var str, pos: int32, unicode: var uint32, len: var int32): string =
-  $str_at_const(addr s, pos, addr unicode, addr len)
-
-proc str_get(a2: ptr str): cstring {.importc: "nk_str_get".}
-proc get*(s: var str): string =
-  $str_get(addr s)
-
-proc str_get_const(a2: ptr str): cstring {.importc: "nk_str_get_const".}
-proc getConst*(s: var str): string =
-  $str_get_const(addr s)
-
-proc str_len(a2: ptr str): int32 {.importc: "nk_str_len".}
-proc len*(s: var str): int32 =
-  str_len(addr s)
-
-proc str_len_char(a2: ptr str): int32 {.importc: "nk_str_len_char".}
-proc lenChar*(s: var str): int32 =
-  str_len_char(addr s)
 
 type
   text_edit_mode* {.size: sizeof(int32).} = enum
