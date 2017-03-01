@@ -130,7 +130,7 @@ proc set_style(ctx: ptr context) =
 proc device_init() =
   var status: GLint
   #buffer_init(addr dev.cmds, addr allocator, 512 * 1024)
-  buffer_init_default(addr dev.cmds)
+  init(dev.cmds)
   dev.prog = glCreateProgram();
   dev.vert_shader = glCreateShader(GL_VERTEX_SHADER);
   dev.frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -410,5 +410,5 @@ glDeleteProgram(dev.prog);
 glDeleteTextures(1, addr dev.font_tex);
 glDeleteBuffers(1, addr dev.vbo);
 glDeleteBuffers(1, addr dev.ebo);
-buffer_free(addr dev.cmds);
+free(dev.cmds);
 glfw.Terminate()

@@ -577,7 +577,7 @@ type
     preferred_x*: float32
     undo*: text_undo_state
 
-  plugin_filter* = proc (a2: ptr text_edit; unicode: uint32): int32
+  plugin_filter* = proc (a2: ptr text_edit; unicode: uint32): int32 {.cdecl.}
 
   text_undo_record* = object
     where*: int32
@@ -1022,68 +1022,151 @@ type
     WINDOW_TITLE = (1 shl (6)), WINDOW_SCROLL_AUTO_HIDE = (1 shl (7)),
     WINDOW_BACKGROUND = (1 shl (8)), WINDOW_SCALE_LEFT = (1 shl (9))
 
-proc buffer_init_default*(a2: ptr buffer) {.importc: "nk_buffer_init_default".}
+proc buffer_init_default(a2: ptr buffer) {.importc: "nk_buffer_init_default".}
 proc init*(b: var buffer) =
     buffer_init_default(addr b)
 
-proc buffer_init*(a2: ptr buffer; a3: ptr allocator; size: uint) {.importc: "nk_buffer_init".}
+proc buffer_init(a2: ptr buffer; a3: ptr allocator; size: uint) {.importc: "nk_buffer_init".}
 proc init*(b: var buffer, a: var allocator, size: uint) =
     buffer_init(addr b, addr a, size)
 
-proc buffer_init_fixed*(a2: ptr buffer; memory: pointer; size: uint) {.importc: "nk_buffer_init_fixed".}
+proc buffer_init_fixed(a2: ptr buffer; memory: pointer; size: uint) {.importc: "nk_buffer_init_fixed".}
 proc init*(b: var buffer, memory: pointer, size:uint) =
   buffer_init_fixed(addr b, memory, size)
 
-proc buffer_info*(a2: ptr memory_status; a3: ptr buffer) {.importc: "nk_buffer_info".}
-proc buffer_push*(a2: ptr buffer; typ: buffer_allocation_type;
+proc buffer_info(a2: ptr memory_status; a3: ptr buffer) {.importc: "nk_buffer_info".}
+proc info*(b: var buffer, ms: var memory_status) =
+  buffer_info(addr ms, addr b)
+
+proc buffer_push(a2: ptr buffer; typ: buffer_allocation_type;
                     memory: pointer; size: uint; align: uint) {.importc: "nk_buffer_push".}
+proc push*(b: var buffer, `type`: buffer_allocation_type, memory: pointer, size, align: uint) =
+  buffer_push(addr b, `type`, memory, size, align)
+
 proc buffer_mark*(a2: ptr buffer; typ: buffer_allocation_type) {.importc: "nk_buffer_mark".}
-proc buffer_reset*(a2: ptr buffer; typ: buffer_allocation_type) {.importc: "nk_buffer_reset".}
-proc buffer_clear*(a2: ptr buffer) {.importc: "nk_buffer_clear".}
-proc buffer_free*(a2: ptr buffer) {.importc: "nk_buffer_free".}
-proc buffer_memory*(a2: ptr buffer): pointer {.importc: "nk_buffer_memory".}
-proc buffer_memory_const*(a2: ptr buffer): pointer {.importc: "nk_buffer_memory_const".}
+proc mark*(b: var buffer, `type`: buffer_allocation_type) =
+  buffer_mark(addr b, `type`)
+
+proc buffer_reset(a2: ptr buffer; typ: buffer_allocation_type) {.importc: "nk_buffer_reset".}
+proc reset*(b: var buffer, `type`: buffer_allocation_type) =
+  buffer_reset(addr b, `type`)
+
+proc buffer_clear(a2: ptr buffer) {.importc: "nk_buffer_clear".}
+proc clear*(b: var buffer) =
+  buffer_clear(addr b)
+
+proc buffer_free(a2: ptr buffer) {.importc: "nk_buffer_free".}
+proc free*(b: var buffer) =
+  buffer_free(addr b)
+
+proc buffer_memory(a2: ptr buffer): pointer {.importc: "nk_buffer_memory".}
+proc bufferMemory*(b: var buffer): pointer =
+  buffer_memory(addr b)
+
+proc buffer_memory_const(a2: ptr buffer): pointer {.importc: "nk_buffer_memory_const".}
+proc bufferMemoryConst*(b: var buffer): pointer =
+  buffer_memory_const(addr b)
+
 proc buffer_total*(a2: ptr buffer): uint {.importc: "nk_buffer_total".}
+proc total*(b: var buffer): uint =
+  buffer_total(addr b)
 
 
-proc nk_str_init*(a2: ptr str; a3: ptr allocator; size: uint) {.importc: "nk_str_init".}
-proc nk_str_init_fixed*(a2: ptr str; memory: pointer; size: uint) {.importc: "nk_str_init_fixed".}
-proc nk_str_clear*(a2: ptr str) {.importc: "nk_str_clear".}
-proc nk_str_free*(a2: ptr str) {.importc: "nk_str_free".}
-proc nk_str_append_text_char*(a2: ptr str; a3: cstring; a4: int32): int32 {.importc: "nk_str_append_text_char".}
-proc nk_str_append_str_char*(a2: ptr str; a3: cstring): int32 {.importc: "nk_str_append_str_char".}
-proc nk_str_append_text_utf8*(a2: ptr str; a3: cstring; a4: int32): int32 {.importc: "nk_str_append_text_utf8".}
-proc nk_str_append_str_utf8*(a2: ptr str; a3: cstring): int32 {.importc: "nk_str_append_str_utf8".}
-proc nk_str_append_text_runes*(a2: ptr str; a3: ptr uint32; a4: int32): int32 {.importc: "nk_str_append_text_runes".}
-proc nk_str_append_str_runes*(a2: ptr str; a3: ptr uint32): int32 {.importc: "nk_str_append_str_runes".}
-proc nk_str_insert_at_char*(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_at_char".}
-proc nk_str_insert_at_rune*(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_at_rune".}
-proc nk_str_insert_text_char*(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_text_char".}
-proc nk_str_insert_str_char*(a2: ptr str; pos: int32; a4: cstring): int32 {.importc: "nk_str_insert_str_char".}
-proc nk_str_insert_text_utf8*(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_text_utf8".}
-proc nk_str_insert_str_utf8*(a2: ptr str; pos: int32; a4: cstring): int32 {.importc: "nk_str_insert_str_utf8".}
-proc nk_str_insert_text_runes*(a2: ptr str; pos: int32; a4: ptr uint32; a5: int32): int32 {. importc: "nk_str_insert_text_runes".}
-proc nk_str_insert_str_runes*(a2: ptr str; pos: int32; a4: ptr uint32): int32 {.importc: "nk_str_insert_str_runes".}
-proc nk_str_remove_chars*(a2: ptr str; len: int32) {.importc: "nk_str_remove_chars".}
-proc nk_str_remove_runes*(str: ptr str; len: int32) {.importc: "nk_str_remove_runes".}
-proc nk_str_delete_chars*(a2: ptr str; pos: int32; len: int32) {.importc: "nk_str_delete_chars".}
-proc nk_str_delete_runes*(a2: ptr str; pos: int32; len: int32) {.importc: "nk_str_delete_runes".}
-proc nk_str_at_char*(a2: ptr str; pos: int32): cstring {.importc: "nk_str_at_char".}
-proc nk_str_at_rune*(a2: ptr str; pos: int32; unicode: ptr uint32; len: ptr int32): cstring {. importc: "nk_str_at_rune".}
-proc nk_str_rune_at*(a2: ptr str; pos: int32): uint32 {.importc: "nk_str_rune_at".}
-proc nk_str_at_char_const*(a2: ptr str; pos: int32): cstring {.importc: "nk_str_at_char_const".}
-proc nk_str_at_const*(a2: ptr str; pos: int32; unicode: ptr uint32; len: ptr int32): cstring {. importc: "nk_str_at_const".}
-proc nk_str_get*(a2: ptr str): cstring {.importc: "nk_str_get".}
-proc nk_str_get_const*(a2: ptr str): cstring {.importc: "nk_str_get_const".}
-proc nk_str_len*(a2: ptr str): int32 {.importc: "nk_str_len".}
-proc nk_str_len_char*(a2: ptr str): int32 {.importc: "nk_str_len_char".}
+proc str_init(a2: ptr str; a3: ptr allocator; size: uint) {.importc: "nk_str_init".}
+proc init*(s: var str, a: var allocator, size: uint) =
+  str_init(addr s, addr a, size)
+
+proc str_init_fixed(a2: ptr str; memory: pointer; size: uint) {.importc: "nk_str_init_fixed".}
+proc initFixed*(s: var str, memory: pointer, size: uint) =
+  str_init_fixed(addr s, memory, size)
+
+proc str_clear(a2: ptr str) {.importc: "nk_str_clear".}
+proc clear*(s: var str) =
+  str_clear(addr s)
+
+proc str_free(a2: ptr str) {.importc: "nk_str_free".}
+proc free*(s: var str) =
+  str_free(addr s)
+
+proc str_append_text_char(a2: ptr str; a3: cstring; a4: int32): int32 {.importc: "nk_str_append_text_char".}
+proc appendTextChar*(s: var str, t: string, c: int32): int32 =
+  str_append_text_char(addr s, t, c)
+
+proc str_append_str_char(a2: ptr str; a3: cstring): int32 {.importc: "nk_str_append_str_char".}
+proc appendStrChar*(s: var str, t: string): int32 =
+  str_append_str_char(addr s, t)
+
+proc str_append_text_utf8(a2: ptr str; a3: cstring; a4: int32): int32 {.importc: "nk_str_append_text_utf8".}
+proc appendTextUTF8*(s: var str, t: string, u: int32): int32 =
+  str_append_text_utf8(addr s, t, u)
+
+proc str_append_str_utf8(a2: ptr str; a3: cstring): int32 {.importc: "nk_str_append_str_utf8".}
+proc appendStrUTF8*(s: var str, t: string): int32 =
+  str_append_str_utf8(addr s, t)
+
+proc str_append_text_runes(a2: ptr str; a3: ptr uint32; a4: int32): int32 {.importc: "nk_str_append_text_runes".}
+proc appendTextRunes*(s: var str, u: var uint32, i: int32): int32 =
+  str_append_text_runes(addr s, addr u, i)
+
+proc str_append_str_runes(a2: ptr str; a3: ptr uint32): int32 {.importc: "nk_str_append_str_runes".}
+proc appendStrRunes*(s: var str, u: var uint32): int32 =
+  str_append_str_runes(addr s, addr u)
+
+proc str_insert_at_char(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_at_char".}
+proc insertAtChar*(s: var str, pos: int32, t: string, i: int32): int32 =
+  str_insert_at_char(addr s, pos, t, i)
+
+proc str_insert_at_rune(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_at_rune".}
+proc insertAtRune*(s: var str, pos: int32, t: string, i: int32): int32 =
+  str_insert_at_rune(addr s, pos, t, i)
+
+proc str_insert_text_char(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_text_char".}
+proc insertTextChar*(s: var str, pos: int32, t: string, i: int32): int32 =
+  str_insert_text_char(addr s, pos, t, i)
+
+proc str_insert_str_char(a2: ptr str; pos: int32; a4: cstring): int32 {.importc: "nk_str_insert_str_char".}
+proc insertStrChar*(s: var str, pos: int32, t: string): int32 =
+  str_insert_str_char(addr s, pos, t)
+
+proc str_insert_text_utf8(a2: ptr str; pos: int32; a4: cstring; a5: int32): int32 {. importc: "nk_str_insert_text_utf8".}
+proc insertTextUTF8*(s: var str, pos: int32, t: string, i: int32): int32 =
+  str_insert_text_utf8(addr s, pos, t, i)
+
+proc str_insert_str_utf8(a2: ptr str; pos: int32; a4: cstring): int32 {.importc: "nk_str_insert_str_utf8".}
+proc insertStrUTF8*(s: var str, pos: int32, t: string): int32 =
+  str_insert_str_utf8(addr s, pos, t)
+
+proc str_insert_text_runes(a2: ptr str; pos: int32; a4: ptr uint32; a5: int32): int32 {. importc: "nk_str_insert_text_runes".}
+proc insertTextRunes*(s: var str, pos: int32, u: var uint32, i: int32): int32 =
+  str_insert_text_runes(addr s, pos, addr u, i)
+
+proc str_insert_str_runes(a2: ptr str; pos: int32; a4: ptr uint32): int32 {.importc: "nk_str_insert_str_runes".}
+proc insertStrRunes*(s: var str, pos: int32, u: var uint32): int32 =
+  str_insert_str_runes(addr s, pos, addr u)
+
+proc str_remove_chars(a2: ptr str; len: int32) {.importc: "nk_str_remove_chars".}
+proc removeChars*(s: var str, len: int32) =
+  str_remove_chars(addr s, len)
+
+proc str_remove_runes*(str: ptr str; len: int32) {.importc: "nk_str_remove_runes".}
+proc str_delete_chars*(a2: ptr str; pos: int32; len: int32) {.importc: "nk_str_delete_chars".}
+proc str_delete_runes*(a2: ptr str; pos: int32; len: int32) {.importc: "nk_str_delete_runes".}
+proc str_at_char*(a2: ptr str; pos: int32): cstring {.importc: "nk_str_at_char".}
+proc str_at_rune*(a2: ptr str; pos: int32; unicode: ptr uint32; len: ptr int32): cstring {. importc: "nk_str_at_rune".}
+proc str_rune_at*(a2: ptr str; pos: int32): uint32 {.importc: "nk_str_rune_at".}
+proc str_at_char_const*(a2: ptr str; pos: int32): cstring {.importc: "nk_str_at_char_const".}
+proc str_at_const*(a2: ptr str; pos: int32; unicode: ptr uint32; len: ptr int32): cstring {. importc: "nk_str_at_const".}
+proc str_get*(a2: ptr str): cstring {.importc: "nk_str_get".}
+proc str_get_const*(a2: ptr str): cstring {.importc: "nk_str_get_const".}
+proc str_len*(a2: ptr str): int32 {.importc: "nk_str_len".}
+proc str_len_char*(a2: ptr str): int32 {.importc: "nk_str_len_char".}
 
 type
   text_edit_mode* {.size: sizeof(int32).} = enum
     TEXT_EDIT_MODE_VIEW, TEXT_EDIT_MODE_INSERT, TEXT_EDIT_MODE_REPLACE
 
 
-proc filter_default*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_default", procvar.}
+proc filter_default*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_default", cdecl.}
 proc filter_ascii*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_ascii".}
 proc filter_float*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_float".}
 proc filter_decimal*(a2: ptr text_edit; unicode: uint32): int32 {.importc: "nk_filter_decimal".}
@@ -1399,8 +1482,6 @@ type
 
 
 type
-  #nk_table* = object
-  
   window_flags* {.size: sizeof(int32).} = enum
     WINDOW_PRIVATE = (1 shl (10)), WINDOW_ROM = (1 shl (11)),
     WINDOW_HIDDEN = (1 shl (12)), WINDOW_CLOSED = (1 shl (13)),
