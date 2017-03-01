@@ -2370,11 +2370,23 @@ proc strfilter*(text: cstring; regexp: cstring): int32 {.importc: "nk_strfilter"
 proc strmatch_fuzzy_string*(str: cstring; pattern: cstring; out_score: ptr int32): int32 {. importc: "nk_strmatch_fuzzy_string".}
 proc strmatch_fuzzy_text*(txt: cstring; txt_len: int32; pattern: cstring;
                             out_score: ptr int32): int32 {.importc: "nk_strmatch_fuzzy_text".}
-proc utf_decode*(a2: cstring; a3: ptr uint32; a4: int32): int32 {.importc: "nk_utf_decode".}
-proc utf_encode*(a2: uint32; a3: cstring; a4: int32): int32 {.importc: "nk_utf_encode".}
-proc utf_len*(a2: cstring; byte_len: int32): int32 {.importc: "nk_utf_len".}
-proc utf_at*(buffer: cstring; length: int32; index: int32; unicode: ptr uint32;
+
+proc utf_decode(a2: cstring; a3: ptr uint32; a4: int32): int32 {.importc: "nk_utf_decode".}
+proc decodeUTF*(c: string, u: var uint32, clen: int32): int32 =
+  utf_decode(c, addr u, clen)
+
+proc utf_encode(a2: uint32; a3: cstring; a4: int32): int32 {.importc: "nk_utf_encode".}
+proc encodeUTF*(u: uint32, c: string, clen: int32): int32 =
+  utf_encode(u, c, clen)
+
+proc utf_len(a2: cstring; byte_len: int32): int32 {.importc: "nk_utf_len".}
+proc lenUTF*(s: string, byteLen: int32): int32 =
+  utf_len(s, byteLen)
+
+proc utf_at(buffer: cstring; length: int32; index: int32; unicode: ptr uint32;
                len: ptr int32): cstring {.importc: "nk_utf_at".}
+proc atUTF*(buffer: string, length, index: int32, unicode: var uint32, len: var int32): string =
+  $utf_at(buffer, length, index, addr unicode, addr len)
 
 
 type
