@@ -1797,10 +1797,10 @@ proc drawImage*(cmdBuf: var command_buffer, r: rect, img: var img, col: color) =
 
 proc draw_text*(a2: ptr command_buffer; a3: rect; text: cstring; len: int32;
                   a6: ptr user_font; a7: color; a8: color) {.importc: "nk_draw_text".}
+
 proc next*(a2: ptr context; a3: ptr command): ptr command {.importc: "nk__next".}
+
 proc begin*(a2: ptr context): ptr command {.importc: "nk__begin".}
-
-
 proc input_has_mouse_click*(a2: ptr input; a3: buttons): int32 {.importc: "nk_input_has_mouse_click".}
 proc input_has_mouse_click_in_rect*(a2: ptr input; a3: buttons; a4: rect): int32 {. importc: "nk_input_has_mouse_click_in_rect".}
 proc input_has_mouse_click_down_in_rect*(a2: ptr input; a3: buttons;
@@ -1906,7 +1906,10 @@ type
 const
   WINDOW_DYNAMIC = WINDOW_PRIVATE
 
-proc init_default*(a2: ptr context; a3: ptr user_font): int32 {.importc: "nk_init_default".}
+proc init_default(a2: ptr context; a3: ptr user_font): int32 {.importc: "nk_init_default".}
+proc init*(ctx: var context, userFont: var user_font): int32 =
+  init_default(addr ctx, addr userFont)
+
 proc init_fixed*(a2: ptr context; memory: pointer; size: uint;
                    a5: ptr user_font): int32 {.importc: "nk_init_fixed".}
 proc init*(a2: ptr context; a3: ptr allocator; a4: ptr user_font): int32 {. importc: "nk_init".}
@@ -1914,10 +1917,17 @@ proc init_custom*(a2: ptr context; cmds: ptr buffer; pool: ptr buffer;
                     a5: ptr user_font): int32 {.importc: "nk_init_custom".}
 proc clear*(a2: ptr context) {.importc: "nk_clear".}
 proc free*(a2: ptr context) {.importc: "nk_free".}
-proc begin*(a2: ptr context; title: cstring; bounds: rect; flags: uint32): int32 {. importc: "nk_begin".}
+
+proc begin(a2: ptr context; title: cstring; bounds: rect; flags: uint32): int32 {. importc: "nk_begin".}
+proc open*(ctx: var context, title: string, bounds: rect, flags: uint32): int32 =
+  begin(addr ctx, title, bounds, flags)
+
 proc begin_titled*(a2: ptr context; name: cstring; title: cstring;
                      bounds: rect; flags: uint32): int32 {.importc: "nk_begin_titled".}
-proc `end`*(a2: ptr context) {.importc: "nk_end".}
+proc close(a2: ptr context) {.importc: "nk_end".}
+proc close*(ctx: var context) =
+  close(addr ctx)
+
 proc window_find*(ctx: ptr context; name: cstring): ptr window {.importc: "nk_window_find".}
 proc window_get_bounds*(a2: ptr context): rect {.importc: "nk_window_get_bounds".}
 proc window_get_position*(a2: ptr context): vec2 {.importc: "nk_window_get_position".}
@@ -2426,28 +2436,58 @@ type
 
 
 proc font_default_glyph_ranges*(): ptr uint32 {.importc: "nk_font_default_glyph_ranges".}
+proc glyphRange*(): var uint32 =
+  font_default_glyph_ranges()[]
+
 proc font_chinese_glyph_ranges*(): ptr uint32 {.importc: "nk_font_chinese_glyph_ranges".}
+proc chineseGlyphRanges*(): var uint32 =
+  font_chinese_glyph_ranges()[]
+
 proc font_cyrillic_glyph_ranges*(): ptr uint32 {.importc: "nk_font_cyrillic_glyph_ranges".}
-proc font_korean_glyph_ranges*(): ptr uint32 {.importc: "nk_font_korean_glyph_ranges".}
-proc font_atlas_init_default*(a2: ptr font_atlas) {.importc: "nk_font_atlas_init_default".}
+proc cyrillicGlyphRanges*(): var uint32 =
+  font_cyrillic_glyph_ranges()[]
+
+proc font_korean_glyph_ranges(): ptr uint32 {.importc: "nk_font_korean_glyph_ranges".}
+proc koreanGyphRanges*(): var uint32 =
+  font_korean_glyph_ranges()[]
+
+proc font_atlas_init_default(a2: ptr font_atlas) {.importc: "nk_font_atlas_init_default".}
+proc init*(atlas: var font_atlas) =
+  font_atlas_init_default(addr atlas)
+
 proc font_atlas_init*(a2: ptr font_atlas; a3: ptr allocator) {.importc: "nk_font_atlas_init".}
-proc font_atlas_init_custom*(a2: ptr font_atlas; persistent: ptr allocator;
+proc init*(atlas: var font_atlas, alloc: var allocator) =
+  font_atlas_init(addr atlas, addr alloc)
+
+proc font_atlas_init_custom(a2: ptr font_atlas; persistent: ptr allocator;
                                transient: ptr allocator) {.importc: "nk_font_atlas_init_custom".}
-proc font_atlas_begin*(a2: ptr font_atlas) {.importc: "nk_font_atlas_begin".}
-proc font_atlas_add*(a2: ptr font_atlas; a3: ptr font_config): ptr font {. importc: "nk_font_atlas_add".}
-proc font_atlas_add_from_memory*(atlas: ptr font_atlas; memory: pointer;
+proc initCustom*(atlas: var font_atlas, persistent, transient: var allocator) =
+  font_atlas_init_custom(addr atlas, addr persistent, addr transient)                               
+
+proc font_atlas_begin(a2: ptr font_atlas) {.importc: "nk_font_atlas_begin".}
+proc begin*(atlas: var font_atlas) =
+  font_atlas_begin(addr atlas)
+
+proc font_atlas_add(a2: ptr font_atlas; a3: ptr font_config): ptr font {. importc: "nk_font_atlas_add".}
+proc add*(atlas: var font_atlas, config: var font_config): var font =
+  font_atlas_add(addr atlas, addr config)[]
+
+proc font_atlas_add_from_memory(atlas: ptr font_atlas; memory: pointer;
                                    size: uint; height: float32;
                                    config: ptr font_config): ptr font {.importc: "nk_font_atlas_add_from_memory".}
+proc addFromMemory*(atlas: var font_atlas, memory: pointer, size: uint, height: float32, config: ptr font_config) : ptr font =
+  font_atlas_add_from_memory(addr atlas, memory, size, height, config)
+
 proc font_atlas_add_compressed*(a2: ptr font_atlas; memory: pointer;
                                   size: uint; height: float32;
                                   a6: ptr font_config): ptr font {.importc: "nk_font_atlas_add_compressed".}
-proc addCompressed*(atlas: var font_atlas, memory: pointer, size: uint, height: float32, config: var font_config) : font =
-  font_atlas_add_compressed(addr atlas, memory, size, height, addr config)[]
+proc addCompressed*(atlas: var font_atlas, memory: pointer, size: uint, height: float32, config: var font_config) : ptr font =
+  font_atlas_add_compressed(addr atlas, memory, size, height, addr config)
 
 proc font_atlas_add_compressed_base85(a2: ptr font_atlas; data: cstring;
     height: float32; config: ptr font_config): ptr font {.importc: "nk_font_atlas_add_compressed_base85".}
-proc addCompressedBase85*(atlas: var font_atlas, data: string, height: float32, config: var font_config): font =
-  font_atlas_add_compressed_base85(addr atlas, data, height, addr config)[]
+proc addCompressedBase85*(atlas: var font_atlas, data: string, height: float32, config: var font_config): ptr font =
+  font_atlas_add_compressed_base85(addr atlas, data, height, addr config)
 
 proc font_atlas_bake(a2: ptr font_atlas; width: ptr int32; height: ptr int32;
                         a5: font_atlas_format): pointer {.importc: "nk_font_atlas_bake".}
@@ -2456,7 +2496,7 @@ proc bake*(atlas: var font_atlas, width, height: var int32, format: font_atlas_f
 
 proc font_atlas_end(a2: ptr font_atlas; tex: handle;
                        a4: ptr draw_null_texture) {.importc: "nk_font_atlas_end".}
-proc `end`*(atlas: var font_atlas, tex: handle, null: var draw_null_texture) =
+proc close*(atlas: var font_atlas, tex: handle, null: var draw_null_texture) =
   font_atlas_end(addr atlas, tex, addr null)
 
 proc font_find_glyph(a2: ptr font; unicode: uint32): ptr font_glyph {.importc: "nk_font_find_glyph".}
@@ -2473,10 +2513,10 @@ proc clear*(atlas: var font_atlas) =
 
 proc font_atlas_add_default(a2: ptr font_atlas; height: float32;
                                a4: ptr font_config): ptr font {.importc: "nk_font_atlas_add_default".}
-proc add*(atlas: var font_atlas, height: float32, fontConfig: var font_config): font =
-  font_atlas_add_default(addr atlas, height, addr fontConfig)[]
+proc add*(atlas: var font_atlas, height: float32, fontConfig: var font_config): ptr font =
+  font_atlas_add_default(addr atlas, height, addr fontConfig)
 
 proc font_atlas_add_from_file*(atlas: ptr font_atlas; file_path: cstring;
                                  height: float32; a5: ptr font_config): ptr font {.importc: "nk_font_atlas_add_from_file".}
-proc addFromFile*(atlas: var font_atlas, filePath: string, height: float32, fontConfig: var font_config): font =
-  font_atlas_add_from_file(addr atlas, filePath, height, addr fontConfig)[]
+proc addFromFile*(atlas: var font_atlas, filePath: string, height: float32, fontConfig: var font_config): ptr font =
+  font_atlas_add_from_file(addr atlas, filePath, height, addr fontConfig)

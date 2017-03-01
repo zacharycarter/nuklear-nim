@@ -232,13 +232,13 @@ glfw.GetWindowSize(win, addr width, addr height)
 loadExtensions()
 glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
 
-font_atlas_init_default(addr fontAtlas)
+fontAtlas.init()
 
-font_atlas_begin(addr fontAtlas)
+fontAtlas.begin()
 
 let roboto_ttf = addr s_robotoRegularTtf
 
-var font = font_atlas_add_from_memory(addr fontAtlas, roboto_ttf, uint sizeof(s_robotoRegularTtf), 13, nil)
+var font = fontAtlas.addFromMemory(roboto_ttf, uint sizeof(s_robotoRegularTtf), 13.0'f32, nil)
 #var font = font_atlas_add_default(addr fontAtlas, 13, nil)
 
 let image = fontAtlas.bake(w, h, FONT_ATLAS_RGBA32)
@@ -248,9 +248,9 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 glTexImage2D(GL_TEXTURE_2D, 0, GLint GL_RGBA, (GLsizei)w, (GLsizei)h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
-fontAtlas.`end`(handle_id(cint dev.font_tex), dev.null)
+fontAtlas.close(handle_id(int32 dev.font_tex), dev.null)
 
-discard init_default(addr ctx, addr font.handle)
+discard ctx.init(font.handle)
 device_init()
 
 set_style(addr ctx)
@@ -269,7 +269,7 @@ while glfw.WindowShouldClose(win) == 0:
 
   input_end(addr ctx)
 
-  if begin(addr ctx, "test", newRect(50, 50, 230, 250), uint32 WINDOW_BORDER.ord or WINDOW_MOVABLE.ord or WINDOW_SCALABLE.ord or WINDOW_MINIMIZABLE.ord or WINDOW_TITLE.ord) == 1:
+  if ctx.open("test", newRect(50, 50, 230, 250), uint32 WINDOW_BORDER.ord or WINDOW_MOVABLE.ord or WINDOW_SCALABLE.ord or WINDOW_MINIMIZABLE.ord or WINDOW_TITLE.ord) == 1:
     const
       EASY = 0
       HARD = 1
@@ -301,7 +301,7 @@ while glfw.WindowShouldClose(win) == 0:
       background.b = cast[char](propertyi(addr ctx, "#B:", 0, background.b.cint, 255, 1, 1.0))
       background.a = cast[char](propertyi(addr ctx, "#A:", 0, background.a.cint, 255, 1, 1.0))
       combo_end(addr ctx)
-  `end`(addr ctx)
+  ctx.close()
 
   var bg : array[4, cfloat]
   
