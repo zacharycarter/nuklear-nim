@@ -241,14 +241,14 @@ let roboto_ttf = addr s_robotoRegularTtf
 var font = font_atlas_add_from_memory(addr fontAtlas, roboto_ttf, uint sizeof(s_robotoRegularTtf), 13, nil)
 #var font = font_atlas_add_default(addr fontAtlas, 13, nil)
 
-let image = font_atlas_bake(addr fontAtlas, addr w, addr h, FONT_ATLAS_RGBA32)
+let image = fontAtlas.bake(w, h, FONT_ATLAS_RGBA32)
 glGenTextures(1, addr dev.font_tex);
 glBindTexture(GL_TEXTURE_2D, dev.font_tex);
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 glTexImage2D(GL_TEXTURE_2D, 0, GLint GL_RGBA, (GLsizei)w, (GLsizei)h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
-font_atlas_end(addr fontAtlas, handle_id(cint dev.font_tex), addr dev.null)
+fontAtlas.`end`(handle_id(cint dev.font_tex), dev.null)
 
 discard init_default(addr ctx, addr font.handle)
 device_init()
@@ -400,7 +400,7 @@ while glfw.WindowShouldClose(win) == 0:
 
   glfw.SwapBuffers(win);
 
-font_atlas_clear(addr(fontAtlas))
+fontAtlas.clear()
 free(addr(ctx))
 glDetachShader(dev.prog, dev.vert_shader);
 glDetachShader(dev.prog, dev.frag_shader);
