@@ -95,37 +95,37 @@ var w, h: cint = 0
 var width,height: cint = 0
 var display_width, display_height : cint = 0
 
-proc set_style(ctx: ptr context) =
+proc set_style(ctx: var context) =
   var style : array[COLOR_COUNT.ord, color]
-  style[COLOR_TEXT.ord] = rgba( 70, 70, 70, 255 )
-  style[COLOR_WINDOW.ord] = rgba( 175, 175, 175, 255 )
-  style[COLOR_HEADER.ord] = rgba( 175, 175, 175, 255 )
-  style[COLOR_BORDER.ord] = rgba( 175, 175, 175, 255 )
-  style[COLOR_BUTTON.ord] = rgba( 175, 175, 175, 255 )
-  style[COLOR_BUTTON_HOVER.ord] = rgba( 175, 175, 175, 255 )
-  style[COLOR_BUTTON_ACTIVE.ord] = rgba( 175, 175, 175, 255 )
-  style[COLOR_TOGGLE.ord] = rgba( 175, 175, 175, 255 )
-  style[COLOR_TOGGLE_HOVER.ord] = rgba( 175, 175, 175, 255 )
-  style[COLOR_TOGGLE_CURSOR.ord] = rgba( 175, 175, 175, 255 )
-  style[COLOR_SELECT.ord] = rgba( 175, 175, 175, 255 )
-  style[COLOR_SELECT_ACTIVE.ord] = rgba( 0, 0, 0, 255 )
-  style[COLOR_SLIDER.ord] = rgba( 0, 0, 0, 255 )
-  style[COLOR_SLIDER_CURSOR.ord] = rgba( 0, 0, 0, 255 )
-  style[COLOR_SLIDER_CURSOR_HOVER.ord] = rgba( 0, 0, 0, 255 )
-  style[COLOR_SLIDER_CURSOR_ACTIVE.ord] = rgba( 0, 0, 0, 255 )
-  style[COLOR_PROPERTY.ord] = rgba( 0, 0, 0, 255 )
-  style[COLOR_EDIT.ord] = rgba( 0, 0, 0, 255 )
-  style[COLOR_EDIT_CURSOR.ord] = rgba( 0, 0, 0, 255 )
-  style[COLOR_COMBO.ord] = rgba( 0, 0, 0, 255 )
-  style[COLOR_CHART_COLOR.ord] = rgba( 0, 0, 0, 255 )
-  style[COLOR_CHART_COLOR_HIGHLIGHT.ord] = rgba( 0, 0, 0, 255 )
-  style[COLOR_SCROLLBAR.ord] = rgba( 0, 0, 0, 255 )
-  style[COLOR_SCROLLBAR_CURSOR.ord] = rgba( 0, 0, 0, 255 )
-  style[COLOR_SCROLLBAR_CURSOR_HOVER.ord] = rgba( 0, 0, 0, 255 )
-  style[COLOR_SCROLLBAR_CURSOR_ACTIVE.ord] = rgba( 0, 0, 0, 255 )
-  style[COLOR_TAB_HEADER.ord] = rgba( 0, 0, 0, 255 )
+  style[COLOR_TEXT.ord] = newColorRGBA( 70, 70, 70, 255 )
+  style[COLOR_WINDOW.ord] = newColorRGBA( 175, 175, 175, 255 )
+  style[COLOR_HEADER.ord] = newColorRGBA( 175, 175, 175, 255 )
+  style[COLOR_BORDER.ord] = newColorRGBA( 175, 175, 175, 255 )
+  style[COLOR_BUTTON.ord] = newColorRGBA( 175, 175, 175, 255 )
+  style[COLOR_BUTTON_HOVER.ord] = newColorRGBA( 175, 175, 175, 255 )
+  style[COLOR_BUTTON_ACTIVE.ord] = newColorRGBA( 175, 175, 175, 255 )
+  style[COLOR_TOGGLE.ord] = newColorRGBA( 175, 175, 175, 255 )
+  style[COLOR_TOGGLE_HOVER.ord] = newColorRGBA( 175, 175, 175, 255 )
+  style[COLOR_TOGGLE_CURSOR.ord] = newColorRGBA( 175, 175, 175, 255 )
+  style[COLOR_SELECT.ord] = newColorRGBA( 175, 175, 175, 255 )
+  style[COLOR_SELECT_ACTIVE.ord] = newColorRGBA( 0, 0, 0, 255 )
+  style[COLOR_SLIDER.ord] = newColorRGBA( 0, 0, 0, 255 )
+  style[COLOR_SLIDER_CURSOR.ord] = newColorRGBA( 0, 0, 0, 255 )
+  style[COLOR_SLIDER_CURSOR_HOVER.ord] = newColorRGBA( 0, 0, 0, 255 )
+  style[COLOR_SLIDER_CURSOR_ACTIVE.ord] = newColorRGBA( 0, 0, 0, 255 )
+  style[COLOR_PROPERTY.ord] = newColorRGBA( 0, 0, 0, 255 )
+  style[COLOR_EDIT.ord] = newColorRGBA( 0, 0, 0, 255 )
+  style[COLOR_EDIT_CURSOR.ord] = newColorRGBA( 0, 0, 0, 255 )
+  style[COLOR_COMBO.ord] = newColorRGBA( 0, 0, 0, 255 )
+  style[COLOR_CHART_COLOR.ord] = newColorRGBA( 0, 0, 0, 255 )
+  style[COLOR_CHART_COLOR_HIGHLIGHT.ord] = newColorRGBA( 0, 0, 0, 255 )
+  style[COLOR_SCROLLBAR.ord] = newColorRGBA( 0, 0, 0, 255 )
+  style[COLOR_SCROLLBAR_CURSOR.ord] = newColorRGBA( 0, 0, 0, 255 )
+  style[COLOR_SCROLLBAR_CURSOR_HOVER.ord] = newColorRGBA( 0, 0, 0, 255 )
+  style[COLOR_SCROLLBAR_CURSOR_ACTIVE.ord] = newColorRGBA( 0, 0, 0, 255 )
+  style[COLOR_TAB_HEADER.ord] = newColorRGBA( 0, 0, 0, 255 )
   
-  style_from_table(ctx, addr style[0])
+  ctx.newStyleFromTable(style[0])
 
 proc device_init() =
   var status: GLint
@@ -253,11 +253,11 @@ fontAtlas.close(handle_id(int32 dev.font_tex), dev.null)
 discard ctx.init(font.handle)
 device_init()
 
-set_style(addr ctx)
+set_style(ctx)
 
 #discard init(addr ctx, addr customAllocator, cast[ptr user_font](addr font))
 
-var background = rgb(28,48,62)
+var background = newColorRGB(28,48,62)
 var mouseX, mouseY: float
 while glfw.WindowShouldClose(win) == 0:
   glfw.PollEvents();
@@ -265,47 +265,47 @@ while glfw.WindowShouldClose(win) == 0:
   input_begin(addr ctx)
 
   glfw.GetCursorPos(win, addr mouseX, addr mouseY)
-  input_motion(addr ctx, cint mouseX, cint mouseY)
+  inputMotion(ctx, cint mouseX, cint mouseY)
 
-  input_end(addr ctx)
+  closeInput(ctx)
 
-  if ctx.open("test", newRect(50, 50, 230, 250), uint32 WINDOW_BORDER.ord or WINDOW_MOVABLE.ord or WINDOW_SCALABLE.ord or WINDOW_MINIMIZABLE.ord or WINDOW_TITLE.ord) == 1:
+  if ctx.open("test", newRect(50, 50, 230, 250), WINDOW_BORDER.ord or WINDOW_MOVABLE.ord or WINDOW_SCALABLE.ord or WINDOW_MINIMIZABLE.ord or WINDOW_TITLE.ord):
     const
-      EASY = 0
-      HARD = 1
+      EASY = false
+      HARD = true
 
-    var op: cint = EASY
+    var op: bool = EASY
 
     var property {.global.}: cint = 20
 
-    layout_row_static(addr ctx, 30, 80, 1)
-    if button_label(addr ctx, "button") == 1: echo "button pressed"
-    layout_row_dynamic(addr ctx, 30, 2)
+    layoutStaticRow(ctx, 30, 80, 1)
+    if buttonLabel(ctx, "button"): echo "button pressed"
+    layoutDynamicRow(ctx, 30, 2)
 
-    if option_label(addr ctx, "easy", op) == EASY:
+    if optionLabel(ctx, "easy", op) == EASY:
       op = HARD
-    if option_label(addr ctx, "hard", op) == HARD:
+    if optionLabel(ctx, "hard", op) == HARD:
       op = EASY
-    layout_row_dynamic(addr ctx, 25, 1)
-    property_int(addr ctx, "Compression:", 0, addr(property), 100, 10, 1)
-    layout_row_dynamic(addr ctx, 20, 1)
-    label(addr ctx, "background:", uint32 TEXT_LEFT)
-    layout_row_dynamic(addr ctx, 25, 1)
-    if combo_begin_color(addr ctx, background, newVec2(widget_width(addr ctx), 400)) == 1:
-      layout_row_dynamic(addr ctx, 120, 1)
-      background = color_picker(addr ctx, background, RGBA)
-      layout_row_dynamic(addr ctx, 25, 1)
+    layoutDynamicRow(ctx, 25, 1)
+    propertyInt(ctx, "Compression:", 0, property, 100, 10, 1)
+    layoutDynamicRow(ctx, 20, 1)
+    label(ctx, "background:", uint32 TEXT_LEFT)
+    layoutDynamicRow(ctx, 25, 1)
+    if comboBeginColor(ctx, background, newVec2(width(ctx), 400)):
+      layoutDynamicRow(ctx, 120, 1)
+      background = color_picker(ctx, background, RGBA)
+      layoutDynamicRow(ctx, 25, 1)
       
-      background.r = cast[char](propertyi(addr ctx, "#R:", 0, background.r.cint, 255, 1, 1.0))
-      background.g = cast[char](propertyi(addr ctx, "#G:", 0, background.g.cint, 255, 1, 1.0))
-      background.b = cast[char](propertyi(addr ctx, "#B:", 0, background.b.cint, 255, 1, 1.0))
-      background.a = cast[char](propertyi(addr ctx, "#A:", 0, background.a.cint, 255, 1, 1.0))
-      combo_end(addr ctx)
+      background.r = char(propertyI(ctx, "#R:", 0, background.r.cint, 255, 1, 1.0))
+      background.g = char(propertyI(ctx, "#G:", 0, background.g.cint, 255, 1, 1.0))
+      background.b = char(propertyI(ctx, "#B:", 0, background.b.cint, 255, 1, 1.0))
+      background.a = char(propertyI(ctx, "#A:", 0, background.a.cint, 255, 1, 1.0))
+      comboEnd(ctx)
   ctx.close()
 
   var bg : array[4, cfloat]
   
-  color_fv(addr bg[0], background)
+  background.fv(bg[0])
 
   glfw.GetWindowSize(win, addr width, addr height);
   glfw.GetFramebufferSize(win, addr display_width, addr display_height)
@@ -367,12 +367,12 @@ while glfw.WindowShouldClose(win) == 0:
   init(vbuf, vertices, MAX_VERTEX_BUFFER)
   init(ebuf, elements, MAX_ELEMENT_BUFFER)
 
-  convert(addr ctx, addr dev.cmds, addr vbuf, addr ebuf, addr config)
+  convertDrawCommands(ctx, dev.cmds, vbuf, ebuf, config)
 
   discard glUnmapBuffer(GL_ARRAY_BUFFER);
   discard glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
-  cmd = draw_begin(addr ctx, addr dev.cmds)
+  cmd = firstDrawCommand(ctx, dev.cmds)
   while not isNil(cmd):
     if cmd.elem_count == 0:
       continue
@@ -385,7 +385,7 @@ while glfw.WindowShouldClose(win) == 0:
     glDrawElements(GL_TRIANGLES, (GLsizei)cmd.elem_count, GL_UNSIGNED_SHORT, offset);
     offset = offset  + int cmd.elem_count
 
-    cmd = draw_next(cmd, addr dev.cmds, addr ctx)
+    cmd = nextDrawCommand(cmd, dev.cmds, ctx)
 
       
   ctx.clear()
