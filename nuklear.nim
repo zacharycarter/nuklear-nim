@@ -2223,7 +2223,7 @@ proc endRowLayout*(ctx: var context) =
 
 proc layout_row(a2: ptr context; a3: layout_format; height: float32;
                    cols: int32; ratio: ptr float32) {.importc: "nk_layout_row".}
-proc layoutRow*(ctx: var context, format: layout_format, height: float32, cols: int32, ratio: var array[2, float32]) =
+proc layoutRow*(ctx: var context, format: layout_format, height: float32, cols: int32, ratio: var openarray[float32]) =
   layout_row(addr ctx, format, height, cols, addr ratio[0])
 
 proc layout_row_template_begin(a2: ptr context; height: float32) {.importc: "nk_layout_row_template_begin".}
@@ -2284,8 +2284,8 @@ proc ratioLayoutFromPixel*(ctx: var context, pixelWidth: float32): float32 =
   layout_ratio_from_pixel(addr ctx, pixelWidth)
 
 proc group_begin(a2: ptr context; title: cstring; a4: uint32): int32 {.importc: "nk_group_begin".}
-proc beginGroup*(ctx: var context, title: string, flags: uint32): int32 =
-  group_begin(addr ctx, title, flags)
+proc beginGroup*(ctx: var context, title: string, flags: uint32): bool =
+  bool group_begin(addr ctx, title, flags)
 
 proc group_scrolled_offset_begin(a2: ptr context; x_offset: ptr uint32;
                                     y_offset: ptr uint32; a5: cstring; a6: uint32): int32 {. importc: "nk_group_scrolled_offset_begin".}
@@ -2302,7 +2302,7 @@ proc endScrolledGroup*(ctx: var context) =
   group_scrolled_end(addr ctx)
 
 proc group_end(a2: ptr context) {.importc: "nk_group_end".}
-proc groupEnd*(ctx: var context) =
+proc endGroup*(ctx: var context) =
   group_end(addr ctx)
 
 proc list_view_begin(a2: ptr context; o: ptr list_view; id: cstring;
@@ -2411,8 +2411,8 @@ proc symbolButton*(ctx: var context, symbolType: symbol_type): int32 =
   button_symbol(addr ctx, symbolType)
 
 proc button_image(a2: ptr context; i: img): int32 {.importc: "nk_button_image".}
-proc imageButton*(ctx: var context, i: img): int32 =
-  button_image(addr ctx, i)
+proc imageButton*(ctx: var context, i: img): bool =
+  bool button_image(addr ctx, i)
 
 proc button_symbol_label(a2: ptr context; a3: symbol_type; a4: cstring;
                             text_alignment: uint32): int32 {.importc: "nk_button_symbol_label".}
@@ -2426,8 +2426,8 @@ proc symbolTextButton*(ctx: var context, symbolType: symbol_type, text: string, 
 
 proc button_image_label(a2: ptr context; i: img; a4: cstring;
                            text_alignment: uint32): int32 {.importc: "nk_button_image_label".}
-proc imageLabelButton*(ctx: var context, i: img, label: string, textAlignment: uint32): int32 =
-  button_image_label(addr ctx, i, label, textAlignment)
+proc imageLabelButton*(ctx: var context, i: img, label: string, textAlignment: uint32): bool =
+  bool button_image_label(addr ctx, i, label, textAlignment)
 
 proc button_image_text(a2: ptr context; i: img; a4: cstring; a5: int32;
                           alignment: uint32): int32 {.importc: "nk_button_image_text".}
@@ -2706,8 +2706,8 @@ proc plotFunction*(ctx: var context, chartType: chart_type, userData: pointer, v
 
 proc popup_begin(a2: ptr context; a3: popup_type; a4: cstring; a5: uint32;
                     bounds: rect): int32 {.importc: "nk_popup_begin".}
-proc beginPopup*(ctx: var context, popupType: popup_type, title: string, flags: uint32, bounds: rect): int32 =
-  popup_begin(addr ctx, popupType, title, flags, bounds)
+proc beginPopup*(ctx: var context, popupType: popup_type, title: string, flags: uint32, bounds: rect): bool =
+  bool popup_begin(addr ctx, popupType, title, flags, bounds)
 
 proc popup_close(a2: ptr context) {.importc: "nk_popup_close".}
 proc closePopup*(ctx: var context) =
@@ -2777,7 +2777,7 @@ proc comboBeginLabel*(ctx: var context, text: string, size: vec2): int32 =
 
 proc combo_begin_color(a2: ptr context; color: color; size: vec2): int32 {. importc: "nk_combo_begin_color".}
 proc comboBeginColor*(ctx: var context, col: color, size: vec2): bool =
-  bool combo_begin_color(addr ctx, col, size)
+  bool  combo_begin_color(addr ctx, col, size)
 
 proc combo_begin_symbol(a2: ptr context; a3: symbol_type; size: vec2): int32 {. importc: "nk_combo_begin_symbol".}
 proc comboBeginSymbol*(ctx: var context, symbolType: symbol_type, size: vec2): int32 =
@@ -2910,8 +2910,8 @@ proc beginMenuText*(ctx: var context, text: string, len: int32, alignment: uint3
   menu_begin_text(addr ctx, text, len, alignment, size)
 
 proc menu_begin_label(a2: ptr context; a3: cstring; align: uint32; size: vec2): int32 {.importc: "nk_menu_begin_label".}
-proc beginMenuLabel*(ctx: var context, text: string, alignment: uint32, size: vec2): int32 =
-  menu_begin_label(addr ctx, text, alignment, size)
+proc beginMenuLabel*(ctx: var context, text: string, alignment: uint32, size: vec2): bool =
+  bool menu_begin_label(addr ctx, text, alignment, size)
 
 proc menu_begin_image(a2: ptr context; a3: cstring; a4: img; size: vec2): int32 {. importc: "nk_menu_begin_image".}
 proc beginMenuImage*(ctx: var context, text: string, i: img, size: vec2): int32 =
@@ -2947,8 +2947,8 @@ proc menuItemText*(ctx: var context, text: string, len: int32, alignment: uint32
   menuItemText(addr ctx, text, len, alignment)
 
 proc menu_item_label(a2: ptr context; a3: cstring; alignment: uint32): int32 {. importc: "nk_menu_item_label".}
-proc menuItemLabel*(ctx: var context, text: string, alignment: uint32): int32 =
-  menu_item_label(addr ctx, text, alignment)
+proc menuItemLabel*(ctx: var context, text: string, alignment: uint32): bool =
+  bool menu_item_label(addr ctx, text, alignment)
 
 proc menu_item_image_label(a2: ptr context; a3: img; a4: cstring;
                               alignment: uint32): int32 {.importc: "nk_menu_item_image_label".}
