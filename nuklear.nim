@@ -3004,8 +3004,8 @@ proc inputMotion*(ctx: var context, x, y: int32) =
   input_motion(addr ctx, x, y)
 
 proc input_key(a2: ptr context; a3: keys; down: int32) {.importc: "nk_input_key".}
-proc inputKey*(ctx: var context, key: keys, down: int32) =
-  input_key(addr ctx, key, down)
+proc inputKey*(ctx: var context, key: keys, down: bool) =
+  input_key(addr ctx, key, down.int32)
 
 proc input_button(a2: ptr context; a3: buttons; x: int32; y: int32; down: int32) {. importc: "nk_input_button".}
 proc inputButton*(ctx: var context, button: buttons, x, y, down: int32) =
