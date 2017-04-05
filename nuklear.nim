@@ -3008,8 +3008,8 @@ proc inputKey*(ctx: var context, key: keys, down: bool) =
   input_key(addr ctx, key, down.int32)
 
 proc input_button(a2: ptr context; a3: buttons; x: int32; y: int32; down: int32) {. importc: "nk_input_button".}
-proc inputButton*(ctx: var context, button: buttons, x, y, down: int32) =
-  input_button(addr ctx, button, x, y, down)
+proc inputBtn*(ctx: var context, button: buttons, x, y: int32, down: bool) =
+  input_button(addr ctx, button, x, y, down.int32)
 
 proc input_scroll(a2: ptr context; y: float32) {.importc: "nk_input_scroll".}
 proc inputScroll*(ctx: var context, y: float32) =
