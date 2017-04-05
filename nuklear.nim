@@ -970,12 +970,12 @@ type
     grabbed*: cuchar
     ungrab*: cuchar
 
-  key* = object
+  keyboard_key* = object
     down*: int32
     clicked*: uint32
 
   keyboard* = object
-    keys*: array[KEY_MAX, key]
+    keys*: array[KEY_MAX, keyboard_key]
     text*: array[16, char]
     text_len*: int32
 
