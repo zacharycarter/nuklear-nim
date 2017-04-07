@@ -2586,8 +2586,8 @@ proc sliderInt*(ctx: var context, min: int32, val: var int32, max: int32, step: 
   slider_int(addr ctx, min, addr val, max, step)
 
 proc progress(a2: ptr context; cur: ptr uint; max: uint; modifyable: int32): int32 {. importc: "nk_progress".}
-proc progress*(ctx: var context, cur: var uint, max: uint, modifiable: bool): int32 =
-  progress(addr ctx, addr cur, max, int32 modifiable)
+proc progress*(ctx: var context, cur: var uint, max: uint, modifiable: bool): bool =
+  progress(addr ctx, addr cur, max, int32 modifiable).bool
 
 proc prog(a2: ptr context; cur: uint; max: uint; modifyable: int32): uint {. importc: "nk_prog".}
 proc prog*(ctx: var context, cur, max: uint, modifiable: bool): uint =
