@@ -5,7 +5,7 @@ author        = "Zachary Carter"
 description   = "nim nuklear bindings"
 license       = "MIT"
 
-skipDirs      = @["examples"]
+skipDirs      = @["examples/nuklear_nim_examples"]
 
 # Dependencies
 
