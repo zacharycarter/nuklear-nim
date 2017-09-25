@@ -37,7 +37,7 @@ var config : convert_config
 proc allocate(a2: handle; old: pointer; a4: uint): pointer {.cdecl.} =
   if not old.isNil:
     old.dealloc()
-  
+
   return alloc(a4)
 
 proc deallocate(a2: handle; old: pointer) {.cdecl.} =
@@ -51,17 +51,17 @@ var win : glfw.Window
 var vertex_layout {.global.} = @[
   draw_vertex_layout_element(
     attribute: VERTEX_POSITION,
-    format: FORMAT_FLOAT, 
+    format: FORMAT_FLOAT,
     offset: offsetof(glfw_vertex, position)
   ),
   draw_vertex_layout_element(
     attribute: VERTEX_TEXCOORD,
-    format: FORMAT_FLOAT, 
+    format: FORMAT_FLOAT,
     offset: offsetof(glfw_vertex, uv)
   ),
   draw_vertex_layout_element(
     attribute: VERTEX_COLOR,
-    format: FORMAT_R8G8B8A8, 
+    format: FORMAT_R8G8B8A8,
     offset: offsetof(glfw_vertex, col)
   ),
   draw_vertex_layout_element(
@@ -97,34 +97,35 @@ var display_width, display_height : cint = 0
 
 proc set_style(ctx: var context) =
   var style : array[COLOR_COUNT.ord, color]
-  style[COLOR_TEXT.ord] = newColorRGBA( 70, 70, 70, 255 )
-  style[COLOR_WINDOW.ord] = newColorRGBA( 175, 175, 175, 255 )
-  style[COLOR_HEADER.ord] = newColorRGBA( 175, 175, 175, 255 )
-  style[COLOR_BORDER.ord] = newColorRGBA( 175, 175, 175, 255 )
-  style[COLOR_BUTTON.ord] = newColorRGBA( 175, 175, 175, 255 )
-  style[COLOR_BUTTON_HOVER.ord] = newColorRGBA( 175, 175, 175, 255 )
-  style[COLOR_BUTTON_ACTIVE.ord] = newColorRGBA( 175, 175, 175, 255 )
-  style[COLOR_TOGGLE.ord] = newColorRGBA( 175, 175, 175, 255 )
-  style[COLOR_TOGGLE_HOVER.ord] = newColorRGBA( 175, 175, 175, 255 )
-  style[COLOR_TOGGLE_CURSOR.ord] = newColorRGBA( 175, 175, 175, 255 )
-  style[COLOR_SELECT.ord] = newColorRGBA( 175, 175, 175, 255 )
-  style[COLOR_SELECT_ACTIVE.ord] = newColorRGBA( 0, 0, 0, 255 )
-  style[COLOR_SLIDER.ord] = newColorRGBA( 0, 0, 0, 255 )
-  style[COLOR_SLIDER_CURSOR.ord] = newColorRGBA( 0, 0, 0, 255 )
-  style[COLOR_SLIDER_CURSOR_HOVER.ord] = newColorRGBA( 0, 0, 0, 255 )
-  style[COLOR_SLIDER_CURSOR_ACTIVE.ord] = newColorRGBA( 0, 0, 0, 255 )
-  style[COLOR_PROPERTY.ord] = newColorRGBA( 0, 0, 0, 255 )
-  style[COLOR_EDIT.ord] = newColorRGBA( 0, 0, 0, 255 )
-  style[COLOR_EDIT_CURSOR.ord] = newColorRGBA( 0, 0, 0, 255 )
-  style[COLOR_COMBO.ord] = newColorRGBA( 0, 0, 0, 255 )
-  style[COLOR_CHART_COLOR.ord] = newColorRGBA( 0, 0, 0, 255 )
-  style[COLOR_CHART_COLOR_HIGHLIGHT.ord] = newColorRGBA( 0, 0, 0, 255 )
-  style[COLOR_SCROLLBAR.ord] = newColorRGBA( 0, 0, 0, 255 )
-  style[COLOR_SCROLLBAR_CURSOR.ord] = newColorRGBA( 0, 0, 0, 255 )
-  style[COLOR_SCROLLBAR_CURSOR_HOVER.ord] = newColorRGBA( 0, 0, 0, 255 )
-  style[COLOR_SCROLLBAR_CURSOR_ACTIVE.ord] = newColorRGBA( 0, 0, 0, 255 )
-  style[COLOR_TAB_HEADER.ord] = newColorRGBA( 0, 0, 0, 255 )
-  
+  style[COLOR_TEXT.ord] = newColorRGBA(20, 20, 20, 255);
+  style[COLOR_WINDOW.ord] = newColorRGBA(202, 212, 214, 215);
+  style[COLOR_HEADER.ord] = newColorRGBA(137, 182, 224, 220);
+  style[COLOR_BORDER.ord] = newColorRGBA(140, 159, 173, 255);
+  style[COLOR_BUTTON.ord] = newColorRGBA(137, 182, 224, 255);
+  style[COLOR_BUTTON_HOVER.ord] = newColorRGBA(142, 187, 229, 255);
+  style[COLOR_BUTTON_ACTIVE.ord] = newColorRGBA(147, 192, 234, 255);
+  style[COLOR_TOGGLE.ord] = newColorRGBA(177, 210, 210, 255);
+  style[COLOR_TOGGLE_HOVER.ord] = newColorRGBA(182, 215, 215, 255);
+  style[COLOR_TOGGLE_CURSOR.ord] = newColorRGBA(137, 182, 224, 255);
+  style[COLOR_SELECT.ord] = newColorRGBA(177, 210, 210, 255);
+  style[COLOR_SELECT_ACTIVE.ord] = newColorRGBA(137, 182, 224, 255);
+  style[COLOR_SLIDER.ord] = newColorRGBA(177, 210, 210, 255);
+  style[COLOR_SLIDER_CURSOR.ord] = newColorRGBA(137, 182, 224, 245);
+  style[COLOR_SLIDER_CURSOR_HOVER.ord] = newColorRGBA(142, 188, 229, 255);
+  style[COLOR_SLIDER_CURSOR_ACTIVE.ord] = newColorRGBA(147, 193, 234, 255);
+  style[COLOR_PROPERTY.ord] = newColorRGBA(210, 210, 210, 255);
+  style[COLOR_EDIT.ord] = newColorRGBA(210, 210, 210, 225);
+  style[COLOR_EDIT_CURSOR.ord] = newColorRGBA(20, 20, 20, 255);
+  style[COLOR_COMBO.ord] = newColorRGBA(210, 210, 210, 255);
+  style[COLOR_CHART.ord] = newColorRGBA(210, 210, 210, 255);
+  style[COLOR_CHART_COLOR.ord] = newColorRGBA(137, 182, 224, 255);
+  style[COLOR_CHART_COLOR_HIGHLIGHT.ord] = newColorRGBA( 255, 0, 0, 255);
+  style[COLOR_SCROLLBAR.ord] = newColorRGBA(190, 200, 200, 255);
+  style[COLOR_SCROLLBAR_CURSOR.ord] = newColorRGBA(64, 84, 95, 255);
+  style[COLOR_SCROLLBAR_CURSOR_HOVER.ord] = newColorRGBA(70, 90, 100, 255);
+  style[COLOR_SCROLLBAR_CURSOR_ACTIVE.ord] = newColorRGBA(75, 95, 105, 255);
+  style[COLOR_TAB_HEADER.ord] = newColorRGBA(156, 193, 220, 255);
+
   ctx.newStyleFromTable(style[0])
 
 proc device_init() =
@@ -134,7 +135,7 @@ proc device_init() =
   dev.prog = glCreateProgram();
   dev.vert_shader = glCreateShader(GL_VERTEX_SHADER);
   dev.frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-  
+
   var vertex_shader = """
     #version 150
     in vec2 Position;
@@ -166,7 +167,7 @@ proc device_init() =
   glShaderSource(dev.vert_shader, 1, vertCStringArray, nil)
 
   glShaderSource(dev.frag_shader, 1, fragCStringArray, nil)
-  
+
   glCompileShader(dev.vert_shader);
   glCompileShader(dev.frag_shader);
   glGetShaderiv(dev.vert_shader, GL_COMPILE_STATUS, addr status);
@@ -210,7 +211,7 @@ proc device_init() =
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
- 
+
 if not glfw.Init() == 1:
   quit(QUIT_FAILURE)
 
@@ -265,6 +266,9 @@ while glfw.WindowShouldClose(win) == 0:
   input_begin(addr ctx)
 
   glfw.GetCursorPos(win, addr mouseX, addr mouseY)
+  inputButton(ctx, BUTTON_LEFT, mouseX.int32, mouseY.int32, glfw.GetMouseButton(win, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS);
+  inputButton(ctx, BUTTON_MIDDLE, mouseX.int32, mouseY.int32, glfw.GetMouseButton(win, glfw.MOUSE_BUTTON_MIDDLE) == glfw.PRESS);
+  inputButton(ctx, BUTTON_RIGHT, mouseX.int32, mouseY.int32, glfw.GetMouseButton(win, glfw.MOUSE_BUTTON_RIGHT) == glfw.PRESS);
   inputMotion(ctx, cint mouseX, cint mouseY)
 
   closeInput(ctx)
@@ -274,7 +278,7 @@ while glfw.WindowShouldClose(win) == 0:
       EASY = false
       HARD = true
 
-    var op: bool = EASY
+    var op {.global.}: bool = EASY
 
     var property {.global.}: cint = 20
 
@@ -282,10 +286,10 @@ while glfw.WindowShouldClose(win) == 0:
     if buttonLabel(ctx, "button"): echo "button pressed"
     layoutDynamicRow(ctx, 30, 2)
 
-    if optionLabel(ctx, "easy", op) == EASY:
-      op = HARD
-    if optionLabel(ctx, "hard", op) == HARD:
+    if optionLabel(ctx, "easy", op == EASY):
       op = EASY
+    if optionLabel(ctx, "hard", op == HARD):
+      op = HARD
     layoutDynamicRow(ctx, 25, 1)
     propertyInt(ctx, "Compression:", 0, property, 100, 10, 1)
     layoutDynamicRow(ctx, 20, 1)
@@ -295,7 +299,7 @@ while glfw.WindowShouldClose(win) == 0:
       layoutDynamicRow(ctx, 120, 1)
       background = color_picker(ctx, background, RGBA)
       layoutDynamicRow(ctx, 25, 1)
-      
+
       background.r = char(propertyI(ctx, "#R:", 0, background.r.cint, 255, 1, 1.0))
       background.g = char(propertyI(ctx, "#G:", 0, background.g.cint, 255, 1, 1.0))
       background.b = char(propertyI(ctx, "#B:", 0, background.b.cint, 255, 1, 1.0))
@@ -304,7 +308,7 @@ while glfw.WindowShouldClose(win) == 0:
   ctx.close()
 
   var bg : array[4, cfloat]
-  
+
   background.fv(bg[0])
 
   glfw.GetWindowSize(win, addr width, addr height);
@@ -334,7 +338,7 @@ while glfw.WindowShouldClose(win) == 0:
 
   glUseProgram(dev.prog);
   glUniform1i(dev.uniform_tex, 0);
-  
+
   glUniformMatrix4fv(dev.uniform_proj, 1, GL_FALSE, addr ortho[0][0])
   glViewport(0,0,(GLsizei)display_width,(GLsizei)display_height);
 
@@ -374,20 +378,19 @@ while glfw.WindowShouldClose(win) == 0:
 
   cmd = firstDrawCommand(ctx, dev.cmds)
   while not isNil(cmd):
-    if cmd.elem_count == 0:
-      continue
-    glBindTexture(GL_TEXTURE_2D, GLuint cast[int](cmd.texture))
-    glScissor(
-                (GLint)(cmd.clip_rect.x * fb_scale.x),
-                (GLint)((float(height) - float(cmd.clip_rect.y + cmd.clip_rect.h)) * fb_scale.y),
-                (GLint)(cmd.clip_rect.w * fb_scale.x),
-                (GLint)(cmd.clip_rect.h * fb_scale.y));
-    glDrawElements(GL_TRIANGLES, (GLsizei)cmd.elem_count, GL_UNSIGNED_SHORT, offset);
-    offset = offset  + int cmd.elem_count
+    if cmd.elem_count != 0:
+      glBindTexture(GL_TEXTURE_2D, GLuint cast[int](cmd.texture))
+      glScissor(
+                  (GLint)(cmd.clip_rect.x * fb_scale.x),
+                  (GLint)((float(height) - float(cmd.clip_rect.y + cmd.clip_rect.h)) * fb_scale.y),
+                  (GLint)(cmd.clip_rect.w * fb_scale.x),
+                  (GLint)(cmd.clip_rect.h * fb_scale.y));
+      glDrawElements(GL_TRIANGLES, (GLsizei)cmd.elem_count, GL_UNSIGNED_SHORT, offset);
+      offset = offset  + int cmd.elem_count
 
     cmd = nextDrawCommand(cmd, dev.cmds, ctx)
 
-      
+
   ctx.clear()
 
 
