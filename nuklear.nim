@@ -632,7 +632,7 @@ type
 
 type
   buttons* {.size: sizeof(int32).} = enum
-    BUTTON_LEFT, BUTTON_MIDDLE, BUTTON_RIGHT, BUTTON_MAX
+    BUTTON_LEFT, BUTTON_MIDDLE, BUTTON_RIGHT, BUTTON_DOUBLE, BUTTON_MAX
 
 type
   keys* {.size: sizeof(int32).} = enum
@@ -965,7 +965,7 @@ type
     pos*: vec2
     prev*: vec2
     delta*: vec2
-    scroll_delta*: float32
+    scroll_delta*: vec2
     grab*: cuchar
     grabbed*: cuchar
     ungrab*: cuchar
@@ -3563,9 +3563,7 @@ proc koreanGyphRanges*(): var uint32 =
 
 proc font_atlas_init_default*(a2: ptr font_atlas) {.importc: "nk_font_atlas_init_default",cdecl.}
 proc init*(atlas: var font_atlas) =
-  echo("1")
   font_atlas_init_default(addr atlas)
-  echo("2")
 
 proc font_atlas_init*(a2: ptr font_atlas; a3: ptr allocator) {.importc: "nk_font_atlas_init",cdecl.}
 proc init*(atlas: var font_atlas, alloc: var allocator) =
