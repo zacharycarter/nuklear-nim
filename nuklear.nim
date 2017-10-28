@@ -3011,9 +3011,9 @@ proc input_button(a2: ptr context; a3: buttons; x: int32; y: int32; down: int32)
 proc inputButton*(ctx: var context, button: buttons, x, y: int32, down: bool) =
   input_button(addr ctx, button, x, y, down.int32)
 
-proc input_scroll(a2: ptr context; y: float32) {.importc: "nk_input_scroll",cdecl.}
-proc inputScroll*(ctx: var context, y: float32) =
-  input_scroll(addr ctx, y)
+proc input_scroll(a2: ptr context; v: vec2) {.importc: "nk_input_scroll",cdecl.}
+proc inputScroll*(ctx: var context, v: vec2) =
+  input_scroll(addr ctx, v)
 
 proc input_char(a2: ptr context; a3: char) {.importc: "nk_input_char",cdecl.}
 proc inputChar*(ctx: var context, c: char) =
