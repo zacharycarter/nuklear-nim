@@ -1,6 +1,6 @@
 import glfw3 as glfw, opengl
 
-import roboto_regular
+# import ../roboto_regular
 
 import nuklear
 
@@ -10,7 +10,7 @@ const WINDOW_HEIGHT = 600
 const MAX_VERTEX_BUFFER = 512 * 1024
 const MAX_ELEMENT_BUFFER = 128 * 1024
 
-var fb_scale : vec2 = newVec2(0.0, 0.0)
+var fb_scale : nk_vec2 = new_nk_vec2(0.0, 0.0)
 
 proc `+`[T](a: ptr T, b: int): ptr T =
     if b >= 0:
@@ -18,62 +18,53 @@ proc `+`[T](a: ptr T, b: int): ptr T =
     else:
         cast[ptr T](cast[uint](a) - cast[uint](-1 * b * a[].sizeof))
 
-template offsetof(typ, field): untyped = (var dummy: typ; cast[uint](addr(dummy.field)) - cast[uint](addr(dummy)))
-
-template alignof(typ) : uint =
-  if sizeof(typ) > 1:
-    offsetof(tuple[c: char, x: typ], x)
-  else:
-    1
-
 type
   glfw_vertex = object
     position: array[2, float]
     uv: array[2, float]
     col: array[4, char]
 
-var config : convert_config
+var config : nk_convert_config
 
-proc allocate(a2: handle; old: pointer; a4: uint): pointer {.cdecl.} =
+proc allocate(a2: nk_handle; old: pointer; a4: uint): pointer {.cdecl.} =
   if not old.isNil:
     old.dealloc()
 
   return alloc(a4)
 
-proc deallocate(a2: handle; old: pointer) {.cdecl.} =
+proc deallocate(a2: nk_handle; old: pointer) {.cdecl.} =
   dealloc(old)
 
-var allocator : plugin_alloc = allocate
-var deallocator : plugin_free = deallocate
+var allocator = nk_allocator(alloc: allocate, free: deallocate)
 
 var win : glfw.Window
 
 var vertex_layout {.global.} = @[
-  draw_vertex_layout_element(
-    attribute: VERTEX_POSITION,
-    format: FORMAT_FLOAT,
-    offset: offsetof(glfw_vertex, position)
+  nk_draw_vertex_layout_element(
+    attribute: NK_VERTEX_POSITION,
+    format: NK_FORMAT_FLOAT,
+    offset: cast[uint](offsetof(glfw_vertex, position))
   ),
-  draw_vertex_layout_element(
-    attribute: VERTEX_TEXCOORD,
-    format: FORMAT_FLOAT,
-    offset: offsetof(glfw_vertex, uv)
+  nk_draw_vertex_layout_element(
+    attribute: NK_VERTEX_TEXCOORD,
+    format: NK_FORMAT_FLOAT,
+    offset: cast[uint](offsetof(glfw_vertex, uv))
   ),
-  draw_vertex_layout_element(
-    attribute: VERTEX_COLOR,
-    format: FORMAT_R8G8B8A8,
-    offset: offsetof(glfw_vertex, col)
+  nk_draw_vertex_layout_element(
+    attribute: NK_VERTEX_COLOR,
+    format: NK_FORMAT_R8G8B8A8,
+    offset: cast[uint](offsetof(glfw_vertex, col))
   ),
-  draw_vertex_layout_element(
-    attribute: VERTEX_ATTRIBUTE_COUNT,
-    format: FORMAT_COUNT,
-    offset: 0
+  nk_draw_vertex_layout_element(
+    attribute: NK_VERTEX_ATTRIBUTE_COUNT,
+    format: NK_FORMAT_COUNT,
+    offset: cast[uint](0)
   )
 ]
 
 type device = object
-  cmds: buffer
-  null: draw_null_texture
+  cmds: nk_buffer
+  null: nk_draw_null_texture
   vbo, vao, ebo: GLuint
   prog: GLuint
   vert_shader: GLuint
@@ -85,53 +76,52 @@ type device = object
   uniform_proj: GLint
   font_tex: GLuint
 
-var ctx : context
+var ctx : nk_context
 var dev {.global.} : device = device()
 
-var fontAtlas : font_atlas
-var fontConfig : font_config
+var fontAtlas : nk_font_atlas
 
 var w, h: cint = 0
 var width,height: cint = 0
 var display_width, display_height : cint = 0
 
-proc set_style(ctx: var context) =
-  var style : array[COLOR_COUNT.ord, color]
-  style[COLOR_TEXT.ord] = newColorRGBA(20, 20, 20, 255);
-  style[COLOR_WINDOW.ord] = newColorRGBA(202, 212, 214, 215);
-  style[COLOR_HEADER.ord] = newColorRGBA(137, 182, 224, 220);
-  style[COLOR_BORDER.ord] = newColorRGBA(140, 159, 173, 255);
-  style[COLOR_BUTTON.ord] = newColorRGBA(137, 182, 224, 255);
-  style[COLOR_BUTTON_HOVER.ord] = newColorRGBA(142, 187, 229, 255);
-  style[COLOR_BUTTON_ACTIVE.ord] = newColorRGBA(147, 192, 234, 255);
-  style[COLOR_TOGGLE.ord] = newColorRGBA(177, 210, 210, 255);
-  style[COLOR_TOGGLE_HOVER.ord] = newColorRGBA(182, 215, 215, 255);
-  style[COLOR_TOGGLE_CURSOR.ord] = newColorRGBA(137, 182, 224, 255);
-  style[COLOR_SELECT.ord] = newColorRGBA(177, 210, 210, 255);
-  style[COLOR_SELECT_ACTIVE.ord] = newColorRGBA(137, 182, 224, 255);
-  style[COLOR_SLIDER.ord] = newColorRGBA(177, 210, 210, 255);
-  style[COLOR_SLIDER_CURSOR.ord] = newColorRGBA(137, 182, 224, 245);
-  style[COLOR_SLIDER_CURSOR_HOVER.ord] = newColorRGBA(142, 188, 229, 255);
-  style[COLOR_SLIDER_CURSOR_ACTIVE.ord] = newColorRGBA(147, 193, 234, 255);
-  style[COLOR_PROPERTY.ord] = newColorRGBA(210, 210, 210, 255);
-  style[COLOR_EDIT.ord] = newColorRGBA(210, 210, 210, 225);
-  style[COLOR_EDIT_CURSOR.ord] = newColorRGBA(20, 20, 20, 255);
-  style[COLOR_COMBO.ord] = newColorRGBA(210, 210, 210, 255);
-  style[COLOR_CHART.ord] = newColorRGBA(210, 210, 210, 255);
-  style[COLOR_CHART_COLOR.ord] = newColorRGBA(137, 182, 224, 255);
-  style[COLOR_CHART_COLOR_HIGHLIGHT.ord] = newColorRGBA( 255, 0, 0, 255);
-  style[COLOR_SCROLLBAR.ord] = newColorRGBA(190, 200, 200, 255);
-  style[COLOR_SCROLLBAR_CURSOR.ord] = newColorRGBA(64, 84, 95, 255);
-  style[COLOR_SCROLLBAR_CURSOR_HOVER.ord] = newColorRGBA(70, 90, 100, 255);
-  style[COLOR_SCROLLBAR_CURSOR_ACTIVE.ord] = newColorRGBA(75, 95, 105, 255);
-  style[COLOR_TAB_HEADER.ord] = newColorRGBA(156, 193, 220, 255);
+proc set_style(ctx: var nk_context) =
+  var style : array[NK_COLOR_COUNT.ord, nk_color]
+  style[NK_COLOR_TEXT.ord] = nk_rgba(20, 20, 20, 255);
+  style[NK_COLOR_WINDOW.ord] = nk_rgba(202, 212, 214, 215);
+  style[NK_COLOR_HEADER.ord] = nk_rgba(137, 182, 224, 220);
+  style[NK_COLOR_BORDER.ord] = nk_rgba(140, 159, 173, 255);
+  style[NK_COLOR_BUTTON.ord] = nk_rgba(137, 182, 224, 255);
+  style[NK_COLOR_BUTTON_HOVER.ord] = nk_rgba(142, 187, 229, 255);
+  style[NK_COLOR_BUTTON_ACTIVE.ord] = nk_rgba(147, 192, 234, 255);
+  style[NK_COLOR_TOGGLE.ord] = nk_rgba(177, 210, 210, 255);
+  style[NK_COLOR_TOGGLE_HOVER.ord] = nk_rgba(182, 215, 215, 255);
+  style[NK_COLOR_TOGGLE_CURSOR.ord] = nk_rgba(137, 182, 224, 255);
+  style[NK_COLOR_SELECT.ord] = nk_rgba(177, 210, 210, 255);
+  style[NK_COLOR_SELECT_ACTIVE.ord] = nk_rgba(137, 182, 224, 255);
+  style[NK_COLOR_SLIDER.ord] = nk_rgba(177, 210, 210, 255);
+  style[NK_COLOR_SLIDER_CURSOR.ord] = nk_rgba(137, 182, 224, 245);
+  style[NK_COLOR_SLIDER_CURSOR_HOVER.ord] = nk_rgba(142, 188, 229, 255);
+  style[NK_COLOR_SLIDER_CURSOR_ACTIVE.ord] = nk_rgba(147, 193, 234, 255);
+  style[NK_COLOR_PROPERTY.ord] = nk_rgba(210, 210, 210, 255);
+  style[NK_COLOR_EDIT.ord] = nk_rgba(210, 210, 210, 225);
+  style[NK_COLOR_EDIT_CURSOR.ord] = nk_rgba(20, 20, 20, 255);
+  style[NK_COLOR_COMBO.ord] = nk_rgba(210, 210, 210, 255);
+  style[NK_COLOR_CHART.ord] = nk_rgba(210, 210, 210, 255);
+  style[NK_COLOR_CHART_COLOR.ord] = nk_rgba(137, 182, 224, 255);
+  style[NK_COLOR_CHART_COLOR_HIGHLIGHT.ord] = nk_rgba( 255, 0, 0, 255);
+  style[NK_COLOR_SCROLLBAR.ord] = nk_rgba(190, 200, 200, 255);
+  style[NK_COLOR_SCROLLBAR_CURSOR.ord] = nk_rgba(64, 84, 95, 255);
+  style[NK_COLOR_SCROLLBAR_CURSOR_HOVER.ord] = nk_rgba(70, 90, 100, 255);
+  style[NK_COLOR_SCROLLBAR_CURSOR_ACTIVE.ord] = nk_rgba(75, 95, 105, 255);
+  style[NK_COLOR_TAB_HEADER.ord] = nk_rgba(156, 193, 220, 255);
 
-  ctx.newStyleFromTable(style[0])
+  nk_style_from_table(addr ctx, addr style[0])
 
 proc device_init() =
   var status: GLint
   #buffer_init(addr dev.cmds, addr allocator, 512 * 1024)
-  init(dev.cmds)
+  nk_buffer_init(addr dev.cmds, addr allocator, 512 * 1024)
   dev.prog = glCreateProgram();
   dev.vert_shader = glCreateShader(GL_VERTEX_SHADER);
   dev.frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -233,47 +223,46 @@ glfw.GetWindowSize(win, addr width, addr height)
 loadExtensions()
 glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
 
-fontAtlas.init()
+nk_font_atlas_init(addr fontAtlas, addr allocator)
+nk_font_atlas_begin(addr fontAtlas)
 
-fontAtlas.open()
+# let roboto_ttf = addr s_robotoRegularTtf
 
-let roboto_ttf = addr s_robotoRegularTtf
+# var font = nk_font_atlas_add_from_memory(addr fontAtlas, roboto_ttf, uint sizeof(s_robotoRegularTtf), 13.0'f32, nil)
+var font = nk_font_atlas_add_default(addr fontAtlas, 13, nil)
 
-var font = fontAtlas.addFromMemory(roboto_ttf, uint sizeof(s_robotoRegularTtf), 13.0'f32, nil)
-#var font = font_atlas_add_default(addr fontAtlas, 13, nil)
-
-let image = fontAtlas.bake(w, h, FONT_ATLAS_RGBA32)
+let image = nk_font_atlas_bake(addr fontAtlas, addr w, addr h, NK_FONT_ATLAS_RGBA32)
 glGenTextures(1, addr dev.font_tex);
 glBindTexture(GL_TEXTURE_2D, dev.font_tex);
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 glTexImage2D(GL_TEXTURE_2D, 0, GLint GL_RGBA, (GLsizei)w, (GLsizei)h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
-fontAtlas.close(handle_id(int32 dev.font_tex), dev.null)
+nk_font_atlas_end(addr fontAtlas, nk_handle_id(int32 dev.font_tex), addr dev.null)
 
-discard ctx.init(font.handle)
+discard nk_init(addr ctx, addr allocator, addr font.handle)
 device_init()
 
 set_style(ctx)
 
 #discard init(addr ctx, addr customAllocator, cast[ptr user_font](addr font))
 
-var background = newColorRGB(28,48,62)
+var background: nk_colorf = nk_color_cf(nk_rgb(28,48,62))
 var mouseX, mouseY: float
 while glfw.WindowShouldClose(win) == 0:
   glfw.PollEvents();
 
-  input_begin(addr ctx)
+  nk_input_begin(addr ctx)
 
   glfw.GetCursorPos(win, addr mouseX, addr mouseY)
-  inputButton(ctx, BUTTON_LEFT, mouseX.int32, mouseY.int32, glfw.GetMouseButton(win, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS);
-  inputButton(ctx, BUTTON_MIDDLE, mouseX.int32, mouseY.int32, glfw.GetMouseButton(win, glfw.MOUSE_BUTTON_MIDDLE) == glfw.PRESS);
-  inputButton(ctx, BUTTON_RIGHT, mouseX.int32, mouseY.int32, glfw.GetMouseButton(win, glfw.MOUSE_BUTTON_RIGHT) == glfw.PRESS);
-  inputMotion(ctx, cint mouseX, cint mouseY)
+  nk_input_button(addr ctx, NK_BUTTON_LEFT, mouseX.cint, mouseY.cint, cint(glfw.GetMouseButton(win, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS))
+  nk_input_button(addr ctx, NK_BUTTON_MIDDLE, mouseX.cint, mouseY.cint, cint(glfw.GetMouseButton(win, glfw.MOUSE_BUTTON_MIDDLE) == glfw.PRESS))
+  nk_input_button(addr ctx, NK_BUTTON_RIGHT, mouseX.cint, mouseY.cint, cint(glfw.GetMouseButton(win, glfw.MOUSE_BUTTON_RIGHT) == glfw.PRESS))
+  nk_input_motion(addr ctx, cint mouseX, cint mouseY)
 
-  closeInput(ctx)
+  nk_input_end(addr ctx)
 
-  if ctx.open("test", newRect(50, 50, 230, 250), WINDOW_BORDER.ord or WINDOW_MOVABLE.ord or WINDOW_SCALABLE.ord or WINDOW_MINIMIZABLE.ord or WINDOW_TITLE.ord):
+  if nk_begin(addr ctx, "test".cstring, new_nk_rect(50, 50, 230, 250), NK_WINDOW_BORDER.ord or NK_WINDOW_MOVABLE.ord or NK_WINDOW_SCALABLE.ord or NK_WINDOW_MINIMIZABLE.ord or NK_WINDOW_TITLE.ord).bool:
     const
       EASY = false
       HARD = true
@@ -282,34 +271,30 @@ while glfw.WindowShouldClose(win) == 0:
 
     var property {.global.}: cint = 20
 
-    layoutStaticRow(ctx, 30, 80, 1)
-    if buttonLabel(ctx, "button"): echo "button pressed"
-    layoutDynamicRow(ctx, 30, 2)
+    nk_layout_row_static(addr ctx, 30, 80, 1)
+    if nk_button_label(addr ctx, "button".cstring).bool: echo "button pressed"
+    nk_layout_row_dynamic(addr ctx, 30, 2)
 
-    if optionLabel(ctx, "easy", op == EASY):
+    if nk_option_label(addr ctx, "easy".cstring, (op == EASY).cint).bool:
       op = EASY
-    if optionLabel(ctx, "hard", op == HARD):
+    if nk_option_label(addr ctx, "hard".cstring, (op == HARD).cint).bool:
       op = HARD
-    layoutDynamicRow(ctx, 25, 1)
-    propertyInt(ctx, "Compression:", 0, property, 100, 10, 1)
-    layoutDynamicRow(ctx, 20, 1)
-    label(ctx, "background:", uint32 TEXT_LEFT)
-    layoutDynamicRow(ctx, 25, 1)
-    if comboBeginColor(ctx, background, newVec2(width(ctx), 400)):
-      layoutDynamicRow(ctx, 120, 1)
-      background = color_picker(ctx, background, RGBA)
-      layoutDynamicRow(ctx, 25, 1)
+    nk_layout_row_dynamic(addr ctx, 25, 1)
+    nk_property_int(addr ctx, "Compression:".cstring, 0, addr property, 100, 10, 1)
+    nk_layout_row_dynamic(addr ctx, 20, 1)
+    nk_label(addr ctx, "background:", uint32 NK_TEXT_LEFT)
+    nk_layout_row_dynamic(addr ctx, 25, 1)
+    if nk_combo_begin_color(addr ctx, nk_rgb_cf(background), new_nk_vec2(nk_widget_width(addr ctx), 400)).bool:
+      nk_layout_row_dynamic(addr ctx, 120, 1)
+      background = nk_color_picker(addr ctx, background, NK_RGBA)
+      nk_layout_row_dynamic(addr ctx, 25, 1)
 
-      background.r = char(propertyI(ctx, "#R:", 0, background.r.cint, 255, 1, 1.0))
-      background.g = char(propertyI(ctx, "#G:", 0, background.g.cint, 255, 1, 1.0))
-      background.b = char(propertyI(ctx, "#B:", 0, background.b.cint, 255, 1, 1.0))
-      background.a = char(propertyI(ctx, "#A:", 0, background.a.cint, 255, 1, 1.0))
-      comboEnd(ctx)
-  ctx.close()
-
-  var bg : array[4, cfloat]
-
-  background.fv(bg[0])
+      background.r = cfloat(nk_propertyi(addr ctx, "#R:", 0, background.r.cint, 255, 1, 1.0))
+      background.g = cfloat(nk_propertyi(addr ctx, "#G:", 0, background.g.cint, 255, 1, 1.0))
+      background.b = cfloat(nk_propertyi(addr ctx, "#B:", 0, background.b.cint, 255, 1, 1.0))
+      background.a = cfloat(nk_propertyi(addr ctx, "#A:", 0, background.a.cint, 255, 1, 1.0))
+      nk_combo_end(addr ctx)
+  nk_end(addr ctx)
 
   glfw.GetWindowSize(win, addr width, addr height);
   glfw.GetFramebufferSize(win, addr display_width, addr display_height)
@@ -317,7 +302,7 @@ while glfw.WindowShouldClose(win) == 0:
   fb_scale.y = display_height / height
   glViewport(0, 0, width, height)
   glClear(GL_COLOR_BUFFER_BIT)
-  glClearColor(bg[0], bg[1], bg[2], bg[3])
+  glClearColor(background.r, background.g, background.b, background.a)
 
   var ortho = [
     [2.0f, 0.0f, 0.0f, 0.0f],
@@ -342,8 +327,8 @@ while glfw.WindowShouldClose(win) == 0:
   glUniformMatrix4fv(dev.uniform_proj, 1, GL_FALSE, addr ortho[0][0])
   glViewport(0,0,(GLsizei)display_width,(GLsizei)display_height);
 
-  var cmd : ptr draw_command
-  var offset: ptr draw_index
+  var cmd : ptr nk_draw_command
+  var offset: ptr nk_draw_index
 
   glBindVertexArray(dev.vao);
   glBindBuffer(GL_ARRAY_BUFFER, dev.vbo);
@@ -358,25 +343,25 @@ while glfw.WindowShouldClose(win) == 0:
   ##  fill convert configuration
   config.vertex_layout = addr vertex_layout[0]
   config.vertex_size = uint sizeof(glfw_vertex);
-  config.vertex_alignment = alignof(glfw_vertex);
+  config.vertex_alignment = cast[uint](alignof(glfw_vertex))
   config.null = dev.null;
   config.circle_segment_count = 22;
   config.curve_segment_count = 22;
   config.arc_segment_count = 22;
   config.global_alpha = 1.0f;
-  config.shape_AA = ANTI_ALIASING_ON;
-  config.line_AA = ANTI_ALIASING_ON;
+  config.shape_AA = NK_ANTI_ALIASING_ON;
+  config.line_AA = NK_ANTI_ALIASING_ON;
 
-  var vbuf, ebuf : buffer
-  init(vbuf, vertices, MAX_VERTEX_BUFFER)
-  init(ebuf, elements, MAX_ELEMENT_BUFFER)
+  var vbuf, ebuf : nk_buffer
+  nk_buffer_init_fixed(addr vbuf, vertices, MAX_VERTEX_BUFFER)
+  nk_buffer_init_fixed(addr ebuf, elements, MAX_ELEMENT_BUFFER)
 
-  convertDrawCommands(ctx, dev.cmds, vbuf, ebuf, config)
+  discard nk_convert(addr ctx, addr dev.cmds, addr vbuf, addr ebuf, addr config)
 
   discard glUnmapBuffer(GL_ARRAY_BUFFER);
   discard glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
-  cmd = firstDrawCommand(ctx, dev.cmds)
+  cmd = nk_draw_begin(addr ctx, addr dev.cmds)
   while not isNil(cmd):
     if cmd.elem_count != 0:
       glBindTexture(GL_TEXTURE_2D, GLuint cast[int](cmd.texture))
@@ -388,10 +373,10 @@ while glfw.WindowShouldClose(win) == 0:
       glDrawElements(GL_TRIANGLES, (GLsizei)cmd.elem_count, GL_UNSIGNED_SHORT, offset);
       offset = offset  + int cmd.elem_count
 
-    cmd = nextDrawCommand(cmd, dev.cmds, ctx)
+    cmd = nk_draw_next(cmd, addr dev.cmds, addr ctx)
 
 
-  ctx.clear()
+  nk_clear(addr ctx)
 
 
   glUseProgram(0);
@@ -403,8 +388,8 @@ while glfw.WindowShouldClose(win) == 0:
 
   glfw.SwapBuffers(win);
 
-fontAtlas.clear()
-ctx.free()
+nk_font_atlas_clear(addr fontAtlas)
+nk_free(addr ctx)
 glDetachShader(dev.prog, dev.vert_shader);
 glDetachShader(dev.prog, dev.frag_shader);
 glDeleteShader(dev.vert_shader);
@@ -413,5 +398,5 @@ glDeleteProgram(dev.prog);
 glDeleteTextures(1, addr dev.font_tex);
 glDeleteBuffers(1, addr dev.vbo);
 glDeleteBuffers(1, addr dev.ebo);
-free(dev.cmds);
+nk_buffer_free(addr dev.cmds);
 glfw.Terminate()

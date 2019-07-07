@@ -8,7 +8,6 @@ license       = "MIT"
 # Dependencies
 
 requires "nim >= 0.16.1"
-requires "https://github.com/zacharycarter/nuklear-nim.git"
 requires "nimrod-glfw >= 3.2.0"
 requires "opengl >= 1.1"
 
