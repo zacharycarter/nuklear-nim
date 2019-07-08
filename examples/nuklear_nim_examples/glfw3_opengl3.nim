@@ -1,6 +1,6 @@
 import glfw3 as glfw, opengl
 
-# import ../roboto_regular
+import ../roboto_regular
 
 import nuklear
 
@@ -25,17 +25,6 @@ type
     col: array[4, char]
 
 var config : nk_convert_config
-
-proc allocate(a2: nk_handle; old: pointer; a4: uint): pointer {.cdecl.} =
-  if not old.isNil:
-    old.dealloc()
-
-  return alloc(a4)
-
-proc deallocate(a2: nk_handle; old: pointer) {.cdecl.} =
-  dealloc(old)
-
-var allocator = nk_allocator(alloc: allocate, free: deallocate)
 
 var win : glfw.Window
 
@@ -120,8 +109,7 @@ proc set_style(ctx: var nk_context) =
 
 proc device_init() =
   var status: GLint
-  #buffer_init(addr dev.cmds, addr allocator, 512 * 1024)
-  nk_buffer_init(addr dev.cmds, addr allocator, 512 * 1024)
+  nk_buffer_init_default(addr dev.cmds)
   dev.prog = glCreateProgram();
   dev.vert_shader = glCreateShader(GL_VERTEX_SHADER);
   dev.frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -223,13 +211,19 @@ glfw.GetWindowSize(win, addr width, addr height)
 loadExtensions()
 glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
 
-nk_font_atlas_init(addr fontAtlas, addr allocator)
+discard nk_init_default(addr ctx, nil)
+ctx.clip.copy = nil
+ctx.clip.paste = nil
+ctx.clip.userdata = nk_handle_ptr(nil)
+device_init()
+
+nk_font_atlas_init_default(addr fontAtlas)
 nk_font_atlas_begin(addr fontAtlas)
 
-# let roboto_ttf = addr s_robotoRegularTtf
+let roboto_ttf = addr s_robotoRegularTtf
 
 # var font = nk_font_atlas_add_from_memory(addr fontAtlas, roboto_ttf, uint sizeof(s_robotoRegularTtf), 13.0'f32, nil)
-var font = nk_font_atlas_add_default(addr fontAtlas, 13, nil)
+# var font = nk_font_atlas_add_default(addr fontAtlas, 13.0f, nil)
 
 let image = nk_font_atlas_bake(addr fontAtlas, addr w, addr h, NK_FONT_ATLAS_RGBA32)
 glGenTextures(1, addr dev.font_tex);
@@ -238,14 +232,15 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 glTexImage2D(GL_TEXTURE_2D, 0, GLint GL_RGBA, (GLsizei)w, (GLsizei)h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
-nk_font_atlas_end(addr fontAtlas, nk_handle_id(int32 dev.font_tex), addr dev.null)
+nk_font_atlas_end(addr fontAtlas, nk_handle_id(cint dev.font_tex), addr dev.null)
 
-discard nk_init(addr ctx, addr allocator, addr font.handle)
-device_init()
+# set_style(ctx)
 
-set_style(ctx)
+if fontAtlas.default_font != nil:
+  echo "HERE!"
+  nk_style_set_font(addr ctx, addr fontAtlas.default_font.handle)
 
-#discard init(addr ctx, addr customAllocator, cast[ptr user_font](addr font))
+echo repr ctx.style.font
 
 var background: nk_colorf = nk_color_cf(nk_rgb(28,48,62))
 var mouseX, mouseY: float
@@ -262,20 +257,20 @@ while glfw.WindowShouldClose(win) == 0:
 
   nk_input_end(addr ctx)
 
-  if nk_begin(addr ctx, "test".cstring, new_nk_rect(50, 50, 230, 250), NK_WINDOW_BORDER.ord or NK_WINDOW_MOVABLE.ord or NK_WINDOW_SCALABLE.ord or NK_WINDOW_MINIMIZABLE.ord or NK_WINDOW_TITLE.ord).bool:
+  if nk_begin(addr ctx, "test", new_nk_rect(50, 50, 230, 250), NK_WINDOW_BORDER.ord or NK_WINDOW_MOVABLE.ord or NK_WINDOW_SCALABLE.ord or NK_WINDOW_MINIMIZABLE.ord or NK_WINDOW_TITLE.ord) != 0:
     const
       EASY = false
       HARD = true
 
-    var op {.global.}: bool = EASY
+    var op: bool = EASY
 
-    var property {.global.}: cint = 20
+    var property: cint = 20
 
     nk_layout_row_static(addr ctx, 30, 80, 1)
-    if nk_button_label(addr ctx, "button".cstring).bool: echo "button pressed"
+    if nk_button_label(addr ctx, "button").bool: echo "button pressed"
     nk_layout_row_dynamic(addr ctx, 30, 2)
 
-    if nk_option_label(addr ctx, "easy".cstring, (op == EASY).cint).bool:
+    if nk_option_label(addr ctx, "easy", (op == EASY).cint).bool:
       op = EASY
     if nk_option_label(addr ctx, "hard".cstring, (op == HARD).cint).bool:
       op = HARD
