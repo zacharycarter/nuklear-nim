@@ -55,7 +55,7 @@ type
   nk_glyph* = array[4, char]
   nk_handle* {.bycopy, union.} = object
     `ptr`*: pointer
-    id*: cint
+    id*: int
 
   nk_image* {.bycopy.} = object
     handle*: nk_handle
@@ -65,10 +65,8 @@ type
 
   nk_cursor* {.bycopy.} = object
     img*: nk_image
-
-var
-  size*: nk_vec2
-  offset*: nk_vec2
+    size*: nk_vec2
+    offset*: nk_vec2
 
 type
   nk_scroll* {.bycopy.} = object
@@ -1168,14 +1166,14 @@ type
     v1*: cfloat
 
   nk_font* {.bycopy.} = object
-    scale*: cfloat
-    fallback*: ptr nk_font_glyph
-    fallback_codepoint*: nk_rune
-    texture*: nk_handle
     next*: ptr nk_font
     handle*: nk_user_font
     info*: nk_baked_font
+    scale*: cfloat
     glyphs*: ptr nk_font_glyph
+    fallback*: ptr nk_font_glyph
+    fallback_codepoint*: nk_rune
+    texture*: nk_handle
     config*: ptr nk_font_config
 
 type
@@ -2499,11 +2497,8 @@ type
     values*: array[((((if (sizeof(nk_window)) <
         (sizeof(nk_panel)): (sizeof(nk_panel)) else: (sizeof(nk_window))) div
         sizeof((nk_uint)))) div 2), nk_uint]
-
-
-var
-  next*: ptr nk_table
-  prev*: ptr nk_table
+    next*: ptr nk_table
+    prev*: ptr nk_table
 
 type
   nk_page_data* {.bycopy, union.} = object
