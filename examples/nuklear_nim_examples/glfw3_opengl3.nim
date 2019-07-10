@@ -33,7 +33,7 @@ type
     fah: bgfx_texture_handle_t
     vb: nk_buffer
     ib: nk_buffer
-    vertexLayout: seq[nk_draw_vertex_layout_element]
+    vertexLayout: array[4, nk_draw_vertex_layout_element]
 
 var
   ctx*: nk_context
@@ -59,6 +59,7 @@ proc init*(vid: uint8): bool =
   viewId = vid
   text = newString(TEXT_MAX)
   # discard glfw.SetCharCallback(graphics.rootWindow, glfw_char_callback)
+  let rendererType = bgfx_get_renderer_type()
   nk_buffer_init_default(addr dev.cmds)
   dev.vsh = bgfx_create_shader(bgfx_make_ref(addr vs[0], uint32 sizeof(vs)))
   dev.fsh = bgfx_create_shader(bgfx_make_ref(addr fs[0], uint32 sizeof(fs)))
@@ -67,14 +68,13 @@ proc init*(vid: uint8): bool =
   dev.uh = bgfx_create_uniform("s_texture", BGFX_UNIFORM_TYPE_SAMPLER, 1)
 
   dev.vdecl = createShared(bgfx_vertex_decl_t)
-  bgfx_vertex_decl_begin(dev.vdecl, BGFX_RENDERER_TYPE_NOOP)
+  bgfx_vertex_decl_begin(dev.vdecl, rendererType)
   bgfx_vertex_decl_add(dev.vdecl, BGFX_ATTRIB_POSITION, 2, BGFX_ATTRIB_TYPE_FLOAT, false, false)
   bgfx_vertex_decl_add(dev.vdecl, BGFX_ATTRIB_TEXCOORD0, 2, BGFX_ATTRIB_TYPE_FLOAT, false, false)
   bgfx_vertex_decl_add(dev.vdecl, BGFX_ATTRIB_COLOR0, 4, BGFX_ATTRIB_TYPE_UINT8, true, false)
   bgfx_vertex_decl_end(dev.vdecl)
   
-
-  dev.vertexLayout = @[
+  dev.vertexLayout = [
     nk_draw_vertex_layout_element(
         attribute: NK_VERTEX_POSITION,
         format: NK_FORMAT_FLOAT, 
@@ -96,9 +96,6 @@ proc init*(vid: uint8): bool =
         offset: 0
       )
   ]
-
-  echo dev.vertexLayout
-  echo sizeof(bgfx_vertex)
 
   dev.cc.vertex_layout = addr dev.vertexLayout[0]
   dev.cc.vertex_size = nk_size sizeof(bgfx_vertex)
@@ -122,7 +119,8 @@ proc init*(vid: uint8): bool =
     oversample_h: cuchar 3,
     oversample_v: cuchar 2
   )
-  var font = nk_font_atlas_add_from_memory(addr fa, roboto_ttf, nk_size sizeof(s_robotoRegularTtf), 18, addr fontConfig)
+  var font = nk_font_atlas_add_from_memory(addr fa, roboto_ttf, nk_size sizeof(s_robotoRegularTtf), 18, nil)
+  # var font = nk_font_atlas_add_from_file(addr fa, "NotoSans-Regular.ttf", 18, nil)
   # Uncomment for default font
   # var font = nk_font_atlas_add_default(addr fa, 13, nil)
 
@@ -201,47 +199,45 @@ proc render*() =
   bgfx_touch(0)
   var tvb : bgfx_transient_vertex_buffer_t
   var tib : bgfx_transient_index_buffer_t
-  if get_avail_transient_vertex_buffers(65536, dev.vdecl) and
-    get_avail_transient_index_buffers(dev.vdecl, 65536*2):
-    
-    bgfx_alloc_transient_vertex_buffer(addr tvb, 65536, dev.vdecl)
-    bgfx_alloc_transient_index_buffer(addr tib, 65536*2)
-    
-    nk_buffer_init_fixed(addr dev.vb, tvb.data, nk_size dev.vdecl.stride.uint32 * 65536'u32)
-    nk_buffer_init_fixed(addr dev.ib, tib.data, nk_size (65536*2) * sizeof(uint32))
-    
-    discard nk_convert(addr ctx, addr dev.cmds, addr dev.vb, addr dev.ib, addr dev.cc)
-    
-    
-    var offset : uint32 = 0
+  # if get_avail_transient_vertex_buffers(65536, dev.vdecl) and
+  #   get_avail_transient_index_buffers(dev.vdecl, 65536*2):
 
-    var cmd : ptr nk_draw_command = nk_draw_begin(addr ctx, addr dev.cmds)
-    while not isNil(cmd):
-      if cmd.elem_count == 0:
-        continue
+  nk_buffer_init_default(addr dev.vb)
+  nk_buffer_init_default(addr dev.ib)
 
-      let scissorX : uint16 = uint16 max(cmd.clip_rect.x, 0.0)
-      let scissorY : uint16 = uint16 max(cmd.clip_rect.y, 0.0)
-      let scissorW : uint16 = uint16 min(cmd.clip_rect.w, 0.0)
-      let scissorH : uint16 = uint16 min(cmd.clip_rect.h, 0.0)
-      # discard bgfx_set_scissor(scissorX, scissorY, scissorW, scissorH)
-
-      bgfx_set_state( BGFX_STATE_WRITE_RGB or BGFX_STATE_WRITE_A or
-                          BGFX_STATE_BLEND_FUNC( BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA ), 0)
+  discard nk_convert(addr ctx, addr dev.cmds, addr dev.vb, addr dev.ib, addr dev.cc)
       
-      var th = dev.fah
-      th.idx = cast[uint16](cmd.texture)
+  bgfx_alloc_transient_vertex_buffer(addr tvb, uint32(dev.vb.allocated div dev.vdecl.stride), dev.vdecl)
+  copyMem(tvb.data, dev.vb.memory.`ptr`, dev.vb.allocated)
 
-      bgfx_set_texture(0, dev.uh, th, high(uint32))
+  bgfx_alloc_transient_index_buffer(addr tib, uint32(dev.ib.allocated.int / sizeof(uint16)))
+  copyMem(tib.data, dev.ib.memory.`ptr`, dev.ib.allocated)
+  
+  var offset : uint32 = 0
+  var cmd : ptr nk_draw_command = nk_draw_begin(addr ctx, addr dev.cmds)
+  while not isNil(cmd):
+    if cmd.elem_count == 0:
+      continue
+    
+    let scissorX : uint16 = uint16 max(cmd.clip_rect.x, 0.0)
+    let scissorY : uint16 = uint16 max(cmd.clip_rect.y, 0.0)
+    let scissorW : uint16 = uint16 min(cmd.clip_rect.w, 0.0)
+    let scissorH : uint16 = uint16 min(cmd.clip_rect.h, 0.0)
+    # discard bgfx_set_scissor(scissorX, scissorY, scissorW, scissorH)
 
-      bgfx_set_transient_vertex_buffer(0, addr tvb, 0, uint32 dev.vb.allocated div dev.vdecl.stride)
-      bgfx_set_transient_index_buffer( addr tib, offset, cmd.elem_count)
+    bgfx_set_state( 0'u64 or BGFX_STATE_WRITE_RGB or BGFX_STATE_WRITE_A or
+                        BGFX_STATE_BLEND_FUNC( BGFX_STATE_BLEND_SRC_ALPHA, BGFX_STATE_BLEND_INV_SRC_ALPHA ), 0)
+    
+    bgfx_set_texture(0, dev.uh, dev.fah, high(uint32))
 
-      bgfx_submit(0, dev.sph, 0, false)
+    bgfx_set_transient_vertex_buffer(0, addr tvb, 0, uint32(dev.vb.allocated div dev.vdecl.stride))
+    bgfx_set_transient_index_buffer( addr tib, offset, cmd.elem_count)
 
-      offset += cmd.elem_count
+    bgfx_submit(0, dev.sph, 0, false)
 
-      cmd = nk_draw_next(cmd, addr dev.cmds, addr ctx)
+    offset += cmd.elem_count
+
+    cmd = nk_draw_next(cmd, addr dev.cmds, addr ctx)
   nk_clear(addr ctx)
 
 proc dispose*() =
